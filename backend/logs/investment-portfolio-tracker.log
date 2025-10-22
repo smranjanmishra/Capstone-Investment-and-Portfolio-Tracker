@@ -1,189 +1,36 @@
-2025-10-22 02:12:10.035 [HikariPool-1 housekeeper] WARN  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=1h45m32s804ms).
-2025-10-22 03:21:00.676 [HikariPool-1 housekeeper] WARN  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=1h8m50s148ms).
-2025-10-22 05:21:17.265 [HikariPool-1 housekeeper] WARN  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=2h17s34ms).
-2025-10-22 06:01:06.224 [HikariPool-1 housekeeper] WARN  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=39m48s712ms).
-2025-10-22 08:01:27.026 [HikariPool-1 housekeeper] WARN  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=2h21s85ms).
-2025-10-22 09:02:33.107 [HikariPool-1 housekeeper] WARN  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=1h1m6s96ms).
-2025-10-22 10:03:38.411 [HikariPool-1 housekeeper] WARN  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=1h1m5s293ms).
-2025-10-22 11:04:44.594 [HikariPool-1 housekeeper] WARN  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=1h1m5s976ms).
-2025-10-22 11:14:01.801 [HikariPool-1 housekeeper] WARN  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=9m17s427ms).
-2025-10-22 11:14:34.867 [background-preinit] INFO  o.h.validator.internal.util.Version - HV000001: Hibernate Validator 8.0.1.Final
-2025-10-22 11:14:34.930 [main] INFO  c.z.b.c.InvestmentControllerTest - Starting InvestmentControllerTest using Java 17.0.12 with PID 39602 (started by soumyami in /Users/soumyami/Capstone-Investment-and-Portfolio-Tracker/backend)
-2025-10-22 11:14:34.931 [main] INFO  c.z.b.c.InvestmentControllerTest - No active profile set, falling back to 1 default profile: "default"
-2025-10-22 11:14:37.630 [main] WARN  o.s.b.a.s.s.UserDetailsServiceAutoConfiguration - 
-
-Using generated security password: 302e56d8-6114-47d6-bc9d-e9e42fe32771
-
-This generated password is for development use only. Your security configuration must be updated before running your application in production.
-
-2025-10-22 11:14:37.834 [main] INFO  o.s.s.web.DefaultSecurityFilterChain - Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@503556cb, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@3c9e19de, org.springframework.security.web.context.SecurityContextHolderFilter@2c815fdc, org.springframework.security.web.header.HeaderWriterFilter@3eec8583, org.springframework.web.filter.CorsFilter@12aa381f, org.springframework.security.web.csrf.CsrfFilter@48b2dbc4, org.springframework.security.web.authentication.logout.LogoutFilter@3e98b933, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter@a03529c, org.springframework.security.web.authentication.ui.DefaultLoginPageGeneratingFilter@6e364f1f, org.springframework.security.web.authentication.ui.DefaultLogoutPageGeneratingFilter@6115846e, org.springframework.security.web.authentication.www.BasicAuthenticationFilter@70139a81, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@dae5e0, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@59a94d0f, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@1bec1589, org.springframework.security.web.access.ExceptionTranslationFilter@2a631049, org.springframework.security.web.access.intercept.AuthorizationFilter@1179fc8c]
-2025-10-22 11:14:37.930 [main] INFO  o.s.b.t.m.w.SpringBootMockServletContext - Initializing Spring TestDispatcherServlet ''
-2025-10-22 11:14:37.931 [main] INFO  o.s.t.w.s.TestDispatcherServlet - Initializing Servlet ''
-2025-10-22 11:14:37.933 [main] INFO  o.s.t.w.s.TestDispatcherServlet - Completed initialization in 2 ms
-2025-10-22 11:14:37.983 [main] INFO  c.z.b.c.InvestmentControllerTest - Started InvestmentControllerTest in 3.763 seconds (process running for 5.661)
-2025-10-22 11:14:38.092 [main] WARN  o.s.w.s.h.HandlerMappingIntrospector - Cache miss for REQUEST dispatch to '/api/investments/active' (previous null). Performing CorsConfiguration lookup. This is logged once only at WARN level, and every time at TRACE.
-2025-10-22 11:15:09.934 [background-preinit] INFO  o.h.validator.internal.util.Version - HV000001: Hibernate Validator 8.0.1.Final
-2025-10-22 11:15:10.015 [main] INFO  c.z.b.r.InvestmentProductRepositoryTest - Starting InvestmentProductRepositoryTest using Java 17.0.12 with PID 39645 (started by soumyami in /Users/soumyami/Capstone-Investment-and-Portfolio-Tracker/backend)
-2025-10-22 11:15:10.017 [main] INFO  c.z.b.r.InvestmentProductRepositoryTest - No active profile set, falling back to 1 default profile: "default"
-2025-10-22 11:15:10.622 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
-2025-10-22 11:15:10.726 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 86 ms. Found 1 JPA repository interface.
-2025-10-22 11:15:10.812 [main] INFO  o.s.b.t.a.j.TestDatabaseAutoConfiguration$EmbeddedDataSourceBeanFactoryPostProcessor - Replacing 'dataSource' DataSource bean with embedded version
-2025-10-22 11:15:11.050 [main] INFO  o.s.j.d.e.EmbeddedDatabaseFactory - Starting embedded database: url='jdbc:h2:mem:60fb0262-d83e-467d-9212-dece28e9c429;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=false', username='sa'
-2025-10-22 11:15:11.504 [main] INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
-2025-10-22 11:15:11.606 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.3.1.Final
-2025-10-22 11:15:11.654 [main] INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
-2025-10-22 11:15:12.086 [main] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
-2025-10-22 11:15:12.163 [main] WARN  org.hibernate.dialect.Dialect - HHH000511: The 2.2.0 version for [org.hibernate.dialect.PostgreSQLDialect] is no longer supported, hence certain features may not work properly. The minimum supported version is 11.0.0. Check the community dialects project for available legacy versions.
-2025-10-22 11:15:12.171 [main] WARN  org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
-2025-10-22 11:15:13.247 [main] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
-2025-10-22 11:15:13.318 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
-2025-10-22 11:15:13.964 [main] INFO  o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
-2025-10-22 11:15:14.894 [main] INFO  c.z.b.r.InvestmentProductRepositoryTest - Started InvestmentProductRepositoryTest in 5.496 seconds (process running for 6.989)
-2025-10-22 11:15:15.824 [SpringApplicationShutdownHook] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
-2025-10-22 11:15:27.734 [background-preinit] INFO  o.h.validator.internal.util.Version - HV000001: Hibernate Validator 8.0.1.Final
-2025-10-22 11:15:27.785 [main] INFO  c.z.b.r.InvestmentProductRepositoryTest - Starting InvestmentProductRepositoryTest using Java 17.0.12 with PID 39658 (started by soumyami in /Users/soumyami/Capstone-Investment-and-Portfolio-Tracker/backend)
-2025-10-22 11:15:27.786 [main] INFO  c.z.b.r.InvestmentProductRepositoryTest - No active profile set, falling back to 1 default profile: "default"
-2025-10-22 11:15:28.353 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
-2025-10-22 11:15:28.429 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 61 ms. Found 1 JPA repository interface.
-2025-10-22 11:15:28.487 [main] INFO  o.s.b.t.a.j.TestDatabaseAutoConfiguration$EmbeddedDataSourceBeanFactoryPostProcessor - Replacing 'dataSource' DataSource bean with embedded version
-2025-10-22 11:15:28.695 [main] INFO  o.s.j.d.e.EmbeddedDatabaseFactory - Starting embedded database: url='jdbc:h2:mem:33567a5d-4d88-4a56-a44e-0be2ada2ac69;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=false', username='sa'
-2025-10-22 11:15:29.069 [main] INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
-2025-10-22 11:15:29.141 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.3.1.Final
-2025-10-22 11:15:29.184 [main] INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
-2025-10-22 11:15:29.512 [main] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
-2025-10-22 11:15:29.592 [main] WARN  org.hibernate.dialect.Dialect - HHH000511: The 2.2.0 version for [org.hibernate.dialect.PostgreSQLDialect] is no longer supported, hence certain features may not work properly. The minimum supported version is 11.0.0. Check the community dialects project for available legacy versions.
-2025-10-22 11:15:29.601 [main] WARN  org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
-2025-10-22 11:15:30.766 [main] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
-2025-10-22 11:15:30.852 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
-2025-10-22 11:15:31.532 [main] INFO  o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
-2025-10-22 11:15:32.351 [main] INFO  c.z.b.r.InvestmentProductRepositoryTest - Started InvestmentProductRepositoryTest in 5.038 seconds (process running for 6.655)
-2025-10-22 11:15:33.327 [SpringApplicationShutdownHook] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
-2025-10-22 11:15:58.649 [background-preinit] INFO  o.h.validator.internal.util.Version - HV000001: Hibernate Validator 8.0.1.Final
-2025-10-22 11:15:58.708 [main] INFO  c.z.b.c.InvestmentControllerTest - Starting InvestmentControllerTest using Java 17.0.12 with PID 39677 (started by soumyami in /Users/soumyami/Capstone-Investment-and-Portfolio-Tracker/backend)
-2025-10-22 11:15:58.709 [main] INFO  c.z.b.c.InvestmentControllerTest - No active profile set, falling back to 1 default profile: "default"
-2025-10-22 11:16:01.131 [main] WARN  o.s.b.a.s.s.UserDetailsServiceAutoConfiguration - 
-
-Using generated security password: 25d024f2-519f-4828-b1a8-b5c6b169b329
-
-This generated password is for development use only. Your security configuration must be updated before running your application in production.
-
-2025-10-22 11:16:01.314 [main] INFO  o.s.s.web.DefaultSecurityFilterChain - Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@1179fc8c, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@a03529c, org.springframework.security.web.context.SecurityContextHolderFilter@32d0d7eb, org.springframework.security.web.header.HeaderWriterFilter@7858d31d, org.springframework.web.filter.CorsFilter@1760e594, org.springframework.security.web.csrf.CsrfFilter@32a033b6, org.springframework.security.web.authentication.logout.LogoutFilter@1a7d0c9f, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter@55061418, org.springframework.security.web.authentication.ui.DefaultLoginPageGeneratingFilter@38e00b47, org.springframework.security.web.authentication.ui.DefaultLogoutPageGeneratingFilter@4af70b83, org.springframework.security.web.authentication.www.BasicAuthenticationFilter@498a4d62, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@7d12429, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@14656be5, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@143413cd, org.springframework.security.web.access.ExceptionTranslationFilter@3f6f9cef, org.springframework.security.web.access.intercept.AuthorizationFilter@73b0ed03]
-2025-10-22 11:16:01.404 [main] INFO  o.s.b.t.m.w.SpringBootMockServletContext - Initializing Spring TestDispatcherServlet ''
-2025-10-22 11:16:01.405 [main] INFO  o.s.t.w.s.TestDispatcherServlet - Initializing Servlet ''
-2025-10-22 11:16:01.407 [main] INFO  o.s.t.w.s.TestDispatcherServlet - Completed initialization in 2 ms
-2025-10-22 11:16:01.450 [main] INFO  c.z.b.c.InvestmentControllerTest - Started InvestmentControllerTest in 3.332 seconds (process running for 4.929)
-2025-10-22 11:16:01.538 [main] WARN  o.s.w.s.h.HandlerMappingIntrospector - Cache miss for REQUEST dispatch to '/api/investments/active' (previous null). Performing CorsConfiguration lookup. This is logged once only at WARN level, and every time at TRACE.
-2025-10-22 11:18:53.708 [background-preinit] INFO  o.h.validator.internal.util.Version - HV000001: Hibernate Validator 8.0.1.Final
-2025-10-22 11:18:53.760 [main] INFO  c.z.b.c.InvestmentControllerTest - Starting InvestmentControllerTest using Java 17.0.12 with PID 39830 (started by soumyami in /Users/soumyami/Capstone-Investment-and-Portfolio-Tracker/backend)
-2025-10-22 11:18:53.761 [main] INFO  c.z.b.c.InvestmentControllerTest - No active profile set, falling back to 1 default profile: "default"
-2025-10-22 11:18:56.129 [main] WARN  o.s.b.a.s.s.UserDetailsServiceAutoConfiguration - 
-
-Using generated security password: c541147a-0d33-42de-a644-be6e71ee7a4a
-
-This generated password is for development use only. Your security configuration must be updated before running your application in production.
-
-2025-10-22 11:18:56.303 [main] INFO  o.s.s.web.DefaultSecurityFilterChain - Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@4fa5cc73, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@224e6e88, org.springframework.security.web.context.SecurityContextHolderFilter@2a631049, org.springframework.security.web.header.HeaderWriterFilter@534762ed, org.springframework.web.filter.CorsFilter@70139a81, org.springframework.security.web.csrf.CsrfFilter@42211e04, org.springframework.security.web.authentication.logout.LogoutFilter@5c0e2ec, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter@6e981e78, org.springframework.security.web.authentication.ui.DefaultLoginPageGeneratingFilter@59a94d0f, org.springframework.security.web.authentication.ui.DefaultLogoutPageGeneratingFilter@60f9dc7e, org.springframework.security.web.authentication.www.BasicAuthenticationFilter@146f3d22, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@3eec8583, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@66e1b2a, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@15e5246, org.springframework.security.web.access.ExceptionTranslationFilter@20be890d, org.springframework.security.web.access.intercept.AuthorizationFilter@1ed9d173]
-2025-10-22 11:18:56.390 [main] INFO  o.s.b.t.m.w.SpringBootMockServletContext - Initializing Spring TestDispatcherServlet ''
-2025-10-22 11:18:56.391 [main] INFO  o.s.t.w.s.TestDispatcherServlet - Initializing Servlet ''
-2025-10-22 11:18:56.394 [main] INFO  o.s.t.w.s.TestDispatcherServlet - Completed initialization in 2 ms
-2025-10-22 11:18:56.445 [main] INFO  c.z.b.c.InvestmentControllerTest - Started InvestmentControllerTest in 3.209 seconds (process running for 4.621)
-2025-10-22 11:18:56.548 [main] WARN  o.s.w.s.h.HandlerMappingIntrospector - Cache miss for REQUEST dispatch to '/api/investments/active' (previous null). Performing CorsConfiguration lookup. This is logged once only at WARN level, and every time at TRACE.
-2025-10-22 11:19:05.097 [background-preinit] INFO  o.h.validator.internal.util.Version - HV000001: Hibernate Validator 8.0.1.Final
-2025-10-22 11:19:05.167 [main] INFO  c.z.b.r.InvestmentProductRepositoryTest - Starting InvestmentProductRepositoryTest using Java 17.0.12 with PID 39853 (started by soumyami in /Users/soumyami/Capstone-Investment-and-Portfolio-Tracker/backend)
-2025-10-22 11:19:05.168 [main] INFO  c.z.b.r.InvestmentProductRepositoryTest - No active profile set, falling back to 1 default profile: "default"
-2025-10-22 11:19:05.705 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
-2025-10-22 11:19:05.792 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 76 ms. Found 1 JPA repository interface.
-2025-10-22 11:19:05.848 [main] INFO  o.s.b.t.a.j.TestDatabaseAutoConfiguration$EmbeddedDataSourceBeanFactoryPostProcessor - Replacing 'dataSource' DataSource bean with embedded version
-2025-10-22 11:19:06.035 [main] INFO  o.s.j.d.e.EmbeddedDatabaseFactory - Starting embedded database: url='jdbc:h2:mem:5ce8b5ff-15f8-4461-b7b4-c425f5e62e1e;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=false', username='sa'
-2025-10-22 11:19:06.323 [main] INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
-2025-10-22 11:19:06.390 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.3.1.Final
-2025-10-22 11:19:06.429 [main] INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
-2025-10-22 11:19:06.663 [main] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
-2025-10-22 11:19:06.715 [main] WARN  org.hibernate.dialect.Dialect - HHH000511: The 2.2.0 version for [org.hibernate.dialect.PostgreSQLDialect] is no longer supported, hence certain features may not work properly. The minimum supported version is 11.0.0. Check the community dialects project for available legacy versions.
-2025-10-22 11:19:06.721 [main] WARN  org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
-2025-10-22 11:19:07.509 [main] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
-2025-10-22 11:19:07.563 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
-2025-10-22 11:19:08.056 [main] INFO  o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
-2025-10-22 11:19:08.749 [main] INFO  c.z.b.r.InvestmentProductRepositoryTest - Started InvestmentProductRepositoryTest in 4.228 seconds (process running for 5.676)
-2025-10-22 11:19:09.649 [SpringApplicationShutdownHook] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
-2025-10-22 11:21:25.456 [background-preinit] INFO  o.h.validator.internal.util.Version - HV000001: Hibernate Validator 8.0.1.Final
-2025-10-22 11:21:25.680 [main] INFO  c.z.b.c.InvestmentControllerTest - Starting InvestmentControllerTest using Java 17.0.12 with PID 40805 (started by soumyami in /Users/soumyami/Capstone-Investment-and-Portfolio-Tracker/backend)
-2025-10-22 11:21:25.682 [main] INFO  c.z.b.c.InvestmentControllerTest - No active profile set, falling back to 1 default profile: "default"
-2025-10-22 11:21:29.933 [main] WARN  o.s.b.a.s.s.UserDetailsServiceAutoConfiguration - 
-
-Using generated security password: d11a9bdf-c06f-483b-91d1-23d4c8548e64
-
-This generated password is for development use only. Your security configuration must be updated before running your application in production.
-
-2025-10-22 11:21:30.201 [main] INFO  o.s.s.web.DefaultSecurityFilterChain - Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@6728370a, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@2b5f8e61, org.springframework.security.web.context.SecurityContextHolderFilter@1d1cfe4, org.springframework.security.web.header.HeaderWriterFilter@3212bfd, org.springframework.web.filter.CorsFilter@6ba0ee4a, org.springframework.security.web.csrf.CsrfFilter@1a7e799e, org.springframework.security.web.authentication.logout.LogoutFilter@2a631049, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter@71e7830a, org.springframework.security.web.authentication.ui.DefaultLoginPageGeneratingFilter@34cb0e49, org.springframework.security.web.authentication.ui.DefaultLogoutPageGeneratingFilter@73b0ed03, org.springframework.security.web.authentication.www.BasicAuthenticationFilter@34cf0e80, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@5a51336a, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@4d8056bf, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@55061418, org.springframework.security.web.access.ExceptionTranslationFilter@32a033b6, org.springframework.security.web.access.intercept.AuthorizationFilter@a4df251]
-2025-10-22 11:21:30.272 [main] INFO  o.s.b.t.m.w.SpringBootMockServletContext - Initializing Spring TestDispatcherServlet ''
-2025-10-22 11:21:30.273 [main] INFO  o.s.t.w.s.TestDispatcherServlet - Initializing Servlet ''
-2025-10-22 11:21:30.275 [main] INFO  o.s.t.w.s.TestDispatcherServlet - Completed initialization in 2 ms
-2025-10-22 11:21:30.338 [main] INFO  c.z.b.c.InvestmentControllerTest - Started InvestmentControllerTest in 5.598 seconds (process running for 7.615)
-2025-10-22 11:21:30.481 [main] WARN  o.s.w.s.h.HandlerMappingIntrospector - Cache miss for REQUEST dispatch to '/api/investments/active' (previous null). Performing CorsConfiguration lookup. This is logged once only at WARN level, and every time at TRACE.
-2025-10-22 11:22:41.718 [background-preinit] INFO  o.h.validator.internal.util.Version - HV000001: Hibernate Validator 8.0.1.Final
-2025-10-22 11:22:41.780 [main] INFO  c.z.b.c.InvestmentControllerTest - Starting InvestmentControllerTest using Java 17.0.12 with PID 40902 (started by soumyami in /Users/soumyami/Capstone-Investment-and-Portfolio-Tracker/backend)
-2025-10-22 11:22:41.782 [main] INFO  c.z.b.c.InvestmentControllerTest - No active profile set, falling back to 1 default profile: "default"
-2025-10-22 11:22:44.475 [main] WARN  o.s.b.a.s.s.UserDetailsServiceAutoConfiguration - 
-
-Using generated security password: c3fa4893-a17c-494c-ac0f-a0a3c9bc28db
-
-This generated password is for development use only. Your security configuration must be updated before running your application in production.
-
-2025-10-22 11:22:44.664 [main] INFO  o.s.s.web.DefaultSecurityFilterChain - Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@a03529c, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@1760e594, org.springframework.security.web.context.SecurityContextHolderFilter@cae2a97, org.springframework.security.web.header.HeaderWriterFilter@782e6b40, org.springframework.web.filter.CorsFilter@4af70b83, org.springframework.security.web.csrf.CsrfFilter@5f6e2ad9, org.springframework.security.web.authentication.logout.LogoutFilter@2b1a901d, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter@27db45f, org.springframework.security.web.authentication.ui.DefaultLoginPageGeneratingFilter@2a631049, org.springframework.security.web.authentication.ui.DefaultLogoutPageGeneratingFilter@143413cd, org.springframework.security.web.authentication.www.BasicAuthenticationFilter@6fbe4800, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@14656be5, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@20be890d, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@4b32465, org.springframework.security.web.access.ExceptionTranslationFilter@61dd1c3d, org.springframework.security.web.access.intercept.AuthorizationFilter@55061418]
-2025-10-22 11:22:44.786 [main] INFO  o.s.b.t.m.w.SpringBootMockServletContext - Initializing Spring TestDispatcherServlet ''
-2025-10-22 11:22:44.786 [main] INFO  o.s.t.w.s.TestDispatcherServlet - Initializing Servlet ''
-2025-10-22 11:22:44.788 [main] INFO  o.s.t.w.s.TestDispatcherServlet - Completed initialization in 2 ms
-2025-10-22 11:22:44.836 [main] INFO  c.z.b.c.InvestmentControllerTest - Started InvestmentControllerTest in 3.633 seconds (process running for 6.003)
-2025-10-22 11:22:44.936 [main] WARN  o.s.w.s.h.HandlerMappingIntrospector - Cache miss for REQUEST dispatch to '/api/investments/active' (previous null). Performing CorsConfiguration lookup. This is logged once only at WARN level, and every time at TRACE.
-2025-10-22 11:23:04.279 [background-preinit] INFO  o.h.validator.internal.util.Version - HV000001: Hibernate Validator 8.0.1.Final
-2025-10-22 11:23:04.330 [main] INFO  c.z.b.c.InvestmentControllerTest - Starting InvestmentControllerTest using Java 17.0.12 with PID 40930 (started by soumyami in /Users/soumyami/Capstone-Investment-and-Portfolio-Tracker/backend)
-2025-10-22 11:23:04.331 [main] INFO  c.z.b.c.InvestmentControllerTest - No active profile set, falling back to 1 default profile: "default"
-2025-10-22 11:23:07.401 [main] WARN  o.s.b.a.s.s.UserDetailsServiceAutoConfiguration - 
-
-Using generated security password: 7d4c4765-325b-4b90-a36e-ba24cdffb8d3
-
-This generated password is for development use only. Your security configuration must be updated before running your application in production.
-
-2025-10-22 11:23:07.563 [main] INFO  o.s.s.web.DefaultSecurityFilterChain - Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@15e5246, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@503556cb, org.springframework.security.web.context.SecurityContextHolderFilter@343db2f6, org.springframework.security.web.header.HeaderWriterFilter@425b5fe2, org.springframework.web.filter.CorsFilter@3c9e19de, org.springframework.security.web.csrf.CsrfFilter@34cb0e49, org.springframework.security.web.authentication.logout.LogoutFilter@344f9467, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter@1179fc8c, org.springframework.security.web.authentication.ui.DefaultLoginPageGeneratingFilter@150f41b9, org.springframework.security.web.authentication.ui.DefaultLogoutPageGeneratingFilter@12aa381f, org.springframework.security.web.authentication.www.BasicAuthenticationFilter@224e6e88, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@769b0752, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@dae5e0, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@6115846e, org.springframework.security.web.access.ExceptionTranslationFilter@38e00b47, org.springframework.security.web.access.intercept.AuthorizationFilter@3f3c5ecd]
-2025-10-22 11:23:07.641 [main] INFO  o.s.b.t.m.w.SpringBootMockServletContext - Initializing Spring TestDispatcherServlet ''
-2025-10-22 11:23:07.641 [main] INFO  o.s.t.w.s.TestDispatcherServlet - Initializing Servlet ''
-2025-10-22 11:23:07.646 [main] INFO  o.s.t.w.s.TestDispatcherServlet - Completed initialization in 4 ms
-2025-10-22 11:23:07.701 [main] INFO  c.z.b.c.InvestmentControllerTest - Started InvestmentControllerTest in 3.913 seconds (process running for 6.459)
-2025-10-22 11:23:07.808 [main] WARN  o.s.w.s.h.HandlerMappingIntrospector - Cache miss for REQUEST dispatch to '/api/investments/active' (previous null). Performing CorsConfiguration lookup. This is logged once only at WARN level, and every time at TRACE.
-2025-10-22 11:24:44.793 [background-preinit] INFO  o.h.validator.internal.util.Version - HV000001: Hibernate Validator 8.0.1.Final
-2025-10-22 11:24:44.843 [main] INFO  com.zeta.backend.BackendApplication - Starting BackendApplication using Java 17.0.12 with PID 41006 (/Users/soumyami/Capstone-Investment-and-Portfolio-Tracker/backend/target/classes started by soumyami in /Users/soumyami/Capstone-Investment-and-Portfolio-Tracker/backend)
-2025-10-22 11:24:44.845 [main] INFO  com.zeta.backend.BackendApplication - No active profile set, falling back to 1 default profile: "default"
-2025-10-22 11:24:46.360 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
-2025-10-22 11:24:46.473 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 99 ms. Found 1 JPA repository interface.
-2025-10-22 11:24:47.439 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
-2025-10-22 11:24:47.452 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8080"]
-2025-10-22 11:24:47.456 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
-2025-10-22 11:24:47.456 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.16]
-2025-10-22 11:24:47.542 [main] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
-2025-10-22 11:24:47.544 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 2593 ms
-2025-10-22 11:24:47.843 [main] INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
-2025-10-22 11:24:47.903 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.3.1.Final
-2025-10-22 11:24:47.947 [main] INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
-2025-10-22 11:24:48.318 [main] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
-2025-10-22 11:24:48.346 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
-2025-10-22 11:24:48.537 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@70f4f89e
-2025-10-22 11:24:48.541 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
-2025-10-22 11:24:48.576 [main] WARN  org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
-2025-10-22 11:24:49.704 [main] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
-2025-10-22 11:24:49.784 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
-2025-10-22 11:24:50.516 [main] INFO  o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
-2025-10-22 11:24:51.706 [main] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
-2025-10-22 11:24:51.884 [main] INFO  o.s.s.web.DefaultSecurityFilterChain - Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@57082d16, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@ae2227, org.springframework.security.web.context.SecurityContextHolderFilter@2e70d072, org.springframework.security.web.header.HeaderWriterFilter@81ac569, org.springframework.web.filter.CorsFilter@3a1eb893, org.springframework.web.filter.CorsFilter@35daccb8, org.springframework.security.web.authentication.logout.LogoutFilter@7d97a1a0, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@4e387da1, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@55145dc5, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@23ac3788, org.springframework.security.web.session.SessionManagementFilter@455082d2, org.springframework.security.web.access.ExceptionTranslationFilter@420dee82, org.springframework.security.web.access.intercept.AuthorizationFilter@75d454a4]
-2025-10-22 11:24:52.776 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8080"]
-2025-10-22 11:24:52.794 [main] WARN  o.s.b.w.s.c.AnnotationConfigServletWebServerApplicationContext - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.context.ApplicationContextException: Failed to start bean 'webServerStartStop'
-2025-10-22 11:24:52.800 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
-2025-10-22 11:24:52.803 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
-2025-10-22 11:24:52.812 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
-2025-10-22 11:24:52.834 [main] INFO  o.s.b.a.l.ConditionEvaluationReportLogger - 
+2025-10-22 18:21:19.896 [background-preinit] INFO  o.h.validator.internal.util.Version - HV000001: Hibernate Validator 8.0.1.Final
+2025-10-22 18:21:19.968 [main] INFO  com.zeta.backend.BackendApplication - Starting BackendApplication using Java 17.0.12 with PID 54531 (/Users/soumyami/Capstone-Investment-and-Portfolio-Tracker/backend/target/classes started by soumyami in /Users/soumyami/Capstone-Investment-and-Portfolio-Tracker/backend)
+2025-10-22 18:21:19.969 [main] INFO  com.zeta.backend.BackendApplication - No active profile set, falling back to 1 default profile: "default"
+2025-10-22 18:21:20.801 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-10-22 18:21:20.878 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 66 ms. Found 1 JPA repository interface.
+2025-10-22 18:21:21.572 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2025-10-22 18:21:21.581 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8080"]
+2025-10-22 18:21:21.583 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2025-10-22 18:21:21.583 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.16]
+2025-10-22 18:21:21.645 [main] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2025-10-22 18:21:21.646 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 1609 ms
+2025-10-22 18:21:21.852 [main] INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-10-22 18:21:21.921 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.3.1.Final
+2025-10-22 18:21:21.959 [main] INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2025-10-22 18:21:22.179 [main] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-10-22 18:21:22.203 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2025-10-22 18:21:22.351 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@2c8ff67
+2025-10-22 18:21:22.352 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2025-10-22 18:21:22.393 [main] WARN  org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-10-22 18:21:23.279 [main] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-10-22 18:21:23.343 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-10-22 18:21:23.696 [main] INFO  o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-10-22 18:21:24.338 [main] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-10-22 18:21:24.461 [main] INFO  o.s.s.web.DefaultSecurityFilterChain - Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@3c79be0f, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@7aeb7bd6, org.springframework.security.web.context.SecurityContextHolderFilter@56daf3b1, org.springframework.security.web.header.HeaderWriterFilter@1428d63, org.springframework.web.filter.CorsFilter@5c0bacaa, org.springframework.web.filter.CorsFilter@7cb15360, org.springframework.security.web.authentication.logout.LogoutFilter@42cf08a1, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@1ee2e363, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@60e83cb9, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@dc9033f, org.springframework.security.web.session.SessionManagementFilter@2e6066e1, org.springframework.security.web.access.ExceptionTranslationFilter@221c097f, org.springframework.security.web.access.intercept.AuthorizationFilter@52e296c0]
+2025-10-22 18:21:24.857 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8080"]
+2025-10-22 18:21:24.864 [main] WARN  o.s.b.w.s.c.AnnotationConfigServletWebServerApplicationContext - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.context.ApplicationContextException: Failed to start bean 'webServerStartStop'
+2025-10-22 18:21:24.866 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-10-22 18:21:24.869 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2025-10-22 18:21:24.876 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2025-10-22 18:21:24.890 [main] INFO  o.s.b.a.l.ConditionEvaluationReportLogger - 
 
 Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
-2025-10-22 11:24:52.854 [main] ERROR o.s.b.d.LoggingFailureAnalysisReporter - 
+2025-10-22 18:21:24.912 [main] ERROR o.s.b.d.LoggingFailureAnalysisReporter - 
 
 ***************************
 APPLICATION FAILED TO START
@@ -197,114 +44,30 @@ Action:
 
 Identify and stop the process that's listening on port 8080 or configure this application to listen on another port.
 
-2025-10-22 11:25:22.234 [background-preinit] INFO  o.h.validator.internal.util.Version - HV000001: Hibernate Validator 8.0.1.Final
-2025-10-22 11:25:22.322 [main] INFO  com.zeta.backend.BackendApplication - Starting BackendApplication using Java 17.0.12 with PID 41077 (/Users/soumyami/Capstone-Investment-and-Portfolio-Tracker/backend/target/classes started by soumyami in /Users/soumyami/Capstone-Investment-and-Portfolio-Tracker/backend)
-2025-10-22 11:25:22.337 [main] INFO  com.zeta.backend.BackendApplication - No active profile set, falling back to 1 default profile: "default"
-2025-10-22 11:25:23.759 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
-2025-10-22 11:25:23.863 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 86 ms. Found 1 JPA repository interface.
-2025-10-22 11:25:24.717 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
-2025-10-22 11:25:24.727 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8080"]
-2025-10-22 11:25:24.730 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
-2025-10-22 11:25:24.730 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.16]
-2025-10-22 11:25:24.823 [main] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
-2025-10-22 11:25:24.824 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 2329 ms
-2025-10-22 11:25:25.157 [main] INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
-2025-10-22 11:25:25.233 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.3.1.Final
-2025-10-22 11:25:25.274 [main] INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
-2025-10-22 11:25:25.570 [main] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
-2025-10-22 11:25:25.607 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
-2025-10-22 11:25:25.777 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@2ba9f986
-2025-10-22 11:25:25.780 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
-2025-10-22 11:25:25.822 [main] WARN  org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
-2025-10-22 11:25:27.071 [main] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
-2025-10-22 11:25:27.141 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
-2025-10-22 11:25:27.639 [main] INFO  o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
-2025-10-22 11:25:28.811 [main] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
-2025-10-22 11:25:29.059 [main] INFO  o.s.s.web.DefaultSecurityFilterChain - Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@42cf08a1, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@46092840, org.springframework.security.web.context.SecurityContextHolderFilter@1a177f2c, org.springframework.security.web.header.HeaderWriterFilter@420dee82, org.springframework.web.filter.CorsFilter@57082d16, org.springframework.web.filter.CorsFilter@ae2227, org.springframework.security.web.authentication.logout.LogoutFilter@38067d41, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@2e70d072, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@6f77917c, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@3a1eb893, org.springframework.security.web.session.SessionManagementFilter@784dd9da, org.springframework.security.web.access.ExceptionTranslationFilter@dcf495c, org.springframework.security.web.access.intercept.AuthorizationFilter@2394fad2]
-2025-10-22 11:25:29.819 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8080"]
-2025-10-22 11:25:29.833 [main] WARN  o.s.b.w.s.c.AnnotationConfigServletWebServerApplicationContext - Exception encountered during context initialization - cancelling refresh attempt: org.springframework.context.ApplicationContextException: Failed to start bean 'webServerStartStop'
-2025-10-22 11:25:29.835 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
-2025-10-22 11:25:29.838 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
-2025-10-22 11:25:29.845 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
-2025-10-22 11:25:29.864 [main] INFO  o.s.b.a.l.ConditionEvaluationReportLogger - 
-
-Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
-2025-10-22 11:25:29.896 [main] ERROR o.s.b.d.LoggingFailureAnalysisReporter - 
-
-***************************
-APPLICATION FAILED TO START
-***************************
-
-Description:
-
-Web server failed to start. Port 8080 was already in use.
-
-Action:
-
-Identify and stop the process that's listening on port 8080 or configure this application to listen on another port.
-
-2025-10-22 11:26:10.061 [background-preinit] INFO  o.h.validator.internal.util.Version - HV000001: Hibernate Validator 8.0.1.Final
-2025-10-22 11:26:10.206 [main] INFO  com.zeta.backend.BackendApplication - Starting BackendApplication using Java 17.0.12 with PID 41289 (/Users/soumyami/Capstone-Investment-and-Portfolio-Tracker/backend/target/classes started by soumyami in /Users/soumyami/Capstone-Investment-and-Portfolio-Tracker/backend)
-2025-10-22 11:26:10.223 [main] INFO  com.zeta.backend.BackendApplication - No active profile set, falling back to 1 default profile: "default"
-2025-10-22 11:26:11.547 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
-2025-10-22 11:26:11.656 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 97 ms. Found 1 JPA repository interface.
-2025-10-22 11:26:12.632 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
-2025-10-22 11:26:12.643 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8080"]
-2025-10-22 11:26:12.646 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
-2025-10-22 11:26:12.647 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.16]
-2025-10-22 11:26:12.725 [main] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
-2025-10-22 11:26:12.727 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 2353 ms
-2025-10-22 11:26:13.027 [main] INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
-2025-10-22 11:26:13.089 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.3.1.Final
-2025-10-22 11:26:13.131 [main] INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
-2025-10-22 11:26:13.479 [main] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
-2025-10-22 11:26:13.511 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
-2025-10-22 11:26:13.674 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@3302035b
-2025-10-22 11:26:13.676 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
-2025-10-22 11:26:13.724 [main] WARN  org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
-2025-10-22 11:26:14.925 [main] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
-2025-10-22 11:26:14.991 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
-2025-10-22 11:26:15.486 [main] INFO  o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
-2025-10-22 11:26:16.427 [main] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
-2025-10-22 11:26:16.581 [main] INFO  o.s.s.web.DefaultSecurityFilterChain - Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@52e296c0, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@1d77762f, org.springframework.security.web.context.SecurityContextHolderFilter@2e6066e1, org.springframework.security.web.header.HeaderWriterFilter@5e1d6ace, org.springframework.web.filter.CorsFilter@7e2bd635, org.springframework.web.filter.CorsFilter@3c79be0f, org.springframework.security.web.authentication.logout.LogoutFilter@2394fad2, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@5435582e, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@56daf3b1, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@7aeb7bd6, org.springframework.security.web.session.SessionManagementFilter@4e387da1, org.springframework.security.web.access.ExceptionTranslationFilter@757501da, org.springframework.security.web.access.intercept.AuthorizationFilter@3a1eb893]
-2025-10-22 11:26:17.210 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8080"]
-2025-10-22 11:26:17.238 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path ''
-2025-10-22 11:26:17.252 [main] INFO  com.zeta.backend.BackendApplication - Started BackendApplication in 8.227 seconds (process running for 8.949)
-2025-10-22 11:27:03.878 [background-preinit] INFO  o.h.validator.internal.util.Version - HV000001: Hibernate Validator 8.0.1.Final
-2025-10-22 11:27:03.959 [main] INFO  c.z.b.r.InvestmentProductRepositoryTest - Starting InvestmentProductRepositoryTest using Java 17.0.12 with PID 41353 (started by soumyami in /Users/soumyami/Capstone-Investment-and-Portfolio-Tracker/backend)
-2025-10-22 11:27:03.961 [main] INFO  c.z.b.r.InvestmentProductRepositoryTest - No active profile set, falling back to 1 default profile: "default"
-2025-10-22 11:27:04.655 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
-2025-10-22 11:27:04.740 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 73 ms. Found 1 JPA repository interface.
-2025-10-22 11:27:04.815 [main] INFO  o.s.b.t.a.j.TestDatabaseAutoConfiguration$EmbeddedDataSourceBeanFactoryPostProcessor - Replacing 'dataSource' DataSource bean with embedded version
-2025-10-22 11:27:05.048 [main] INFO  o.s.j.d.e.EmbeddedDatabaseFactory - Starting embedded database: url='jdbc:h2:mem:7e76fc3a-eff8-4a1b-841d-f7a9d450ffd9;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=false', username='sa'
-2025-10-22 11:27:05.475 [main] INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
-2025-10-22 11:27:05.545 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.3.1.Final
-2025-10-22 11:27:05.592 [main] INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
-2025-10-22 11:27:05.885 [main] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
-2025-10-22 11:27:05.950 [main] WARN  org.hibernate.dialect.Dialect - HHH000511: The 2.2.0 version for [org.hibernate.dialect.PostgreSQLDialect] is no longer supported, hence certain features may not work properly. The minimum supported version is 11.0.0. Check the community dialects project for available legacy versions.
-2025-10-22 11:27:05.956 [main] WARN  org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
-2025-10-22 11:27:06.938 [main] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
-2025-10-22 11:27:07.010 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
-2025-10-22 11:27:07.533 [main] INFO  o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
-2025-10-22 11:27:08.388 [main] INFO  c.z.b.r.InvestmentProductRepositoryTest - Started InvestmentProductRepositoryTest in 5.092 seconds (process running for 7.285)
-2025-10-22 11:27:09.539 [SpringApplicationShutdownHook] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
-2025-10-22 11:27:17.791 [background-preinit] INFO  o.h.validator.internal.util.Version - HV000001: Hibernate Validator 8.0.1.Final
-2025-10-22 11:27:17.860 [main] INFO  c.z.b.c.InvestmentControllerTest - Starting InvestmentControllerTest using Java 17.0.12 with PID 41376 (started by soumyami in /Users/soumyami/Capstone-Investment-and-Portfolio-Tracker/backend)
-2025-10-22 11:27:17.862 [main] INFO  c.z.b.c.InvestmentControllerTest - No active profile set, falling back to 1 default profile: "default"
-2025-10-22 11:27:20.578 [main] WARN  o.s.b.a.s.s.UserDetailsServiceAutoConfiguration - 
-
-Using generated security password: 482554f5-fcf6-444c-b0af-f757d55dc027
-
-This generated password is for development use only. Your security configuration must be updated before running your application in production.
-
-2025-10-22 11:27:20.758 [main] INFO  o.s.s.web.DefaultSecurityFilterChain - Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@498a4d62, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@6fbe4800, org.springframework.security.web.context.SecurityContextHolderFilter@7858d31d, org.springframework.security.web.header.HeaderWriterFilter@53ba7997, org.springframework.web.filter.CorsFilter@3f3c5ecd, org.springframework.security.web.csrf.CsrfFilter@55071497, org.springframework.security.web.authentication.logout.LogoutFilter@429e7914, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter@2b5f8e61, org.springframework.security.web.authentication.ui.DefaultLoginPageGeneratingFilter@5db9f51f, org.springframework.security.web.authentication.ui.DefaultLogoutPageGeneratingFilter@1179fc8c, org.springframework.security.web.authentication.www.BasicAuthenticationFilter@5a466dd, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@3b65084e, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@32d0d7eb, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@a03529c, org.springframework.security.web.access.ExceptionTranslationFilter@48b2dbc4, org.springframework.security.web.access.intercept.AuthorizationFilter@6728370a]
-2025-10-22 11:27:20.842 [main] INFO  o.s.b.t.m.w.SpringBootMockServletContext - Initializing Spring TestDispatcherServlet ''
-2025-10-22 11:27:20.843 [main] INFO  o.s.t.w.s.TestDispatcherServlet - Initializing Servlet ''
-2025-10-22 11:27:20.846 [main] INFO  o.s.t.w.s.TestDispatcherServlet - Completed initialization in 3 ms
-2025-10-22 11:27:20.892 [main] INFO  c.z.b.c.InvestmentControllerTest - Started InvestmentControllerTest in 3.575 seconds (process running for 5.49)
-2025-10-22 11:27:20.971 [main] WARN  o.s.w.s.h.HandlerMappingIntrospector - Cache miss for REQUEST dispatch to '/api/investments/active' (previous null). Performing CorsConfiguration lookup. This is logged once only at WARN level, and every time at TRACE.
-2025-10-22 11:35:35.784 [HikariPool-1 housekeeper] WARN  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=3m21s988ms).
-2025-10-22 11:57:55.342 [HikariPool-1 housekeeper] WARN  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=2m49s398ms).
-2025-10-22 15:19:10.250 [HikariPool-1 housekeeper] WARN  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=3h1m14s687ms).
-2025-10-22 15:57:43.685 [HikariPool-1 housekeeper] WARN  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=38m33s462ms).
-2025-10-22 17:11:39.445 [HikariPool-1 housekeeper] WARN  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=17m55s406ms).
+2025-10-22 18:22:05.766 [background-preinit] INFO  o.h.validator.internal.util.Version - HV000001: Hibernate Validator 8.0.1.Final
+2025-10-22 18:22:05.809 [main] INFO  com.zeta.backend.BackendApplication - Starting BackendApplication using Java 17.0.12 with PID 54701 (/Users/soumyami/Capstone-Investment-and-Portfolio-Tracker/backend/target/classes started by soumyami in /Users/soumyami/Capstone-Investment-and-Portfolio-Tracker/backend)
+2025-10-22 18:22:05.810 [main] INFO  com.zeta.backend.BackendApplication - No active profile set, falling back to 1 default profile: "default"
+2025-10-22 18:22:06.651 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-10-22 18:22:06.727 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 67 ms. Found 1 JPA repository interface.
+2025-10-22 18:22:07.444 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2025-10-22 18:22:07.454 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8080"]
+2025-10-22 18:22:07.458 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2025-10-22 18:22:07.458 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.16]
+2025-10-22 18:22:07.530 [main] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2025-10-22 18:22:07.531 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 1653 ms
+2025-10-22 18:22:07.749 [main] INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-10-22 18:22:07.796 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.3.1.Final
+2025-10-22 18:22:07.830 [main] INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2025-10-22 18:22:08.072 [main] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-10-22 18:22:08.098 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2025-10-22 18:22:08.230 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@61a704d3
+2025-10-22 18:22:08.232 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2025-10-22 18:22:08.258 [main] WARN  org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-10-22 18:22:09.092 [main] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-10-22 18:22:09.148 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-10-22 18:22:09.517 [main] INFO  o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-10-22 18:22:10.213 [main] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-10-22 18:22:10.315 [main] INFO  o.s.s.web.DefaultSecurityFilterChain - Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@b7b5e7, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@2aa143ba, org.springframework.security.web.context.SecurityContextHolderFilter@6231bb88, org.springframework.security.web.header.HeaderWriterFilter@2e70d072, org.springframework.web.filter.CorsFilter@7abe3d53, org.springframework.web.filter.CorsFilter@372dc92e, org.springframework.security.web.authentication.logout.LogoutFilter@dc9033f, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@66373f77, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@834944, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@a885aa1, org.springframework.security.web.session.SessionManagementFilter@5d71813b, org.springframework.security.web.access.ExceptionTranslationFilter@1a177f2c, org.springframework.security.web.access.intercept.AuthorizationFilter@48ac4201]
+2025-10-22 18:22:10.724 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8080"]
+2025-10-22 18:22:10.747 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path ''
+2025-10-22 18:22:10.756 [main] INFO  com.zeta.backend.BackendApplication - Started BackendApplication in 5.496 seconds (process running for 5.952)
