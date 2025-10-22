@@ -39,7 +39,7 @@ public class TicketController {
 
             Optional<User> loggedInUseroptional = userService.getUserById(userId);
             if (loggedInUseroptional.isEmpty()) {
-                logger.warn("User not found for userId: {}", userId);
+                logger.warn("User not found for UserId: {}", userId);
                 return ResponseEntity.status(403).body("User not found");
             }
             User loggedInUser = loggedInUseroptional.get();
