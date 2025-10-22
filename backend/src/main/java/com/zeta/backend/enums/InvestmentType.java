@@ -25,6 +25,7 @@ public enum InvestmentType {
         return description;
     }
 
+    // Accepts both enum name (e.g., "STOCK") and display name (e.g., "Stock") for flexible API input
     public static InvestmentType fromString(String value) {
         for (InvestmentType type : InvestmentType.values()) {
             if (type.name().equalsIgnoreCase(value) ||
@@ -32,7 +33,7 @@ public enum InvestmentType {
                 return type;
             }
         }
+        // Triggers GlobalExceptionHandler to return 400 Bad Request
         throw new IllegalArgumentException("Invalid investment type: " + value);
     }
 }
-

@@ -1,5 +1,6 @@
 package com.zeta.backend.exceptions;
 
+// Unchecked exception for entity lookup failures - maps to 404 Not Found responses
 public class ResourceNotFoundException extends RuntimeException {
     private String resourceName;
     private String fieldName;
@@ -9,6 +10,7 @@ public class ResourceNotFoundException extends RuntimeException {
         super(message);
     }
 
+    // Auto-generates formatted error message with resource context for consistent error reporting
     public ResourceNotFoundException(String resourceName, String fieldName, Object fieldValue) {
         super(String.format("%s not found with %s: '%s'", resourceName, fieldName, fieldValue));
         this.resourceName = resourceName;
