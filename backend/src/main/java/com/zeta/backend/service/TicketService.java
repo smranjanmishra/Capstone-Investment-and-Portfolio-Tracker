@@ -5,6 +5,8 @@ import com.zeta.backend.models.User;
 import com.zeta.backend.enums.TicketPriority;
 import com.zeta.backend.enums.TicketStatus;
 import com.zeta.backend.repository.TicketRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +17,8 @@ import java.util.Optional;
 @Service
 public class TicketService {
 
+    private static final Logger logger = LoggerFactory.getLogger(TicketService.class);
+
     @Autowired
     private TicketRepository ticketRepository;
 
@@ -23,40 +27,59 @@ public class TicketService {
 
     public Ticket createTicket(Ticket ticket) {
         String ticketDescription = ticket.getSubject().toLowerCase();
+        logger.info("Creating ticket with subject: {}", ticket.getSubject());
 
         if (ticketDescription.contains("urgent") || ticketDescription.contains("immediately")) {
             ticket.setTicketPriority(TicketPriority.HIGH);
+            logger.info("Ticket priority set to HIGH");
         } else if (ticketDescription.contains("soon") || ticketDescription.contains("problem")) {
             ticket.setTicketPriority(TicketPriority.MEDIUM);
+            logger.info("Ticket priority set to MEDIUM");
         } else {
             ticket.setTicketPriority(TicketPriority.LOW);
+            logger.info("Ticket priority set to LOW");
         }
 
         ticket.setCreatedAt(LocalDateTime.now());
         ticket.setTicketStatus(TicketStatus.OPEN);
-
-        return ticketRepository.save(ticket);
+        Ticket savedTicket = ticketRepository.save(ticket);
+        logger.info("Ticket saved successfully with ID: {}", savedTicket.getId());
+        return savedTicket;
     }
 
     public List<Ticket> getAllTickets() {
-        return ticketRepository.findAll();
+        logger.info("Fetching all tickets");
+        List<Ticket> tickets = ticketRepository.findAll();
+        logger.info("Total tickets fetched: {}", tickets.size());
+        return tickets;
     }
 
     public Optional<Ticket> getTicketById(Integer ticketId) {
+        logger.info("Fetching ticket with ID: {}", ticketId);
         return ticketRepository.findById(ticketId);
     }
 
     public List<Ticket> getTicketsByUser(User user) {
-        return ticketRepository.findByUserId(user.getId());
+        logger.info("Fetching tickets for userId: {}", user.getId());
+        List<Ticket> tickets = ticketRepository.findByUserId(user.getId());
+        logger.info("Total tickets found for userId {}: {}", user.getId(), tickets.size());
+        return tickets;
     }
 
     public Ticket updateTicket(Integer ticketId, TicketStatus newStatus, String response) {
+        logger.info("Updating ticketId: {} with status: {}", ticketId, newStatus);
         Ticket ticket = ticketRepository.findById(ticketId)
-                .orElseThrow(() -> new RuntimeException("Ticket not found"));
+                .orElseThrow(() -> {
+                    logger.warn("Ticket not found with ID: {}", ticketId);
+                    return new RuntimeException("Ticket not found");
+                });
 
         ticket.setTicketStatus(newStatus);
         ticket.setResponse(response);
         ticket.setUpdatedAt(LocalDateTime.now());
-        return ticketRepository.save(ticket);
+
+        Ticket updatedTicket = ticketRepository.save(ticket);
+        logger.info("Ticket updated successfully with ID: {}", updatedTicket.getId());
+        return updatedTicket;
     }
 }
