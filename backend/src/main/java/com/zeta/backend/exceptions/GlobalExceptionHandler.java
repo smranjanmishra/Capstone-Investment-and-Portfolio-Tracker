@@ -1,6 +1,6 @@
 package com.zeta.backend.exceptions;
 
-import com.zeta.backend.dto.ErrorResponse;  // ✅ YOUR CUSTOM CLASS (NOT Spring's!)
+import com.zeta.backend.dto.ErrorResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
