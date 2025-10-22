@@ -8,8 +8,10 @@ import com.zeta.backend.enums.RiskLevel;
 import java.util.List;
 
 public interface InvestmentService {
+    // Returns only active products - public endpoint
     List<InvestmentProductResponseDTO> getAllActiveInvestments();
 
+    // Returns all products including inactive - admin endpoint only
     List<InvestmentProductResponseDTO> getAllInvestments();
 
     InvestmentProductResponseDTO getInvestmentById(Long id);
@@ -18,6 +20,7 @@ public interface InvestmentService {
 
     InvestmentProductResponseDTO updateInvestment(Long id, InvestmentProductRequestDTO requestDTO);
 
+    // Soft delete - sets isActive=false, preserves data for audit
     void deactivateInvestment(Long id);
 
     void activateInvestment(Long id);
@@ -26,6 +29,7 @@ public interface InvestmentService {
 
     List<InvestmentProductResponseDTO> getInvestmentsByRiskLevel(RiskLevel riskLevel);
 
+    // Case-insensitive partial match search
     List<InvestmentProductResponseDTO> searchInvestmentsByName(String keyword);
 
     long getActiveInvestmentCount();

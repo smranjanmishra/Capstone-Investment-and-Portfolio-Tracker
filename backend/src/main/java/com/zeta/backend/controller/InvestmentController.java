@@ -21,11 +21,12 @@ import java.util.Map;
 @RequestMapping("/api/v1")
 @Slf4j
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*", maxAge = 3600) // Allow CORS for frontend
+@CrossOrigin(origins = "*", maxAge = 3600) // Allows all origins - restrict in production to specific frontend URLs
 
 public class InvestmentController {
     private final InvestmentService investmentService;
 
+    // Public endpoint - no authentication required for browsing investments
     @GetMapping("/investments")
     public ResponseEntity<Map<String, Object>> getAllActiveInvestments() {
         log.info("API Request: GET /investments - Fetch all active investment products");
@@ -64,6 +65,7 @@ public class InvestmentController {
             @PathVariable String type) {
         log.info("API Request: GET /investments/type/{} - Fetch products by type", type);
 
+        // Converts string to enum with validation - throws IllegalArgumentException if invalid
         InvestmentType investmentType = InvestmentType.fromString(type);
         List<InvestmentProductResponseDTO> investments = investmentService.getInvestmentsByType(investmentType);
 
@@ -84,6 +86,7 @@ public class InvestmentController {
             @PathVariable String riskLevel) {
         log.info("API Request: GET /investments/risk/{} - Fetch products by risk level", riskLevel);
 
+        // Converts string to enum with validation - throws IllegalArgumentException if invalid
         RiskLevel risk = RiskLevel.fromString(riskLevel);
         List<InvestmentProductResponseDTO> investments = investmentService.getInvestmentsByRiskLevel(risk);
 
@@ -138,10 +141,12 @@ public class InvestmentController {
     }
 
     // ==================== ADMIN ENDPOINTS ====================
+
+    // Enforces ADMIN role at method level - complements SecurityConfig rules
     @PostMapping("/admin/investments")
-//    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Map<String, Object>> createInvestment(
-            @Valid @RequestBody InvestmentProductRequestDTO requestDTO) {
+            @Valid @RequestBody InvestmentProductRequestDTO requestDTO) { // @Valid triggers DTO-level validation
         log.info("API Request: POST /admin/investments - Create new investment product '{}'", requestDTO.getName());
 
         InvestmentProductResponseDTO createdInvestment = investmentService.createInvestment(requestDTO);
@@ -158,10 +163,10 @@ public class InvestmentController {
     }
 
     @PutMapping("/admin/investments/{id}")
-//    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Map<String, Object>> updateInvestment(
             @PathVariable Long id,
-            @Valid @RequestBody InvestmentProductRequestDTO requestDTO) {
+            @Valid @RequestBody InvestmentProductRequestDTO requestDTO) { // @Valid ensures business rules are checked
         log.info("API Request: PUT /admin/investments/{} - Update investment product", id);
 
         InvestmentProductResponseDTO updatedInvestment = investmentService.updateInvestment(id, requestDTO);
@@ -176,8 +181,9 @@ public class InvestmentController {
         return ResponseEntity.ok(response);
     }
 
+    // Soft delete pattern - sets isActive=false instead of removing from database
     @DeleteMapping("/admin/investments/{id}")
-//    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Map<String, Object>> deactivateInvestment(@PathVariable Long id) {
         log.info("API Request: DELETE /admin/investments/{} - Deactivate investment product", id);
 
@@ -193,7 +199,7 @@ public class InvestmentController {
     }
 
     @PutMapping("/admin/investments/{id}/activate")
-//    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Map<String, Object>> activateInvestment(@PathVariable Long id) {
         log.info("API Request: PUT /admin/investments/{}/activate - Activate investment product", id);
 
@@ -208,8 +214,9 @@ public class InvestmentController {
         return ResponseEntity.ok(response);
     }
 
+    // Returns both active and inactive products for admin management
     @GetMapping("/admin/investments")
-//    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Map<String, Object>> getAllInvestmentsAdmin() {
         log.info("API Request: GET /admin/investments - Fetch all investment products (admin)");
 

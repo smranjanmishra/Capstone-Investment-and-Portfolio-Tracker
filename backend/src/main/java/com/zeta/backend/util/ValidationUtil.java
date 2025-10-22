@@ -6,10 +6,12 @@ import com.zeta.backend.exceptions.InvalidInputException;
 import java.math.BigDecimal;
 
 public class ValidationUtil {
+    // Prevents instantiation of utility class
     private ValidationUtil() {
         throw new UnsupportedOperationException("Utility class cannot be instantiated");
     }
 
+    // Business logic validation beyond Jakarta Bean Validation constraints
     public static void validateInvestmentProductRequest(InvestmentProductRequestDTO requestDTO) {
 
         if (requestDTO.getExpectedReturnRate() != null &&
@@ -21,7 +23,6 @@ public class ValidationUtil {
             );
         }
 
-        // Validate minimum investment (must be positive)
         if (requestDTO.getMinInvestment() != null &&
                 requestDTO.getMinInvestment().compareTo(BigDecimal.ZERO) <= 0) {
             throw new InvalidInputException(
@@ -31,7 +32,6 @@ public class ValidationUtil {
             );
         }
 
-        // Validate current NAV (must be positive)
         if (requestDTO.getCurrentNAV() != null &&
                 requestDTO.getCurrentNAV().compareTo(BigDecimal.ZERO) <= 0) {
             throw new InvalidInputException(
@@ -41,7 +41,6 @@ public class ValidationUtil {
             );
         }
 
-        // Validate risk level (already handled by enum, but double-check)
         if (requestDTO.getRiskLevel() == null) {
             throw new InvalidInputException(
                     "riskLevel",
@@ -50,7 +49,6 @@ public class ValidationUtil {
             );
         }
 
-        // Validate investment type
         if (requestDTO.getType() == null) {
             throw new InvalidInputException(
                     "type",
@@ -59,7 +57,7 @@ public class ValidationUtil {
             );
         }
 
-        // Additional business rule: Return rate should not exceed 100%
+        // Business rule: Caps unrealistic return rate expectations
         if (requestDTO.getExpectedReturnRate() != null &&
                 requestDTO.getExpectedReturnRate().compareTo(new BigDecimal("100")) > 0) {
             throw new InvalidInputException(
@@ -69,7 +67,7 @@ public class ValidationUtil {
             );
         }
 
-        // Validate name is not empty or just whitespace
+        // Catches whitespace-only names that pass @NotBlank
         if (requestDTO.getName() == null || requestDTO.getName().trim().isEmpty()) {
             throw new InvalidInputException(
                     "name",
@@ -79,6 +77,7 @@ public class ValidationUtil {
         }
     }
 
+    // Reusable validation for positive financial values
     public static boolean isPositive(BigDecimal value, String fieldName) {
         if (value == null || value.compareTo(BigDecimal.ZERO) <= 0) {
             throw new InvalidInputException(
@@ -101,6 +100,7 @@ public class ValidationUtil {
         return true;
     }
 
+    // Range validation for bounded financial metrics
     public static boolean isInRange(BigDecimal value, BigDecimal min, BigDecimal max, String fieldName) {
         if (value == null || value.compareTo(min) < 0 || value.compareTo(max) > 0) {
             throw new InvalidInputException(

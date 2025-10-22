@@ -5,7 +5,7 @@ public enum RiskLevel {
     MEDIUM(2, "Medium Risk", "Balanced risk-return profile"),
     HIGH(3, "High Risk", "Suitable for aggressive investors");
 
-    private final int score;
+    private final int score; // Numeric score enables sorting/filtering investments by risk level
     private final String displayName;
     private final String description;
 
@@ -27,6 +27,7 @@ public enum RiskLevel {
         return description;
     }
 
+    // Accepts both enum name (e.g., "LOW") and display name (e.g., "Low Risk") for flexible API input
     public static RiskLevel fromString(String value) {
         for (RiskLevel level : RiskLevel.values()) {
             if (level.name().equalsIgnoreCase(value) ||
@@ -34,6 +35,7 @@ public enum RiskLevel {
                 return level;
             }
         }
+        // Triggers GlobalExceptionHandler to return 400 Bad Request
         throw new IllegalArgumentException("Invalid risk level: " + value);
     }
 }
