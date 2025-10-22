@@ -1,12 +1,14 @@
-// java
 package com.zeta.backend.controller;
 
+import com.zeta.backend.config.JwtAuthenticationFilter;
 import com.zeta.backend.dto.InvestmentProductResponseDTO;
 import com.zeta.backend.service.InvestmentService;
+import com.zeta.backend.util.JwtUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
@@ -23,16 +25,23 @@ class InvestmentControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
+    @MockitoBean
     private InvestmentService investmentService;
 
+    @MockitoBean
+    private JwtUtil jwtUtil;  // Mock the security dependencies
+
+    @MockitoBean
+    private JwtAuthenticationFilter jwtAuthenticationFilter;
+
     @Test
+    @WithMockUser  // Add a mock authenticated user
     void shouldReturnActiveInvestments() throws Exception {
         InvestmentProductResponseDTO dto = new InvestmentProductResponseDTO();
         dto.setId(1L);
+
         when(investmentService.getAllActiveInvestments()).thenReturn(List.of(dto));
 
-        // adjust the endpoint path if your controller uses a different mapping
         mockMvc.perform(get("/api/investments/active"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)))

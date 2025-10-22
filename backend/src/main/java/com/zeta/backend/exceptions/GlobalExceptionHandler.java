@@ -1,6 +1,9 @@
 package com.zeta.backend.exceptions;
 
 import com.zeta.backend.dto.ErrorResponse;
+import jakarta.validation.Valid;
+import org.aspectj.weaver.ast.Not;
+import org.hibernate.Internal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -15,16 +18,14 @@ import org.springframework.web.context.request.WebRequest;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.slf4j.LoggerFactory;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
-    /**
-     * Handle duplicate email exception (409 Conflict).
-     * Thrown when user tries to register with an existing email.
-     */
+    // Handle duplicate email exception (409 Conflict). Thrown when user tries to register with an existing email.
     @ExceptionHandler(DuplicateEmailException.class)
     public ResponseEntity<ErrorResponse> handleDuplicateEmail(DuplicateEmailException ex) {
         logger.warn("Duplicate email error: {}", ex.getMessage());
@@ -33,10 +34,7 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponse(ex.getMessage()));
     }
 
-    /**
-     * Handle invalid credentials exception (401 Unauthorized).
-     * Thrown when login credentials are incorrect.
-     */
+    // Handle invalid credentials exception (401 Unauthorized). Thrown when login credentials are incorrect.
     @ExceptionHandler(InvalidCredentialsException.class)
     public ResponseEntity<ErrorResponse> handleInvalidCredentials(InvalidCredentialsException ex) {
         logger.warn("Invalid credentials: {}", ex.getMessage());
@@ -45,10 +43,8 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponse(ex.getMessage()));
     }
 
-    /**
-     * Handle user not found exception (404 Not Found).
-     * Thrown when user doesn't exist in the system.
-     */
+
+    // Handle user not found exception (404 Not Found). Thrown when user doesn't exist in the system.
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleUserNotFound(UserNotFoundException ex) {
         logger.warn("User not found: {}", ex.getMessage());
@@ -57,10 +53,7 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponse(ex.getMessage()));
     }
 
-    /**
-     * Handle access denied exception (403 Forbidden).
-     * Thrown when user doesn't have permission to access a resource.
-     */
+    // Handle access denied exception (403 Forbidden). Thrown when user doesn't have permission to access a resource.
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<Map<String, Object>> handleAccessDeniedException(
             AccessDeniedException ex, WebRequest request) {
@@ -79,10 +72,7 @@ public class GlobalExceptionHandler {
 
     // ==================== RESOURCE EXCEPTIONS ====================
 
-    /**
-     * Handle resource not found exception (404 Not Found).
-     * Thrown when requested resource doesn't exist (e.g., Investment Product, Portfolio).
-     */
+    // Handle resource not found exception (404 Not Found). Thrown when requested resource doesn't exist (e.g., Investment Product, Portfolio).
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<Map<String, Object>> handleResourceNotFoundException(
             ResourceNotFoundException ex, WebRequest request) {
@@ -99,10 +89,7 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
-    /**
-     * Handle invalid input exception (400 Bad Request).
-     * Thrown when business logic validation fails (e.g., duplicate name, invalid state).
-     */
+    // Handle invalid input exception (400 Bad Request). Thrown when business logic validation fails (e.g., duplicate name, invalid state).
     @ExceptionHandler(InvalidInputException.class)
     public ResponseEntity<Map<String, Object>> handleInvalidInputException(
             InvalidInputException ex, WebRequest request) {
@@ -121,11 +108,7 @@ public class GlobalExceptionHandler {
 
     // ==================== VALIDATION EXCEPTIONS ====================
 
-    /**
-     * Handle validation errors (400 Bad Request).
-     * Triggered when @Valid annotation fails on request DTOs.
-     * Returns detailed field-level error information.
-     */
+    // Handle validation errors (400 Bad Request). Triggered when @Valid annotation fails on request DTOs. Returns detailed field-level error information.
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, Object>> handleValidationExceptions(
             MethodArgumentNotValidException ex, WebRequest request) {
@@ -154,10 +137,7 @@ public class GlobalExceptionHandler {
 
     // ==================== GLOBAL EXCEPTION HANDLER ====================
 
-    /**
-     * Handle all other uncaught exceptions (500 Internal Server Error).
-     * This is the fallback handler for unexpected errors.
-     */
+    // Handle all other uncaught exceptions (500Internal Server Error). This is the fallback handler for unexpected errors.
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleGlobalException(
             Exception ex, WebRequest request) {
