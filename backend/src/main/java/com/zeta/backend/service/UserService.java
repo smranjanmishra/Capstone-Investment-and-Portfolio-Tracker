@@ -99,7 +99,7 @@ public class UserService {
         }
 
         // Generate JWT token with userId and role claims
-        String token = jwtUtil.generateToken(user.getId(), user.getRole());
+        String token = jwtUtil.generateToken(Math.toIntExact(user.getId()), user.getRole());
         logger.info("Login successful for userId: {}, role: {}", user.getId(), user.getRole());
 
         return new LoginResponse(token);
@@ -148,7 +148,7 @@ public class UserService {
 
     //get user by id as a method
 
-    public Optional<User> getUserById(Integer id){
+    public Optional<User> getUserById(Long id){
         return userRepository.findById(id);
     }
 

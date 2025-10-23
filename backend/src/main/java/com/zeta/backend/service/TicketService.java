@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.sound.sampled.Port;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -25,6 +26,9 @@ public class TicketService {
     @Autowired
     private UserService userService;
 
+
+
+
     public Ticket createTicket(Ticket ticket) {
         String ticketDescription = ticket.getSubject().toLowerCase();
         logger.info("Creating ticket with subject: {}", ticket.getSubject());
@@ -39,6 +43,7 @@ public class TicketService {
             ticket.setPriority(TicketPriority.LOW);
             logger.info("Ticket priority set to LOW");
         }
+
 
         ticket.setCreatedAt(LocalDateTime.now());
         ticket.setStatus(TicketStatus.OPEN);
@@ -61,7 +66,7 @@ public class TicketService {
 
     public List<Ticket> getTicketsByUser(User user) {
         logger.info("Fetching tickets for userId: {}", user.getId());
-        List<Ticket> tickets = ticketRepository.findByUserId(user.getId());
+        List<Ticket> tickets = ticketRepository.findByUserId(Math.toIntExact(user.getId()));
         logger.info("Total tickets found for userId {}: {}", user.getId(), tickets.size());
         return tickets;
     }

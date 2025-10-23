@@ -24,7 +24,7 @@ class TicketRepositoryTest {
         Ticket t = new Ticket();
         t.setSubject("repo test");
         t.setDescription("desc");
-        t.setUserId(5);
+        t.setUserId(5L);
         ticketRepository.save(t);
 
         List<Ticket> byUser = ticketRepository.findByUserId(5);

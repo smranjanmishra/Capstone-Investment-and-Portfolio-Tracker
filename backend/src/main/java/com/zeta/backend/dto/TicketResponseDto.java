@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class TicketResponseDto {
     private Integer id;
-    private Integer investmentId;
+    private Long investmentProductId;
     private TicketPriority ticketPriority;
     private TicketStatus ticketStatus;
     private String subject;

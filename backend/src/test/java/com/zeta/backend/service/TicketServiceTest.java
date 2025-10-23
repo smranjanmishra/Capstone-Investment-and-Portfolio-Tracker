@@ -29,13 +29,13 @@ class TicketServiceTest {
         Ticket t = new Ticket();
         t.setSubject("This is urgent");
         t.setDescription("desc");
-        t.setUserId(1);
+        t.setUserId(1L);
 
         Ticket saved = new Ticket();
         saved.setId(1);
         saved.setSubject(t.getSubject());
         saved.setDescription(t.getDescription());
-        saved.setUserId(1);
+        saved.setUserId(1L);
         saved.setCreatedAt(LocalDateTime.now());
         saved.setStatus(TicketStatus.OPEN);
 

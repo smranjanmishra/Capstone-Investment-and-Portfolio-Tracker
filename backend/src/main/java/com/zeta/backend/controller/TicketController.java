@@ -5,6 +5,7 @@ import com.zeta.backend.dto.TicketResponseDto;
 import com.zeta.backend.enums.TicketStatus;
 import com.zeta.backend.models.Ticket;
 import com.zeta.backend.models.User;
+import com.zeta.backend.service.PortfolioServiceImpl;
 import com.zeta.backend.service.TicketService;
 import com.zeta.backend.service.UserService;
 import com.zeta.backend.util.TicketDtoMapper;
@@ -30,11 +31,22 @@ public class TicketController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private PortfolioServiceImpl portfolioService;
+
+    //  Helper function to safely extract userId
+    private Long extractUserId(Authentication authentication) {
+        Object principal = authentication.getPrincipal();
+        if (principal instanceof Integer) return ((Integer) principal).longValue();
+        if (principal instanceof Long) return (Long) principal;
+        throw new IllegalStateException("Unexpected principal type: " + principal.getClass());
+    }
+
     // create a ticket (user only)
     @PostMapping
     public ResponseEntity<?> createTicket(@RequestBody Ticket ticket, Authentication authentication) {
         try {
-            Integer userId = (Integer) authentication.getPrincipal();
+            Long userId = extractUserId(authentication);
             logger.info("Create ticket request received from userId: {}", userId);
 
             Optional<User> loggedInUseroptional = userService.getUserById(userId);
@@ -44,12 +56,16 @@ public class TicketController {
             }
             User loggedInUser = loggedInUseroptional.get();
 
-            // COMMENTED OUT: This was incomplete code - missing closing brace
-            // Also, this check might not be needed if security config handles it
-//            if (userService.isAdmin(loggedInUser)) {
-//                logger.warn("Admin user attempted to create ticket: {}", userId);
-//                return ResponseEntity.status(403).body("Admins are not allowed to create support tickets.");
-//            }
+            if (ticket.getInvestmentProductId() != null) {
+                boolean ownsInvestment = portfolioService.getPortfolioByUser(userId)
+                        .stream()
+                        .anyMatch(p -> p.getInvestmentProductId().equals(ticket.getInvestmentProductId()));
+
+                if (!ownsInvestment) {
+                    logger.warn("User {} does not own investment id {}", userId, ticket.getInvestmentProductId());
+                    return ResponseEntity.badRequest().body("Investment ID does not exist for the user");
+                }
+            }
 
             ticket.setUserId(loggedInUser.getId());
             Ticket createdTicket = ticketService.createTicket(ticket);
@@ -67,7 +83,7 @@ public class TicketController {
     @GetMapping("/user")
     public ResponseEntity<?> getTicketByUser(Authentication authentication) {
         try {
-            Integer userId = (Integer) authentication.getPrincipal();
+            Long userId = extractUserId(authentication);
             logger.info("Get tickets request received from userId: {}", userId);
 
             Optional<User> loggedInUseroptional = userService.getUserById(userId);
@@ -96,14 +112,11 @@ public class TicketController {
                                                  @RequestBody RespondDto responseDto,
                                                  Authentication authentication) {
         try {
-            Integer userId = (Integer) authentication.getPrincipal();
+            Long userId = extractUserId(authentication);
             logger.info("Admin request to respond to ticketId: {} by userId: {}", ticketId, userId);
 
             User loggedInUser = userService.getUserById(userId)
                     .orElseThrow(() -> new RuntimeException("User not found"));
-
-
-            // This endpoint is under /api/v1/support/{ticketId}/respond
 
             if (!userService.isAdmin(loggedInUser)) {
                 logger.warn("Non-admin user attempted to respond to ticket: {}", userId);
@@ -118,7 +131,7 @@ public class TicketController {
 
             Ticket userTicket = userTicketOptional.get();
             userTicket.setResponse(responseDto.getResponse());
-            userTicket.setStatus(TicketStatus.RESPONDED); // Note: Changed from setTicketStatus to setStatus after refactoring
+            userTicket.setStatus(TicketStatus.RESPONDED);
             ticketService.updateTicket(userTicket.getId(), TicketStatus.RESPONDED, responseDto.getResponse());
 
             TicketResponseDto userTicketDto = TicketDtoMapper.mapTicketToDto(userTicket, loggedInUser);

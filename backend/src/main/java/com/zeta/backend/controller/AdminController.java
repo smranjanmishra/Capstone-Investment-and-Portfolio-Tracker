@@ -60,7 +60,8 @@ public class AdminController {
     @GetMapping("/support")
     public ResponseEntity<?> getTicketsByAdmin(Authentication authentication) {
         try {
-            Integer userId = (Integer) authentication.getPrincipal();
+
+            Long userId = Long.parseLong(authentication.getPrincipal().toString());
             logger.info("Admin request to get all tickets, userId: {}", userId);
 
             Optional<User> loggedInUseroptional = userService.getUserById(userId);
@@ -68,9 +69,10 @@ public class AdminController {
                 logger.warn("Admin user not found: {}", userId);
                 return ResponseEntity.status(403).body("User not found");
             }
-            User loggedInUser = loggedInUseroptional.get();
 
+            User loggedInUser = loggedInUseroptional.get();
             List<Ticket> allTickets = ticketService.getAllTickets();
+
             List<TicketResponseDto> listOfAllTicketDto = allTickets.stream()
                     .map(ticket -> {
                         User ticketOwner = null;

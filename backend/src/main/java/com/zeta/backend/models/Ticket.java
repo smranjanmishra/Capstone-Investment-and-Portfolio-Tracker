@@ -19,10 +19,10 @@ public class Ticket {
     private Integer id;
 
     @Column(name = "userId", nullable = false)
-    private Integer userId;  // FK to User
+    private Long userId;  // FK to User
 
     @Column(name = "investmentProductId")
-    private Integer investmentProductId;  // FK to Investment
+    private Long investmentProductId;  // FK to Investment
 
     @Column(columnDefinition = "VARCHAR(255)")
     private String subject;  // subject of the issue

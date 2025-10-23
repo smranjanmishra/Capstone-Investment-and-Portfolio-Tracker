@@ -15,7 +15,7 @@ import lombok.Setter;
 public class UserDtoMapper {
     private User user;
     public static UserResponse UserMapperToDto(User user){
-        return new UserResponse(user.getEmail(),user.getId(),user.getRole().toString());
+        return new UserResponse(user.getEmail(), Math.toIntExact(user.getId()),user.getRole().toString());
     }
 
 }

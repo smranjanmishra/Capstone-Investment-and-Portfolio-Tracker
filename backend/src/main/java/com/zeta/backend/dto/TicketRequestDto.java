@@ -12,6 +12,6 @@ import lombok.Setter;
 public class TicketRequestDto {
 
     private String description;
-    private Integer investmentId;
+    private Integer investmentProductId;
     private String subject;
 }
