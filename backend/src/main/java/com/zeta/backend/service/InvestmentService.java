@@ -12,7 +12,7 @@ public interface InvestmentService {
     List<InvestmentProductResponseDTO> getAllActiveInvestments();
 
     // Returns all products including inactive - admin endpoint only
-    List<InvestmentProductResponseDTO> getAllInvestments();
+//    List<InvestmentProductResponseDTO> getAllInvestments();
 
     InvestmentProductResponseDTO getInvestmentById(Long id);
 
@@ -23,14 +23,14 @@ public interface InvestmentService {
     // Soft delete - sets isActive=false, preserves data for audit
     void deactivateInvestment(Long id);
 
-    void activateInvestment(Long id);
+    // void activateInvestment(Long id);
 
-    List<InvestmentProductResponseDTO> getInvestmentsByType(InvestmentType type);
+//    List<InvestmentProductResponseDTO> getInvestmentsByType(InvestmentType type);
+//
+//    List<InvestmentProductResponseDTO> getInvestmentsByRiskLevel(RiskLevel riskLevel);
+//
+//    // Case-insensitive partial match search
+//    List<InvestmentProductResponseDTO> searchInvestmentsByName(String keyword);
 
-    List<InvestmentProductResponseDTO> getInvestmentsByRiskLevel(RiskLevel riskLevel);
-
-    // Case-insensitive partial match search
-    List<InvestmentProductResponseDTO> searchInvestmentsByName(String keyword);
-
-    long getActiveInvestmentCount();
+    // long getActiveInvestmentCount();
 }
