@@ -24,7 +24,7 @@ public class Portfolio {
 
     // FK → InvestmentProduct
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "investment_product_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(referencedColumnName = "id", nullable = false)
     private InvestmentProduct investmentProduct;
 
     @Column(nullable = false, precision = 19, scale = 4)
