@@ -17,6 +17,9 @@ public class UserResponse {
     private ZonedDateTime createdAt;
 
 //    constructors
+    public UserResponse(){
+
+    }
     public UserResponse(String email, Integer id, String string) {
 
     }

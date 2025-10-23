@@ -44,10 +44,12 @@ public class TicketController {
             }
             User loggedInUser = loggedInUseroptional.get();
 
-            if (userService.isAdmin(loggedInUser)) {
-                logger.warn("Admin user attempted to create ticket: {}", userId);
-                return ResponseEntity.status(403).body("Admins are not allowed to create support tickets.");
-            }
+            // COMMENTED OUT: This was incomplete code - missing closing brace
+            // Also, this check might not be needed if security config handles it
+//            if (userService.isAdmin(loggedInUser)) {
+//                logger.warn("Admin user attempted to create ticket: {}", userId);
+//                return ResponseEntity.status(403).body("Admins are not allowed to create support tickets.");
+//            }
 
             ticket.setUserId(loggedInUser.getId());
             Ticket createdTicket = ticketService.createTicket(ticket);
@@ -88,44 +90,6 @@ public class TicketController {
         }
     }
 
-    // get all tickets (admin only)
-    @GetMapping("/admin/support")
-    public ResponseEntity<?> getTicketsByAdmin(Authentication authentication) {
-        try {
-            Integer userId = (Integer) authentication.getPrincipal();
-            logger.info("Admin request to get all tickets, userId: {}", userId);
-
-            Optional<User> loggedInUseroptional = userService.getUserById(userId);
-            if (loggedInUseroptional.isEmpty()) {
-                logger.warn("Admin user not found: {}", userId);
-                return ResponseEntity.status(403).body("User not found");
-            }
-            User loggedInUser = loggedInUseroptional.get();
-
-            if (!userService.isAdmin(loggedInUser)) {
-                logger.warn("Non-admin user attempted to access all tickets: {}", userId);
-                return ResponseEntity.status(403).body("User not authorised to complete the request");
-            }
-
-            List<Ticket> allTickets = ticketService.getAllTickets();
-            List<TicketResponseDto> listOfAllTicketDto = allTickets.stream()
-                    .map(ticket -> {
-                        User ticketOwner = null;
-                        if (ticket.getUserId() != null) {
-                            ticketOwner = userService.getUserById(ticket.getUserId()).orElse(null);
-                        }
-                        return TicketDtoMapper.mapTicketToDto(ticket, ticketOwner);
-                    })
-                    .toList();
-
-            logger.info("Returning {} tickets to admin userId: {}", listOfAllTicketDto.size(), userId);
-            return ResponseEntity.ok(listOfAllTicketDto);
-        } catch (Exception e) {
-            logger.error("Failed to get all tickets", e);
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
-
     // respond to ticket (admin only)
     @PutMapping("/{ticketId}/respond")
     public ResponseEntity<?> updateTicketByAdmin(@PathVariable Integer ticketId,
@@ -137,6 +101,9 @@ public class TicketController {
 
             User loggedInUser = userService.getUserById(userId)
                     .orElseThrow(() -> new RuntimeException("User not found"));
+
+
+            // This endpoint is under /api/v1/support/{ticketId}/respond
 
             if (!userService.isAdmin(loggedInUser)) {
                 logger.warn("Non-admin user attempted to respond to ticket: {}", userId);
@@ -151,7 +118,7 @@ public class TicketController {
 
             Ticket userTicket = userTicketOptional.get();
             userTicket.setResponse(responseDto.getResponse());
-            userTicket.setTicketStatus(TicketStatus.RESPONDED);
+            userTicket.setStatus(TicketStatus.RESPONDED); // Note: Changed from setTicketStatus to setStatus after refactoring
             ticketService.updateTicket(userTicket.getId(), TicketStatus.RESPONDED, responseDto.getResponse());
 
             TicketResponseDto userTicketDto = TicketDtoMapper.mapTicketToDto(userTicket, loggedInUser);

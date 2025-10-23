@@ -18,9 +18,9 @@ public class TicketDtoMapper {
 
         return new TicketResponseDto(
                 ticket.getId(),
-                ticket.getInvestmentId(),
-                ticket.getTicketPriority(),
-                ticket.getTicketStatus(),
+                ticket.getInvestmentProductId(),
+                ticket.getPriority(),
+                ticket.getStatus(),
                 ticket.getSubject(),
                 ticket.getDescription(),
                 ticket.getResponse(),

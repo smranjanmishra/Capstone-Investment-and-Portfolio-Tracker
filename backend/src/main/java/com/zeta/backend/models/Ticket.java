@@ -3,42 +3,48 @@ package com.zeta.backend.models;
 import com.zeta.backend.enums.TicketPriority;
 import com.zeta.backend.enums.TicketStatus;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import java.time.LocalDateTime;
 
-
 @Entity
-@Table(name="support_tickets")
+@Table(name = "supportTicket")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Ticket {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private Integer userId; // Foreign key to user
+    @Column(name = "userId", nullable = false)
+    private Integer userId;  // FK to User
 
-    @Column(columnDefinition ="TEXT")
-    private String description;
+    @Column(name = "investmentProductId")
+    private Integer investmentProductId;  // FK to Investment
+
+    @Column(columnDefinition = "VARCHAR(255)")
+    private String subject;  // subject of the issue
 
     @Column(columnDefinition = "TEXT")
-    private String subject;
-
-    private Integer investmentId;    // Foreign key to investment ;
+    private String description;  // Detailed description of the issue
 
     @Enumerated(EnumType.STRING)
-    private TicketPriority ticketPriority=TicketPriority.MEDIUM;
+    @Column(name = "status", nullable = false)
+    private TicketStatus status = TicketStatus.OPEN;
 
     @Enumerated(EnumType.STRING)
-    private TicketStatus ticketStatus=TicketStatus.OPEN;
+    @Column(name = "priority", nullable = false)
+    private TicketPriority priority = TicketPriority.MEDIUM;
 
     @Column(columnDefinition = "TEXT")
     private String response;
-    private LocalDateTime createdAt= LocalDateTime.now();
+
+    @Column(name = "createdAt", updatable = false)
+    private LocalDateTime createdAt = LocalDateTime.now();
+
+    @Column(name = "updatedAt")
     private LocalDateTime updatedAt;
+
 }
