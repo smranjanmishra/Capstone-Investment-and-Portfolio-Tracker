@@ -25,19 +25,19 @@ public class Transaction {
     private Long userId;
 
     // FK → InvestmentProduct
-    @Column(name = "investment_product_id", nullable = false)
+    @Column(nullable = false)
     private Long investmentProductId;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "txn_type", nullable = false, length = 10)
+    @Column(nullable = false, length = 10)
     private TxnType txnType;
 
     @Column(nullable = false, precision = 19, scale = 4)
     private BigDecimal units;
 
-    @Column(name = "nav_at_txn", nullable = false, precision = 19, scale = 4)
+    @Column( nullable = false, precision = 19, scale = 4)
     private BigDecimal navAtTxn;
 
-    @Column(name = "txn_date", nullable = false)
+    @Column(nullable = false)
     private LocalDateTime txnDate;
 }
