@@ -40,20 +40,6 @@ public class InvestmentServiceImpl implements InvestmentService {
                 .collect(Collectors.toList());
     }
 
-//    @Override
-//    @Transactional(readOnly = true)
-//    public List<InvestmentProductResponseDTO> getAllInvestments() {
-//        log.info("Fetching all investment products (admin operation)");
-//
-//        List<InvestmentProduct> products = investmentRepository.findAll();
-//
-//        log.debug("Found {} total investment products", products.size());
-//
-//        return products.stream()
-//                .map(this::convertToResponseDTO)
-//                .collect(Collectors.toList());
-//    }
-
     @Override
     @Transactional(readOnly = true)
     public InvestmentProductResponseDTO getInvestmentById(Long id) {
@@ -160,95 +146,6 @@ public class InvestmentServiceImpl implements InvestmentService {
 
         log.info("Successfully deactivated investment product with ID: {}", id);
     }
-
-//    @Override
-//    public void activateInvestment(Long id) {
-//        log.info("Activating investment product with ID: {}", id);
-//
-//        InvestmentProduct product = investmentRepository.findById(id)
-//                .orElseThrow(() -> {
-//                    log.error("Investment product not found with ID: {}", id);
-//                    return new ResourceNotFoundException("InvestmentProduct", "id", id);
-//                });
-//
-//        if (product.getIsActive()) {
-//            log.warn("Investment product with ID {} is already active", id);
-//            throw new InvalidInputException(
-//                    "isActive",
-//                    true,
-//                    "Investment product is already active"
-//            );
-//        }
-//
-//        product.setIsActive(true);
-//        investmentRepository.save(product);
-//
-//        log.info("Successfully activated investment product with ID: {}", id);
-//    }
-//
-//    @Override
-//    @Transactional(readOnly = true)
-//    public List<InvestmentProductResponseDTO> getInvestmentsByType(InvestmentType type) {
-//        log.info("Fetching investment products of type: {}", type);
-//
-//        List<InvestmentProduct> products = investmentRepository.findByTypeAndIsActiveTrue(type);
-//
-//        log.debug("Found {} products of type {}", products.size(), type);
-//
-//        return products.stream()
-//                .map(this::convertToResponseDTO)
-//                .collect(Collectors.toList());
-//    }
-//
-//    @Override
-//    @Transactional(readOnly = true)
-//    public List<InvestmentProductResponseDTO> getInvestmentsByRiskLevel(RiskLevel riskLevel) {
-//        log.info("Fetching investment products with risk level: {}", riskLevel);
-//
-//        List<InvestmentProduct> products = investmentRepository.findByRiskLevelAndIsActiveTrue(riskLevel);
-//
-//        log.debug("Found {} products with risk level {}", products.size(), riskLevel);
-//
-//        return products.stream()
-//                .map(this::convertToResponseDTO)
-//                .collect(Collectors.toList());
-//    }
-//
-//    @Override
-//    @Transactional(readOnly = true)
-//    public List<InvestmentProductResponseDTO> searchInvestmentsByName(String keyword) {
-//        log.info("Searching investment products with keyword: {}", keyword);
-//
-//        if (keyword == null || keyword.trim().isEmpty()) {
-//            log.warn("Empty search keyword provided");
-//            return getAllActiveInvestments();
-//        }
-//
-//        List<InvestmentProduct> products = investmentRepository.findByNameContainingIgnoreCase(keyword);
-//
-//        // Filter to show only active products
-//        List<InvestmentProduct> activeProducts = products.stream()
-//                .filter(InvestmentProduct::getIsActive)
-//                .collect(Collectors.toList());
-//
-//        log.debug("Found {} products matching keyword '{}'", activeProducts.size(), keyword);
-//
-//        return activeProducts.stream()
-//                .map(this::convertToResponseDTO)
-//                .collect(Collectors.toList());
-//    }
-//
-//    @Override
-//    @Transactional(readOnly = true)
-//    public long getActiveInvestmentCount() {
-//        log.info("Fetching count of active investment products");
-//
-//        long count = investmentRepository.countByIsActiveTrue();
-//
-//        log.debug("Total active investment products: {}", count);
-//
-//        return count;
-//    }
 
     private InvestmentProductResponseDTO convertToResponseDTO(InvestmentProduct product) {
         InvestmentProductResponseDTO dto = modelMapper.map(product, InvestmentProductResponseDTO.class);
