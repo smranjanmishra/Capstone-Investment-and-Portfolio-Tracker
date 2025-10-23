@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.zeta.backend.enums.TxnType;
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
@@ -21,9 +20,11 @@ public class Transaction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "user_id", nullable = false)
+    // FK → User
+    @Column(nullable = false)
     private Long userId;
 
+    // FK → InvestmentProduct
     @Column(name = "investment_product_id", nullable = false)
     private Long investmentProductId;
 

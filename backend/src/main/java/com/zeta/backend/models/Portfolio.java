@@ -18,18 +18,20 @@ public class Portfolio {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "user_id", nullable = false)
+    // FK → User
+    @Column(nullable = false)
     private Long userId;
 
-    @Column(name = "units_owned", nullable = false, precision = 19, scale = 4)
-    private BigDecimal unitsOwned;
-
-    @Column(name = "avg_purchase_price", nullable = false, precision = 19, scale = 2)
-    private BigDecimal avgPurchasePrice;
-
+    // FK → InvestmentProduct
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "investment_product_id", referencedColumnName = "id", nullable = false)
     private InvestmentProduct investmentProduct;
+
+    @Column(nullable = false, precision = 19, scale = 4)
+    private BigDecimal unitsOwned;
+
+    @Column(nullable = false, precision = 19, scale = 2)
+    private BigDecimal avgPurchasePrice;
 
     @Override
     public String toString() {
@@ -38,7 +40,8 @@ public class Portfolio {
                 ", userId=" + userId +
                 ", unitsOwned=" + unitsOwned +
                 ", avgPurchasePrice=" + avgPurchasePrice +
-                ", investmentProduct=" + investmentProduct +
+                ", investmentProductId=" +
+                (investmentProduct != null ? investmentProduct.getId() : null) +
                 '}';
     }
 }
