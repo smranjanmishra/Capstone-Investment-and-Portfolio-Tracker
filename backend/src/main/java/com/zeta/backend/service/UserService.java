@@ -58,13 +58,13 @@ public class UserService {
         // Hash password using bcrypt with cost factor 12
         String hashedPassword = passwordEncoder.encode(request.getPassword());
 
-        // Create new user with requested role OR USER role by default
+        // create new user with USER role by default
         User user = new User(
                 request.getName(),
                 request.getEmail(),
                 hashedPassword,
                 request.getPhone(),
-                request.getRole() != null ? request.getRole() : Role.USER  // ← YE LINE SE REPLACE KARO
+                Role.USER
         );
 
         User savedUser = userRepository.save(user);
