@@ -13,11 +13,14 @@ import com.zeta.backend.repository.UserRepository;
 import com.zeta.backend.util.JwtUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 // Service layer for user-related business logic.
@@ -127,4 +130,31 @@ public class UserService {
                 .map(UserResponse::fromUser)
                 .collect(Collectors.toList());
     }
+
+
+    // get logged in user using security context
+
+    public User getLoggedInUserFromSecurityContext() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || authentication.getPrincipal() == null) {
+            throw new RuntimeException("User not authenticated");
+        }
+
+        Integer userId = (Integer) authentication.getPrincipal(); // stored by JwtFilter
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found with ID: " + userId));
+    }
+
+    //get user by id as a method
+
+    public Optional<User> getUserById(Integer id){
+        return userRepository.findById(id);
+    }
+
+    public boolean isAdmin(User user){
+        return user.getRole()==Role.ADMIN;
+    }
 }
+
+
