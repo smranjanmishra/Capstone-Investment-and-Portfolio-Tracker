@@ -27,8 +27,11 @@ public class TicketService {
     private UserService userService;
 
 
-
-
+    // Create a new support ticket.
+    // Automatically sets ticket priority based on subject keywords.
+    // Sets ticket status to OPEN and createdAt timestamp to current time.
+    // ticket -> Ticket object containing subject, description, and optional investment info
+    // returns -> Saved Ticket object with generated ID and timestamps
     public Ticket createTicket(Ticket ticket) {
         String ticketDescription = ticket.getSubject().toLowerCase();
         logger.info("Creating ticket with subject: {}", ticket.getSubject());
@@ -52,6 +55,8 @@ public class TicketService {
         return savedTicket;
     }
 
+    // Retrieve all tickets in the system (admin usage)
+    // returns -> List of all Ticket objects
     public List<Ticket> getAllTickets() {
         logger.info("Fetching all tickets");
         List<Ticket> tickets = ticketRepository.findAll();
@@ -59,18 +64,27 @@ public class TicketService {
         return tickets;
     }
 
+    // Retrieve a ticket by its unique ticket ID
+    // ticketId -> ID of the ticket to fetch
+    // returns -> Optional containing the Ticket if found
     public Optional<Ticket> getTicketById(Integer ticketId) {
         logger.info("Fetching ticket with ID: {}", ticketId);
         return ticketRepository.findById(ticketId);
     }
-
+    // Retrieve all tickets for a specific user
+    // user -> User object whose tickets need to be fetched
+    // returns -> List of Ticket objects belonging to the user
     public List<Ticket> getTicketsByUser(User user) {
         logger.info("Fetching tickets for userId: {}", user.getId());
         List<Ticket> tickets = ticketRepository.findByUserId(Math.toIntExact(user.getId()));
         logger.info("Total tickets found for userId {}: {}", user.getId(), tickets.size());
         return tickets;
     }
-
+    // Update a ticket's status and admin response
+    // ticketId -> ID of the ticket to update
+    // newStatus -> New status to set (e.g., RESPONDED, CLOSED)
+    // response -> Admin response text
+    // returns -> Updated Ticket object
     public Ticket updateTicket(Integer ticketId, TicketStatus newStatus, String response) {
         logger.info("Updating ticketId: {} with status: {}", ticketId, newStatus);
         Ticket ticket = ticketRepository.findById(ticketId)

@@ -131,8 +131,10 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
-
-    // get logged in user using security context
+    // Retrieve the currently logged-in user from the security context.
+    // Uses Spring Security's SecurityContextHolder to get Authentication object.
+    // Throws RuntimeException if user is not authenticated or not found in database.
+    // return -> User object of the logged-in user.
 
     public User getLoggedInUserFromSecurityContext() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -146,15 +148,19 @@ public class UserService {
                 .orElseThrow(() -> new RuntimeException("User not found with ID: " + userId));
     }
 
-    //get user by id as a method
+    // Retrieve a user by their unique ID.
+    // id -> ID of the user to fetch
+    // return -> Optional<User> containing the user if found
 
-    public Optional<User> getUserById(Long id){
+    public Optional<User> getUserById(Long id) {
         return userRepository.findById(id);
     }
 
-    public boolean isAdmin(User user){
-        return user.getRole()==Role.ADMIN;
+    // Check if a user has ADMIN role.
+    // user -> User object to check
+    // return -> true if user's role is ADMIN, false otherwise
+
+    public boolean isAdmin(User user) {
+        return user.getRole() == Role.ADMIN;
     }
 }
-
-

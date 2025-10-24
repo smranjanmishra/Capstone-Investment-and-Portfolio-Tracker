@@ -32,8 +32,6 @@ public class UserResponse {
         this.createdAt = createdAt;
     }
 
-
-
     public static UserResponse fromUser(User user) {
         return new UserResponse(
                 user.getId(),

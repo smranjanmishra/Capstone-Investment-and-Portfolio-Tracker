@@ -10,9 +10,13 @@ import java.util.Optional;
 @Repository
 public interface TicketRepository extends JpaRepository<Ticket, Integer> {
 
-    // find the ticket by ticket ID
+    // Find a ticket by its unique ticket ID.
+    // ticketId -> the ID of the ticket to search for
+    // return Optional containing the Ticket if found
     Optional<Ticket> findTicketsById(Integer ticketId);
 
-    //List all the tickets by User
+    // Find all tickets raised by a specific user.
+    // userId -> ID of the user whose tickets are to be fetched
+    // return List of Ticket objects belonging to that user
     List<Ticket> findByUserId(Integer userId);
 }

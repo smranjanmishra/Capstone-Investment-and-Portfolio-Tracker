@@ -34,7 +34,8 @@ public class TicketController {
     @Autowired
     private PortfolioServiceImpl portfolioService;
 
-    //  Helper function to safely extract userId
+    // helper: extract userId from Authentication principal
+    // handles different principal types (Integer / Long)
     private Long extractUserId(Authentication authentication) {
         Object principal = authentication.getPrincipal();
         if (principal instanceof Integer) return ((Integer) principal).longValue();
@@ -42,7 +43,11 @@ public class TicketController {
         throw new IllegalStateException("Unexpected principal type: " + principal.getClass());
     }
 
-    // create a ticket (user only)
+    // create a new support ticket (User only)
+    // POST /api/v1/support
+    // requires: valid JWT token
+    // validates: user exists and owns the investment (if provided)
+    // response: 200 OK on success with ticket ID or error message
     @PostMapping
     public ResponseEntity<?> createTicket(@RequestBody Ticket ticket, Authentication authentication) {
         try {
@@ -79,7 +84,10 @@ public class TicketController {
         }
     }
 
-    // get tickets by logged-in user
+    // get all tickets for the authenticated user
+    // GET /api/v1/support/user
+    // requires: valid JWT token
+    // response: 200 OK with list of user's tickets
     @GetMapping("/user")
     public ResponseEntity<?> getTicketByUser(Authentication authentication) {
         try {
@@ -106,7 +114,11 @@ public class TicketController {
         }
     }
 
-    // respond to ticket (admin only)
+    // respond to a ticket (Admin only)
+    // PUT /api/v1/support/{ticketId}/respond
+    // requires: valid JWT token for admin user
+    // validates: admin privileges and existing ticket
+    // response: 200 OK with confirmation or error message
     @PutMapping("/{ticketId}/respond")
     public ResponseEntity<?> updateTicketByAdmin(@PathVariable Integer ticketId,
                                                  @RequestBody RespondDto responseDto,

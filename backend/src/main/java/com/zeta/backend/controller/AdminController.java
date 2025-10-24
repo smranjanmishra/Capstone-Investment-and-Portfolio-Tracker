@@ -31,7 +31,7 @@ public class AdminController {
     private final UserService userService;
 
     @Autowired
-    private  TicketService ticketService;
+    private TicketService ticketService;
 
     public AdminController(UserService userService) {
         this.userService = userService;
@@ -42,7 +42,6 @@ public class AdminController {
 //     requires: valid JWT token with ADMIN role
 //     response: 200 OK with list of all users (excluding passwords)
 //     return ResponseEntity with List of UserResponse
-
     @GetMapping("/users")
     public ResponseEntity<List<UserResponse>> getAllUsers() {
         logger.info("Admin request to get all users");
@@ -50,13 +49,11 @@ public class AdminController {
         return ResponseEntity.ok(users);
     }
 
-
-
-    // get all tickets (admin only)
-    //requires : authentication token
-    //response :: returns list of users who have generated ticket
-
-
+    // Get all support tickets (admin only).
+    // Endpoint: GET /admin/support
+    // Requires: Valid JWT token with ADMIN role.
+    // Response: 200 OK with list of all tickets along with user info.
+    // Returns: List<TicketResponseDto> mapped from Ticket entities.
     @GetMapping("/support")
     public ResponseEntity<?> getTicketsByAdmin(Authentication authentication) {
         try {
@@ -90,6 +87,4 @@ public class AdminController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-
-
 }
