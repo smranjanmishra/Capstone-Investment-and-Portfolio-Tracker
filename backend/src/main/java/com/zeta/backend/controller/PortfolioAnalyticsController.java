@@ -24,6 +24,7 @@ import java.util.Map;
 @RequestMapping("/api/v1/portfolio")
 @Slf4j
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*", maxAge = 3600)
 public class PortfolioAnalyticsController {
 
     private final PortfolioAnalyticsService analyticsService;
