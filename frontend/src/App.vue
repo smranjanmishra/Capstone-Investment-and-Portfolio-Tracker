@@ -109,6 +109,12 @@ onMounted(() => {
                 About
               </RouterLink>
             </li>
+            <li class="nav-item" v-if="currentUser">
+              <RouterLink to="/help-center" class="nav-link">
+                <i class="bi bi-question-circle-fill me-1"></i>
+                Help
+              </RouterLink>
+            </li>
           </ul>
 
           <ul class="navbar-nav">
@@ -137,7 +143,7 @@ onMounted(() => {
               >
                 <i class="bi bi-person-circle me-1"></i>
                 {{ currentUser.fullName }}
-                <!-- <span
+                <!-- <span 
                   class="badge ms-2"
                   :class="currentUser.role === 'ADMIN' ? 'bg-danger' : 'bg-light text-dark'"
                 >

@@ -119,6 +119,53 @@ const router = createRouter({
         requiresAdmin: true, // Requires admin privileges
       },
     },
+// Ticket creation and helpcenter paths 
+    {
+      path: '/help-center',
+      name: 'help-center',
+      component: () => import('../views/HelpCenter.vue'),
+      meta: {
+        title: 'Help Center',
+        requiresAuth: true,
+      },
+    },
+    {
+      path: '/help-center/new',
+      name: 'create-ticket',
+      component: () => import('../views/CreateTicket.vue'),
+      meta: {
+        title: 'Create Ticket',
+        requiresAuth: true,
+      },
+    },
+    {
+      path: '/help-center/my-tickets',
+      name: 'user-ticket-list',
+      component: () => import('../views/UserTicketList.vue'),
+      meta: {
+        title: 'My Tickets',
+        requiresAuth: true,
+      },
+    },
+    {
+      path: '/admin/tickets',
+      name: 'admin-ticket-list',
+      component: () => import('../views/AdminTicketList.vue'),
+      meta: {
+        title: 'Manage Tickets',
+        requiresAdmin: true,
+      },
+    },
+    {
+      path: '/ticket/:id',
+      name: 'ticket-detail',
+      component: () => import('../views/TicketDetail.vue'),
+      meta: {
+        title: 'Ticket Details',
+        requiresAuth: true,
+      },
+      props: true, // This allows the :id to be passed as a prop
+    },
   ],
 })
 
