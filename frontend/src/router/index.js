@@ -1,9 +1,11 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 
+// Create router instance with HTML5 history mode
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
+    // Public Routes
     {
       path: '/',
       name: 'home',
@@ -12,12 +14,122 @@ const router = createRouter({
     {
       path: '/about',
       name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
+      // Lazy-loaded route: generates separate chunk for code-splitting
       component: () => import('../views/AboutView.vue'),
     },
+    // Authentication Routes (guest-only)
+    {
+      path: '/register',
+      name: 'register',
+      component: () => import('../views/Register.vue'),
+      meta: {
+        title: 'Register',
+        description: 'Create a new account',
+        guestOnly: true, // Only accessible when not logged in
+      },
+    },
+    {
+      path: '/login',
+      name: 'login',
+      component: () => import('../views/Login.vue'),
+      meta: {
+        title: 'Login',
+        description: 'Sign in to your account',
+        guestOnly: true, // Only accessible when not logged in
+      },
+    },
+    // Protected User Routes
+    {
+      path: '/profile',
+      name: 'profile',
+      component: () => import('../views/Profile.vue'),
+      meta: {
+        title: 'Profile',
+        description: 'View and edit your profile',
+        requiresAuth: true, // Requires authentication
+      },
+    },
+    // Investment Routes (public access)
+    {
+      path: '/investments',
+      name: 'investments',
+      component: () => import('../views/InvestmentList.vue'),
+      meta: {
+        title: 'Investment Products',
+        description: 'Browse available investment products',
+      },
+    },
+    // Admin Routes (requires admin role)
+    {
+      path: '/admin/investments',
+      name: 'manage-investments',
+      component: () => import('../views/ManageInvestments.vue'),
+      meta: {
+        title: 'Manage Investments',
+        description: 'Admin panel for managing investment products',
+        requiresAdmin: true, // Requires admin privileges
+      },
+    },
+    {
+      path: '/admin/users',
+      name: 'user-list',
+      component: () => import('../views/UserList.vue'),
+      meta: {
+        title: 'User Management',
+        description: 'Admin panel for managing users',
+        requiresAdmin: true, // Requires admin privileges
+      },
+    },
   ],
+})
+
+// Check if user has valid authentication token
+function isAuthenticated() {
+  const currentUser = localStorage.getItem('currentUser')
+  return !!currentUser
+}
+
+// Check if authenticated user has admin role
+function isAdmin() {
+  const currentUser = localStorage.getItem('currentUser')
+  if (!currentUser) return false
+  const user = JSON.parse(currentUser)
+  return user.role === 'ADMIN'
+}
+
+// Global navigation guard - runs before each route change
+router.beforeEach((to, from, next) => {
+  // Update page title based on route metadata
+  if (to.meta.title) {
+    document.title = `${to.meta.title} - Investment Tracker`
+  } else {
+    document.title = 'Investment & Portfolio Tracker'
+  }
+
+  // Redirect to login if route requires authentication
+  if (to.meta.requiresAuth && !isAuthenticated()) {
+    console.warn('⚠️ Access denied: Authentication required')
+    next({ name: 'login', query: { redirect: to.fullPath } })
+    return
+  }
+
+  // Redirect to home if route requires admin but user is not admin
+  if (to.meta.requiresAdmin && !isAdmin()) {
+    console.warn('⚠️ Access denied: Admin privileges required')
+    alert('Access denied! This page is only accessible to administrators.')
+    next({ name: 'home' })
+    return
+  }
+
+  // Redirect authenticated users away from guest-only pages (login/register)
+  if (to.meta.guestOnly && isAuthenticated()) {
+    console.log('Already authenticated, redirecting to home')
+    next({ name: 'home' })
+    return
+  }
+
+  // Allow navigation to proceed
+  next()
 })
 
 export default router
