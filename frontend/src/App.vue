@@ -24,10 +24,10 @@ function logout() {
     localStorage.removeItem('currentUser')
     localStorage.removeItem('authToken')
     currentUser.value = null
-    
+
     // Dispatch custom event for other components to react
     window.dispatchEvent(new CustomEvent('user-logged-out'))
-    
+
     // Redirect to home page
     window.location.href = '/'
   }
@@ -36,13 +36,13 @@ function logout() {
 onMounted(() => {
   // Load user data on app initialization
   loadCurrentUser()
-  
+
   // Listen for storage changes (cross-tab synchronization)
   window.addEventListener('storage', loadCurrentUser)
-  
+
   // Listen for custom login event (same-tab updates after login)
   window.addEventListener('user-logged-in', loadCurrentUser)
-  
+
   // Listen for custom logout event (same-tab updates after logout)
   window.addEventListener('user-logged-out', () => {
     currentUser.value = null
@@ -59,16 +59,16 @@ onMounted(() => {
           <i class="bi bi-graph-up-arrow me-2"></i>
           Investment Tracker
         </RouterLink>
-        
-        <button 
-          class="navbar-toggler" 
-          type="button" 
-          data-bs-toggle="collapse" 
+
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
           data-bs-target="#navbarNav"
         >
           <span class="navbar-toggler-icon"></span>
         </button>
-        
+
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav me-auto">
             <li class="nav-item">
@@ -83,6 +83,14 @@ onMounted(() => {
                 Investments
               </RouterLink>
             </li>
+            <li class="nav-item" v-if="currentUser">
+              <RouterLink to="/portfolio" class="nav-link">
+                <i class="bi bi-wallet2 me-1"></i>
+                Portfolio
+              </RouterLink>
+            </li>
+
+
             <li class="nav-item" v-if="currentUser && currentUser.role === 'ADMIN'">
               <RouterLink to="/admin/investments" class="nav-link">
                 <i class="bi bi-gear-fill me-1"></i>
@@ -102,7 +110,7 @@ onMounted(() => {
               </RouterLink>
             </li>
           </ul>
-          
+
           <ul class="navbar-nav">
             <!-- If user is not logged in -->
             <li class="nav-item" v-if="!currentUser">
@@ -117,19 +125,19 @@ onMounted(() => {
                 Register
               </RouterLink>
             </li>
-            
+
             <!-- If user is logged in -->
             <li class="nav-item dropdown" v-if="currentUser">
-              <a 
-                class="nav-link dropdown-toggle" 
-                href="#" 
-                id="userDropdown" 
-                role="button" 
+              <a
+                class="nav-link dropdown-toggle"
+                href="#"
+                id="userDropdown"
+                role="button"
                 data-bs-toggle="dropdown"
               >
                 <i class="bi bi-person-circle me-1"></i>
                 {{ currentUser.fullName }}
-                <!-- <span 
+                <!-- <span
                   class="badge ms-2"
                   :class="currentUser.role === 'ADMIN' ? 'bg-danger' : 'bg-light text-dark'"
                 >
@@ -141,6 +149,12 @@ onMounted(() => {
                   <RouterLink to="/profile" class="dropdown-item">
                     <i class="bi bi-person-fill me-2"></i>
                     Profile
+                  </RouterLink>
+                </li>
+                <li>
+                  <RouterLink to="/transactions" class="dropdown-item">
+                    <i class="bi bi-clock-history me-2"></i>
+                    History
                   </RouterLink>
                 </li>
                 <li><hr class="dropdown-divider"></li>
@@ -269,7 +283,7 @@ onMounted(() => {
   .navbar-nav {
     margin-top: 1rem;
   }
-  
+
   .nav-link {
     margin: 0.25rem 0;
   }

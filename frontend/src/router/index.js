@@ -71,6 +71,45 @@ const router = createRouter({
       },
     },
     {
+      path: "/portfolio",
+      name: "portfolio",
+      component: () => import("../views/MyPortfolio.vue"),
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/transactions',
+      name: 'transactions',
+      component: () => import('../views/TransactionHistory.vue'),
+      meta: {
+        title: 'Transactions',
+        description: 'View your transaction history',
+        requiresAuth: true
+      }
+    },
+    {
+      path: "/portfolio/buy",
+      name: "buy-investment",
+      component: () => import("../views/BuyInvestment.vue"),
+      meta: { requiresAuth: true }
+    },
+    {
+      path: "/portfolio/sell",
+      name: "sell-investment",
+      component: () => import("../views/SellInvestment.vue"),
+      meta: { requiresAuth: true }
+    },
+    {
+      path: "/buy",
+      name: "BuyInvestment",
+      component: () => import("@/views/BuyInvestment.vue")
+    },
+    {
+      path: "/sell",
+      name: "SellInvestment",
+      component: () => import("@/views/SellInvestment.vue")
+    },
+
+    {
       path: '/admin/users',
       name: 'user-list',
       component: () => import('../views/UserList.vue'),
