@@ -7,7 +7,6 @@ export const usePortfolioStore = defineStore('portfolio', () => {
   const portfolioItems = ref([])
   const loading = ref(false)
   const error = ref(null)
-
   // --- ACTIONS ---
 //  Fetches the logged-in user's portfolio items.
   async function fetchPortfolio() {
