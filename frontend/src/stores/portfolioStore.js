@@ -1,6 +1,3 @@
-// frontend/src/stores/portfolioStore.js
-// --- THIS IS THE UPDATED AND CORRECTED VERSION ---
-
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import apiClient from '@/services/api'
@@ -12,18 +9,17 @@ export const usePortfolioStore = defineStore('portfolio', () => {
   const error = ref(null)
 
   // --- ACTIONS ---
-
-    //  Fetches the logged-in user's portfolio items.
+//  Fetches the logged-in user's portfolio items.
   async function fetchPortfolio() {
     if (portfolioItems.value.length > 0) {
       return portfolioItems.value
     }
-
     loading.value = true
     error.value = null
     try {
-      // 1. Calls your endpoint: GET /api/v1/portfolio
+      // 1. Calls  endpoint: GET /api/v1/portfolio
       const response = await apiClient.get('/portfolio')
+    
       if (response.data && response.data.success) {
         portfolioItems.value = response.data.data || []
       } else {
@@ -42,7 +38,6 @@ export const usePortfolioStore = defineStore('portfolio', () => {
       loading.value = false
     }
   }
-
   return {
     // State
     portfolioItems,
