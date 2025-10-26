@@ -13,11 +13,14 @@ import com.zeta.backend.repository.UserRepository;
 import com.zeta.backend.util.JwtUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 // Service layer for user-related business logic.
@@ -96,7 +99,7 @@ public class UserService {
         }
 
         // Generate JWT token with userId and role claims
-        String token = jwtUtil.generateToken(user.getId(), user.getRole());
+        String token = jwtUtil.generateToken(Math.toIntExact(user.getId()), user.getRole());
         logger.info("Login successful for userId: {}, role: {}", user.getId(), user.getRole());
 
         return new LoginResponse(token);
@@ -126,5 +129,38 @@ public class UserService {
         return userRepository.findAll().stream()
                 .map(UserResponse::fromUser)
                 .collect(Collectors.toList());
+    }
+
+    // Retrieve the currently logged-in user from the security context.
+    // Uses Spring Security's SecurityContextHolder to get Authentication object.
+    // Throws RuntimeException if user is not authenticated or not found in database.
+    // return -> User object of the logged-in user.
+
+    public User getLoggedInUserFromSecurityContext() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || authentication.getPrincipal() == null) {
+            throw new RuntimeException("User not authenticated");
+        }
+
+        Integer userId = (Integer) authentication.getPrincipal(); // stored by JwtFilter
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found with ID: " + userId));
+    }
+
+    // Retrieve a user by their unique ID.
+    // id -> ID of the user to fetch
+    // return -> Optional<User> containing the user if found
+
+    public Optional<User> getUserById(Long id) {
+        return userRepository.findById(id);
+    }
+
+    // Check if a user has ADMIN role.
+    // user -> User object to check
+    // return -> true if user's role is ADMIN, false otherwise
+
+    public boolean isAdmin(User user) {
+        return user.getRole() == Role.ADMIN;
     }
 }
