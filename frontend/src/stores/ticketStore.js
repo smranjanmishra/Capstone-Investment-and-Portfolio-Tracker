@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import {ref} from vue;
+import {ref} from 'vue';
 import apiClient from '@/services/api'
 
 export const useTicketStore=defineStore('ticket',()=>{
@@ -18,7 +18,7 @@ export const useTicketStore=defineStore('ticket',()=>{
   //(USER) Creates a new support ticket.
   //{Object} ticketData - { subject, description, investmentProductId }
 
-  async function createTickets(ticketData) {
+  async function createTicket(ticketData) {
     loading.value=true;
     error.value=null;
     try {
