@@ -101,6 +101,10 @@ export const buyInvestment = (payload) => apiClient.post("/portfolio/buy", paylo
 export const sellInvestment = (payload) => apiClient.post("/portfolio/sell", payload);
 export const getTransactions = () => apiClient.get("/portfolio/transactions");
 export const getInvestments = () => apiClient.get("/Investments");
-
+export const createTicket = (ticketData) => apiClient.post('/support', ticketData);
+export const getUserTickets = () => apiClient.get('/support/user');
+export const getAllTickets = () => apiClient.get('/admin/support');
+export const respondToTicket = (ticketId, responseData) => apiClient.put(`/support/${ticketId}/respond`, responseData);
+export const closeTicket = (ticketId) => apiClient.put(`/support/${ticketId}/close`);
 
 

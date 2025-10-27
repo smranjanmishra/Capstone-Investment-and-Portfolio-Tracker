@@ -184,7 +184,7 @@ public class TicketController {
                 return ResponseEntity.badRequest().body("Only responded ticket can be closed by the user");
             }
             ticket.setStatus(TicketStatus.CLOSED);
-            ticketService.updateTicket(ticketId,TicketStatus.CLOSED,null);
+            ticketService.updateTicket(ticketId,TicketStatus.CLOSED,ticket.getResponse());
             TicketResponseDto ticketResponseDto=TicketDtoMapper.mapTicketToDto(ticket,loggedInUser);
             logger.info("Ticket {} closed successfully by user {}", ticketId, userId);
             return ResponseEntity.ok(ticketResponseDto);

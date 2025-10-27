@@ -29,6 +29,15 @@
         <span class="badge" :class="priorityClass(ticket.ticketPriority)">
           {{ ticket.ticketPriority }} PRIORITY
         </span>
+        <button
+          v-if="ticket.ticketStatus === 'RESPONDED' && !showUser"
+          class="btn btn-outline-danger btn-sm ms-2"
+          @click.prevent="handleClose(ticket.id)"
+          :disabled="store.loading"
+        >
+          <i class="bi bi-check-circle me-1"></i>
+          Close Ticket
+        </button>
       </div>
     </div>
   </RouterLink>
@@ -37,7 +46,8 @@
 <script setup>
 import { computed } from 'vue'
 import { RouterLink } from 'vue-router'
-
+import { useTicketStore } from '@/stores/ticketStore'
+const store = useTicketStore()
 const props = defineProps({
   ticket: {
     type: Object,
@@ -49,6 +59,18 @@ const props = defineProps({
     default: false,
   }
 })
+// Function to close the responded ticket of the user 
+async function handleClose(ticketId) {
+  // 1. Show confirmation alert
+  if (confirm('Are you sure you want to close this ticket? This action cannot be undone.')) {
+    try {
+      // 2. Call the store action if user clicks "OK"
+      await store.closeTicket(ticketId);
+    } catch (error) {
+      alert(`Failed to close ticket: ${error.message || 'Unknown error'}`);
+    }
+  }
+}
 
 // ---  Properties for Styling ---
 
