@@ -100,6 +100,6 @@ export const getPortfolio = () => apiClient.get("/portfolio");
 export const buyInvestment = (payload) => apiClient.post("/portfolio/buy", payload);
 export const sellInvestment = (payload) => apiClient.post("/portfolio/sell", payload);
 export const getTransactions = () => apiClient.get("/portfolio/transactions");
-export const getInvestments = () => apiClient.get("/Investments");
+export const getInvestments = () => apiClient.get("/investments");
 
 
