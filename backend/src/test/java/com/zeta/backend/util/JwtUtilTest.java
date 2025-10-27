@@ -48,7 +48,7 @@ class JwtUtilTest {
 
         assertNotNull(token, "Token should not be null");
         assertFalse(token.isEmpty(), "Token should not be empty");
-        assertTrue(token.split("\\.").length == 3, "Token should have 3 parts (header.payload.signature)");
+        assertEquals(3, token.split("\\.").length, "Token should have 3 parts (header.payload.signature)");
     }
 
     @Test

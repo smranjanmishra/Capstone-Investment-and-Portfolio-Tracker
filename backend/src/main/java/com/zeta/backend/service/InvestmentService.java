@@ -2,8 +2,6 @@ package com.zeta.backend.service;
 
 import com.zeta.backend.dto.InvestmentProductRequestDTO;
 import com.zeta.backend.dto.InvestmentProductResponseDTO;
-import com.zeta.backend.enums.InvestmentType;
-import com.zeta.backend.enums.RiskLevel;
 
 import java.util.List;
 

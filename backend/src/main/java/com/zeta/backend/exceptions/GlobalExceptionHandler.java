@@ -1,9 +1,6 @@
 package com.zeta.backend.exceptions;
 
 import com.zeta.backend.dto.ErrorResponse;
-import jakarta.validation.Valid;
-import org.aspectj.weaver.ast.Not;
-import org.hibernate.Internal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -18,8 +15,6 @@ import org.springframework.web.context.request.WebRequest;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.slf4j.LoggerFactory;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {

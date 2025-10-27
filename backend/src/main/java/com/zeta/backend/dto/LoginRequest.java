@@ -14,7 +14,7 @@ public class LoginRequest {
     @NotBlank(message = "Password is required")
     private String password;
 
-//    constructors
+    // Constructors
     public LoginRequest() {
     }
 
@@ -23,7 +23,6 @@ public class LoginRequest {
         this.password = password;
     }
 
-//    getters and setters
     public String getEmail() {
         return email;
     }

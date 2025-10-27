@@ -1,4 +1,3 @@
-// java
 package com.zeta.backend.repository;
 
 import com.zeta.backend.enums.InvestmentType;
@@ -14,7 +13,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
-class InvestmentProductRepositoryTest {
+public class InvestmentProductRepositoryTest {
     @Autowired
     private InvestmentProductRepository repository;
 
