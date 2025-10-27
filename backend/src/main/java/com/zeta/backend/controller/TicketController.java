@@ -154,4 +154,43 @@ public class TicketController {
             return ResponseEntity.badRequest().body("Failed to update Ticket " + e.getMessage());
         }
     }
+
+    //closing a  responded  ticket (Admin only)
+    // PUT /api/v1/support/{ticketId}/close
+    // requires: valid JWT token for logged in user
+    // validates: ticket is responded and ticket belongs to user
+    // response: 200 OK with confirmation or error message
+    @PutMapping("/{ticketId}/close")
+    public ResponseEntity<?>closeRespondedTicketOfUser(@PathVariable Integer ticketId,Authentication authentication)
+    {
+        try{
+            Long userId = extractUserId(authentication);
+            logger.info("User request to close the responded   ticketId: {} by userId: {}", ticketId, userId);
+            User loggedInUser = userService.getUserById(userId)
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+            Optional<Ticket>ticketOptional=ticketService.getTicketById(ticketId);
+            if(ticketOptional.isEmpty()){
+                logger.warn("Ticket not found with ticketId: {}", ticketId);
+                return ResponseEntity.badRequest().body("No Ticket found");
+            }
+            Ticket ticket=ticketOptional.get();
+            if(!ticket.getUserId().equals(loggedInUser.getId())){
+                logger.warn("User can only close only his ticket and ticketId does not belong to ",loggedInUser.getId());
+                return ResponseEntity.badRequest().body("ticket does not belong to user ");
+
+            }
+            if(ticket.getStatus()!=TicketStatus.RESPONDED){
+                logger.warn("Only responded ticket can be closed by the user");
+                return ResponseEntity.badRequest().body("Only responded ticket can be closed by the user");
+            }
+            ticket.setStatus(TicketStatus.CLOSED);
+            ticketService.updateTicket(ticketId,TicketStatus.CLOSED,null);
+            TicketResponseDto ticketResponseDto=TicketDtoMapper.mapTicketToDto(ticket,loggedInUser);
+            logger.info("Ticket {} closed successfully by user {}", ticketId, userId);
+            return ResponseEntity.ok(ticketResponseDto);
+        } catch (Exception e) {
+            logger.error("Failed to close ticket", e);
+            return ResponseEntity.badRequest().body("Failed to close ticket: " + e.getMessage());
+        }
+    }
 }
