@@ -11,5 +11,6 @@ public record GainLossDTO(
         BigDecimal unitsOwned,
         BigDecimal avgPurchasePrice,
         BigDecimal currentNAV,
-        BigDecimal absoluteGainLoss
+        BigDecimal absoluteGainLoss,
+        BigDecimal gainLossPercent
 ) {}
