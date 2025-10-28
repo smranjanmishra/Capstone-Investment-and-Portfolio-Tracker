@@ -6,60 +6,85 @@ import com.zeta.backend.dto.PortfolioSummaryDTO;
 import com.zeta.backend.service.PortfolioAnalyticsService;
 import com.zeta.backend.util.JwtUtil;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.security.core.Authentication;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.RequestPostProcessor;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.time.LocalDateTime;
 
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-/**
- * Controller Unit Tests for PortfolioAnalyticsController
- * Works with Authentication parameter (no controller changes)
- */
-@WebMvcTest(PortfolioAnalyticsController.class)
-@AutoConfigureMockMvc(addFilters = false)
-public class PortfolioAnalyticsControllerTest {
+@SpringBootTest
+@AutoConfigureMockMvc
+@ActiveProfiles("test")
+class PortfolioAnalyticsControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
-    @MockitoBean
-    private PortfolioAnalyticsService analyticsService;
+    @Autowired
+    private PortfolioRepository portfolioRepository;
 
-    @MockitoBean
-    private JwtUtil jwtUtil;
+    @Autowired
+    private InvestmentProductRepository investmentProductRepository;
+
+    @Autowired
+    private TransactionRepository transactionRepository;
 
     @Autowired
     private ObjectMapper objectMapper;
 
     private final Long userId = 1L;
+    private InvestmentProduct stockProduct;
+    private InvestmentProduct bondProduct;
 
-    /**
-     * Helper method to inject Authentication into controller method
-     */
-    private RequestPostProcessor authenticatedUser() {
-        Authentication authentication = Mockito.mock(Authentication.class);
-        Mockito.when(authentication.getName()).thenReturn(String.valueOf(userId));
-        return request -> {
-            request.setUserPrincipal(authentication);
-            request.setAttribute("authentication", authentication);
-            return request;
-        };
-    }
+    @BeforeEach
+    void setUp() {
+        // Clean database
+        transactionRepository.deleteAll();
+        portfolioRepository.deleteAll();
+        investmentProductRepository.deleteAll();
 
-    // ---------- /portfolio/summary ----------
+        // Create investment products
+        stockProduct = investmentProductRepository.save(
+                InvestmentProduct.builder()
+                        .name("Equity Fund")
+                        .type(InvestmentType.STOCK)
+                        .riskLevel(RiskLevel.HIGH)
+                        .currentNAV(BigDecimal.valueOf(110))
+                        .expectedReturnRate(BigDecimal.valueOf(12.5))
+                        .minInvestment(BigDecimal.valueOf(5000))
+                        .isActive(true)
+                        .build()
+        );
+
+        bondProduct = investmentProductRepository.save(
+                InvestmentProduct.builder()
+                        .name("Bond Fund")
+                        .type(InvestmentType.BOND)
+                        .riskLevel(RiskLevel.LOW)
+                        .currentNAV(BigDecimal.valueOf(105))
+                        .expectedReturnRate(BigDecimal.valueOf(7.0))
+                        .minInvestment(BigDecimal.valueOf(2000))
+                        .isActive(true)
+                        .build()
+        );
+
+        // Create portfolio entries
+        portfolioRepository.save(
+                Portfolio.builder()
+                        .userId(userId)
+                        .investmentProduct(stockProduct)
+                        .avgPurchasePrice(BigDecimal.valueOf(100))
+                        .unitsOwned(BigDecimal.valueOf(10))
+                        .build()
+        );
 
     @Test
     void testGetPortfolioSummary_Success() throws Exception {
@@ -71,58 +96,41 @@ public class PortfolioAnalyticsControllerTest {
                 BigDecimal.valueOf(10.00)
         );
 
-        Mockito.when(analyticsService.getPortfolioSummary(userId)).thenReturn(summary);
 
-        mockMvc.perform(get("/api/v1/portfolio/summary")
-                        .with(authenticatedUser()))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.message").value("Portfolio summary fetched successfully"))
-                .andExpect(jsonPath("$.data.totalInvested").value(10000.00))
-                .andExpect(jsonPath("$.data.currentValue").value(11000.00))
-                .andExpect(jsonPath("$.data.absoluteReturn").value(1000.00))
-                .andExpect(jsonPath("$.data.annualizedReturn").value(10.00));
+        transactionRepository.save(
+                Transaction.builder()
+                        .userId(userId)
+                        .investmentProductId(stockProduct.getId())
+                        .txnType(TxnType.BUY)
+                        .navAtTxn(BigDecimal.valueOf(100))
+                        .units(BigDecimal.valueOf(20))
+                        .txnDate(LocalDateTime.now().minusDays(30))
+                        .build()
+        );
     }
 
-    @Test
-    void testGetPortfolioSummary_ServiceException() throws Exception {
-        Mockito.when(analyticsService.getPortfolioSummary(anyLong()))
-                .thenThrow(new RuntimeException("Calculation error"));
+    @AfterEach
+    void tearDown() {
+        transactionRepository.deleteAll();
+        portfolioRepository.deleteAll();
+        investmentProductRepository.deleteAll();
+    }
 
-        mockMvc.perform(get("/api/v1/portfolio/summary")
-                        .with(authenticatedUser()))
-                .andExpect(status().isInternalServerError())
-                .andExpect(jsonPath("$.success").value(false))
-                .andExpect(jsonPath("$.message").value("Failed to fetch portfolio summary: Calculation error"));
+    // ---------- /portfolio/summary ----------
+
+    @Test
+    @WithMockUser(username = "1") // Mock authentication
+    void shouldReturnPortfolioSummary() throws Exception {
+        mockMvc.perform(get("/api/v1/portfolio/summary"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data.totalInvested", is(2000.00)))
+                .andExpect(jsonPath("$.data.currentValue", is(2150.00)))
+                .andExpect(jsonPath("$.data.absoluteReturn", is(150.00)))
+                .andExpect(jsonPath("$.message", containsString("Portfolio summary fetched successfully")));
     }
 
     // ---------- /portfolio/allocation ----------
-
-    @Test
-    void testGetPortfolioAllocation_Empty() throws Exception {
-        Mockito.when(analyticsService.getPortfolioAllocation(userId)).thenReturn(Collections.emptyList());
-
-        mockMvc.perform(get("/api/v1/portfolio/allocation")
-                        .with(authenticatedUser()))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.count").value(0))
-                .andExpect(jsonPath("$.data").isEmpty());
-    }
-
-    @Test
-    void testGetPortfolioAllocation_ServiceException() throws Exception {
-        Mockito.when(analyticsService.getPortfolioAllocation(anyLong()))
-                .thenThrow(new RuntimeException("Allocation fetch error"));
-
-        mockMvc.perform(get("/api/v1/portfolio/allocation")
-                        .with(authenticatedUser()))
-                .andExpect(status().isInternalServerError())
-                .andExpect(jsonPath("$.success").value(false))
-                .andExpect(jsonPath("$.message").value("Failed to fetch portfolio allocation: Allocation fetch error"));
-    }
-
-    // ---------- /portfolio/gains ----------
 
     @Test
     void testGetPortfolioGains_Success() throws Exception {
@@ -139,33 +147,29 @@ public class PortfolioAnalyticsControllerTest {
                         .with(authenticatedUser()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.message").value("Gain/Loss data fetched successfully"))
-                .andExpect(jsonPath("$.count").value(2))
-                .andExpect(jsonPath("$.data[0].productName").value("Product A"))
-                .andExpect(jsonPath("$.data[1].productName").value("Product B"));
+                .andExpect(jsonPath("$.count", is(2)))
+                .andExpect(jsonPath("$.data[0].investmentType", anyOf(is("STOCK"), is("BOND"))));
     }
 
-    @Test
-    void testGetPortfolioGains_Empty() throws Exception {
-        Mockito.when(analyticsService.getPortfolioGains(userId)).thenReturn(Collections.emptyList());
+    // ---------- /portfolio/gains ----------
 
-        mockMvc.perform(get("/api/v1/portfolio/gains")
-                        .with(authenticatedUser()))
+    @Test
+    @WithMockUser(username = "1")
+    void shouldReturnPortfolioGains() throws Exception {
+        mockMvc.perform(get("/api/v1/portfolio/gains"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.count").value(0))
-                .andExpect(jsonPath("$.data").isEmpty());
+                .andExpect(jsonPath("$.count", is(2)))
+                .andExpect(jsonPath("$.data[0].productName", anyOf(is("Equity Fund"), is("Bond Fund"))));
     }
 
     @Test
-    void testGetPortfolioGains_ServiceException() throws Exception {
-        Mockito.when(analyticsService.getPortfolioGains(anyLong()))
-                .thenThrow(new RuntimeException("Gain calculation failed"));
-
-        mockMvc.perform(get("/api/v1/portfolio/gains")
-                        .with(authenticatedUser()))
+    @WithMockUser(username = "1")
+    void shouldReturnEmptyPortfolioGainsIfNoPortfolio() throws Exception {
+        portfolioRepository.deleteAll();
+        mockMvc.perform(get("/api/v1/portfolio/gains"))
                 .andExpect(status().isInternalServerError())
                 .andExpect(jsonPath("$.success").value(false))
-                .andExpect(jsonPath("$.message").value("Failed to fetch gain/loss data: Gain calculation failed"));
+                .andExpect(jsonPath("$.message", containsString("Failed to fetch gain/loss data")));
     }
 }

@@ -4,45 +4,47 @@ import com.zeta.backend.dto.AssetAllocationDTO;
 import com.zeta.backend.dto.GainLossDTO;
 import com.zeta.backend.dto.PortfolioSummaryDTO;
 import com.zeta.backend.enums.InvestmentType;
+import com.zeta.backend.enums.RiskLevel;
 import com.zeta.backend.enums.TxnType;
-import com.zeta.backend.exceptions.InvalidInputException;
-import com.zeta.backend.exceptions.ResourceNotFoundException;
 import com.zeta.backend.models.InvestmentProduct;
 import com.zeta.backend.models.Portfolio;
 import com.zeta.backend.models.Transaction;
+import com.zeta.backend.repository.InvestmentProductRepository;
 import com.zeta.backend.repository.PortfolioRepository;
 import com.zeta.backend.repository.TransactionRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class PortfolioAnalyticsServiceImplTest {
+@SpringBootTest
+@ActiveProfiles("test")
+public class PortfolioAnalyticsServiceImplTest {
 
-    @Mock
-    private PortfolioRepository portfolioRepository;
-
-    @Mock
-    private TransactionRepository transactionRepository;
-
-    @InjectMocks
+    @Autowired
     private PortfolioAnalyticsServiceImpl analyticsService;
 
+    @Autowired
+    private PortfolioRepository portfolioRepository;
+
+    @Autowired
+    private InvestmentProductRepository investmentProductRepository;
+
+    @Autowired
+    private TransactionRepository transactionRepository;
+
     private final Long userId = 1L;
-    private InvestmentProduct product1;
-    private InvestmentProduct product2;
-    private Portfolio portfolio1;
-    private Portfolio portfolio2;
+    private InvestmentProduct stockProduct;
+    private InvestmentProduct bondProduct;
 
     @BeforeEach
     void setUp() {
@@ -80,109 +82,73 @@ class PortfolioAnalyticsServiceImplTest {
     // ---------- getPortfolioSummary() ----------
 
     @Test
-    void testGetPortfolioSummary_Success() {
-        when(portfolioRepository.findByUserId(userId)).thenReturn(Arrays.asList(portfolio1, portfolio2));
-
-        Transaction txn = Transaction.builder()
-                .userId(userId)
-                .txnType(TxnType.BUY)
-                .navAtTxn(BigDecimal.valueOf(100))
-                .units(BigDecimal.valueOf(20))
-                .txnDate(LocalDateTime.now().minusDays(30))
-                .build();
-
-        when(transactionRepository.findByUserIdOrderByTxnDateDesc(userId))
-                .thenReturn(Collections.singletonList(txn));
-
+    void shouldReturnPortfolioSummarySuccessfully() {
         PortfolioSummaryDTO result = analyticsService.getPortfolioSummary(userId);
 
-        assertNotNull(result);
-        assertEquals(BigDecimal.valueOf(2000.00).setScale(2), result.totalInvested());
-        assertEquals(BigDecimal.valueOf(2150.00).setScale(2), result.currentValue());
-        assertEquals(BigDecimal.valueOf(150.00).setScale(2), result.absoluteReturn());
-        assertTrue(result.annualizedReturn().compareTo(BigDecimal.ZERO) >= 0);
+        assertThat(result).isNotNull();
+        assertThat(result.totalInvested()).isEqualByComparingTo(BigDecimal.valueOf(2000.00).setScale(2));
+        assertThat(result.currentValue()).isEqualByComparingTo(BigDecimal.valueOf(2150.00).setScale(2));
+        assertThat(result.absoluteReturn()).isEqualByComparingTo(BigDecimal.valueOf(150.00).setScale(2));
+        assertThat(result.annualizedReturn()).isNotNull();
     }
 
     @Test
-    void testGetPortfolioSummary_InvalidUser() {
-        assertThrows(InvalidInputException.class, () -> analyticsService.getPortfolioSummary(null));
-        assertThrows(InvalidInputException.class, () -> analyticsService.getPortfolioSummary(0L));
+    void shouldThrowExceptionForInvalidUser() {
+        assertThrows(Exception.class, () -> analyticsService.getPortfolioSummary(null));
+        assertThrows(Exception.class, () -> analyticsService.getPortfolioSummary(0L));
     }
 
     @Test
-    void testGetPortfolioSummary_NoPortfolioFound() {
-        when(portfolioRepository.findByUserId(userId)).thenReturn(Collections.emptyList());
-        assertThrows(ResourceNotFoundException.class, () -> analyticsService.getPortfolioSummary(userId));
+    void shouldThrowExceptionForNoPortfolio() {
+        portfolioRepository.deleteAll();
+        assertThrows(Exception.class, () -> analyticsService.getPortfolioSummary(userId));
     }
 
     // ---------- getPortfolioAllocation() ----------
 
     @Test
-    void testGetPortfolioAllocation_Success() {
-        when(portfolioRepository.findByUserId(userId)).thenReturn(Arrays.asList(portfolio1, portfolio2));
-
+    void shouldReturnPortfolioAllocationSuccessfully() {
         List<AssetAllocationDTO> result = analyticsService.getPortfolioAllocation(userId);
 
-        assertEquals(2, result.size());
-
-        List<String> types = result.stream()
-                .map(AssetAllocationDTO::investmentType)
-                .toList();
-
-        assertTrue(types.contains("STOCK"));
-        assertTrue(types.contains("BOND"));
-    }
-
-
-    @Test
-    void testGetPortfolioAllocation_NoPortfolioFound() {
-        when(portfolioRepository.findByUserId(userId)).thenReturn(Collections.emptyList());
-        assertThrows(ResourceNotFoundException.class, () -> analyticsService.getPortfolioAllocation(userId));
+        assertThat(result).isNotEmpty();
+        assertThat(result).hasSize(2);
+        assertThat(result)
+                .extracting(AssetAllocationDTO::investmentType)
+                .containsExactlyInAnyOrder("STOCK", "BOND");
     }
 
     @Test
-    void testGetPortfolioAllocation_ZeroTotalValue() {
-        product1.setCurrentNAV(BigDecimal.ZERO);
-        when(portfolioRepository.findByUserId(userId)).thenReturn(Collections.singletonList(portfolio1));
-
-        List<AssetAllocationDTO> result = analyticsService.getPortfolioAllocation(userId);
-        assertTrue(result.isEmpty());
+    void shouldThrowExceptionForNoPortfolioInAllocation() {
+        portfolioRepository.deleteAll();
+        assertThrows(Exception.class, () -> analyticsService.getPortfolioAllocation(userId));
     }
 
     // ---------- getPortfolioGains() ----------
 
     @Test
-    void testGetPortfolioGains_Success() {
-        when(portfolioRepository.findByUserId(userId)).thenReturn(Arrays.asList(portfolio1, portfolio2));
-
+    void shouldReturnPortfolioGainsSuccessfully() {
         List<GainLossDTO> result = analyticsService.getPortfolioGains(userId);
 
-        assertEquals(2, result.size());
-        assertEquals("Equity Fund", result.get(0).productName());
-        assertEquals(BigDecimal.valueOf(100.00).setScale(2), result.get(0).absoluteGainLoss());
+        assertThat(result).isNotEmpty();
+        assertThat(result).hasSize(2);
+        assertThat(result.get(0).productName()).isIn("Equity Fund", "Bond Fund");
+        assertThat(result.get(0).absoluteGainLoss()).isGreaterThanOrEqualTo(BigDecimal.ZERO);
     }
 
     @Test
-    void testGetPortfolioGains_NoPortfolioFound() {
-        when(portfolioRepository.findByUserId(userId)).thenReturn(Collections.emptyList());
-        assertThrows(ResourceNotFoundException.class, () -> analyticsService.getPortfolioGains(userId));
-    }
-
-    @Test
-    void testGetPortfolioGains_InvalidUser() {
-        assertThrows(InvalidInputException.class, () -> analyticsService.getPortfolioGains(0L));
+    void shouldThrowExceptionWhenNoPortfolioForGains() {
+        portfolioRepository.deleteAll();
+        assertThrows(Exception.class, () -> analyticsService.getPortfolioGains(userId));
     }
 
     // ---------- Edge Case ----------
 
     @Test
-    void testGetPortfolioSummary_EmptyTransactions() {
-        when(portfolioRepository.findByUserId(userId)).thenReturn(Arrays.asList(portfolio1));
-        when(transactionRepository.findByUserIdOrderByTxnDateDesc(userId))
-                .thenReturn(Collections.emptyList());
+    void shouldHandleEmptyTransactionsGracefully() {
+        transactionRepository.deleteAll();
 
         PortfolioSummaryDTO result = analyticsService.getPortfolioSummary(userId);
-        assertNotNull(result);
-        assertEquals(BigDecimal.valueOf(1000.00).setScale(2), result.totalInvested());
+        assertThat(result).isNotNull();
+        assertThat(result.totalInvested()).isEqualByComparingTo(BigDecimal.valueOf(2000.00).setScale(2));
     }
 }

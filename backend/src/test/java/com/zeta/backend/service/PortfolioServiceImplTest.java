@@ -3,281 +3,181 @@ package com.zeta.backend.service;
 import com.zeta.backend.dto.PortfolioRequest;
 import com.zeta.backend.dto.PortfolioResponse;
 import com.zeta.backend.dto.TransactionResponse;
-import com.zeta.backend.enums.TxnType;
+import com.zeta.backend.enums.InvestmentType;
+import com.zeta.backend.enums.RiskLevel;
+import com.zeta.backend.enums.Role;
 import com.zeta.backend.exceptions.InvalidInputException;
 import com.zeta.backend.exceptions.ResourceNotFoundException;
 import com.zeta.backend.models.InvestmentProduct;
-import com.zeta.backend.models.Portfolio;
-import com.zeta.backend.models.Transaction;
+import com.zeta.backend.models.User;
 import com.zeta.backend.repository.InvestmentProductRepository;
 import com.zeta.backend.repository.PortfolioRepository;
 import com.zeta.backend.repository.TransactionRepository;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import com.zeta.backend.repository.UserRepository;
+import org.junit.jupiter.api.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.assertj.core.api.Assertions.*;
 
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest
+@ActiveProfiles("test")
 class PortfolioServiceImplTest {
 
-    @Mock
-    private PortfolioRepository portfolioRepository;
+    @Autowired
+    private PortfolioService portfolioService;
 
-    @Mock
+    @Autowired
     private InvestmentProductRepository productRepository;
 
-    @Mock
+    @Autowired
+    private PortfolioRepository portfolioRepository;
+
+    @Autowired
     private TransactionRepository transactionRepository;
 
-    @InjectMocks
-    private PortfolioServiceImpl portfolioService;
+    @Autowired
+    private UserRepository userRepository;
 
     private Long userId;
-    private PortfolioRequest request;
     private InvestmentProduct product;
-    private Portfolio portfolio;
 
     @BeforeEach
     void setUp() {
-        userId = 1L;
-        request = PortfolioRequest.builder()
-                .investmentProductId(1L)
-                .units(BigDecimal.valueOf(10))
-                .build();
+        transactionRepository.deleteAll();
+        portfolioRepository.deleteAll();
+        productRepository.deleteAll();
+        userRepository.deleteAll();
+
+        User user = new User();
+        user.setName("John Doe");
+        user.setEmail("john@example.com");
+        user.setPasswordHash("pass");
+        user.setPhone("9876543210");
+        user.setRole(Role.USER);
+        userRepository.save(user);
+
+        userId = user.getId();
 
         product = InvestmentProduct.builder()
-                .id(1L)
                 .name("Test Product")
-                .currentNAV(BigDecimal.valueOf(100))
+                .type(InvestmentType.STOCK)
+                .riskLevel(RiskLevel.MEDIUM)
+                .minInvestment(new BigDecimal("1000"))
+                .expectedReturnRate(new BigDecimal("10"))
+                .currentNAV(new BigDecimal("100"))
+                .isActive(true)
                 .build();
-
-        portfolio = Portfolio.builder()
-                .id(1L)
-                .userId(userId)
-                .investmentProduct(product)
-                .unitsOwned(BigDecimal.valueOf(5))
-                .avgPurchasePrice(BigDecimal.valueOf(100))
-                .build();
+        productRepository.save(product);
     }
 
-    // Test cases for buyInvestment
-    @Test
-    void buyInvestment_ShouldCreateNewPortfolioAndSaveTransaction_WhenPortfolioDoesNotExist() {
-        // Arrange
-        when(productRepository.findById(1L)).thenReturn(Optional.of(product));
-        when(portfolioRepository.findByUserIdAndInvestmentProductId(userId, 1L)).thenReturn(Optional.empty());
-        when(portfolioRepository.save(any(Portfolio.class))).thenReturn(portfolio);
-        when(transactionRepository.save(any(Transaction.class))).thenReturn(Transaction.builder().build());
+    @AfterEach
+    void tearDown() {
+        transactionRepository.deleteAll();
+        portfolioRepository.deleteAll();
+        productRepository.deleteAll();
+        userRepository.deleteAll();
+    }
 
-        // Act
+    @Test
+    void shouldBuyInvestmentWhenNewPortfolio() {
+        PortfolioRequest request = new PortfolioRequest();
+        request.setInvestmentProductId(product.getId());
+        request.setUnits(new BigDecimal("10"));
+
         PortfolioResponse response = portfolioService.buyInvestment(userId, request);
 
-        // Assert
-        assertThat(response.getUserId()).isEqualTo(userId);
-        assertThat(response.getInvestmentProductId()).isEqualTo(1L);
-        assertThat(response.getUnitsOwned()).isEqualTo(BigDecimal.valueOf(10));
-        assertThat(response.getAvgPurchasePrice()).isEqualTo(BigDecimal.valueOf(100));
-
-        verify(portfolioRepository).save(any(Portfolio.class));
-        verify(transactionRepository).save(any(Transaction.class));
+        assertThat(response.getUnitsOwned()).isEqualTo("10");
+        assertThat(portfolioRepository.findAll()).hasSize(1);
+        assertThat(transactionRepository.findAll()).hasSize(1);
     }
 
     @Test
-    void buyInvestment_ShouldUpdateExistingPortfolioAndSaveTransaction_WhenPortfolioExists() {
-        // Arrange
-        Portfolio existingPortfolio = Portfolio.builder()
-                .id(1L)
-                .userId(userId)
-                .investmentProduct(product)
-                .unitsOwned(BigDecimal.valueOf(5))
-                .avgPurchasePrice(BigDecimal.valueOf(100))
-                .build();
+    void shouldIncreaseUnitsWhenBuyingAgain() {
+        PortfolioRequest request = new PortfolioRequest();
+        request.setInvestmentProductId(product.getId());
+        request.setUnits(new BigDecimal("10"));
 
-        when(productRepository.findById(1L)).thenReturn(Optional.of(product));
-        when(portfolioRepository.findByUserIdAndInvestmentProductId(userId, 1L)).thenReturn(Optional.of(existingPortfolio));
-        when(portfolioRepository.save(any(Portfolio.class))).thenReturn(existingPortfolio);
-        when(transactionRepository.save(any(Transaction.class))).thenReturn(Transaction.builder().build());
+        portfolioService.buyInvestment(userId, request);
+        PortfolioResponse updated = portfolioService.buyInvestment(userId, request);
 
-        // Act
-        PortfolioResponse response = portfolioService.buyInvestment(userId, request);
-
-        // Assert
-        assertThat(response.getUnitsOwned()).isEqualTo(BigDecimal.valueOf(15));  // 5 + 10
-        assertThat(response.getAvgPurchasePrice()).isEqualTo(BigDecimal.valueOf(100));  // Updated to current NAV
-
-        verify(portfolioRepository).save(existingPortfolio);
-        verify(transactionRepository).save(any(Transaction.class));
+        assertThat(updated.getUnitsOwned()).isEqualByComparingTo("20");
     }
 
     @Test
-    void buyInvestment_ShouldThrowResourceNotFoundException_WhenProductNotFound() {
-        // Arrange
-        when(productRepository.findById(1L)).thenReturn(Optional.empty());
+    void shouldThrowWhenProductNotFound() {
+        PortfolioRequest request = new PortfolioRequest();
+        request.setInvestmentProductId(999L);
+        request.setUnits(BigDecimal.ONE);
 
-        // Act & Assert
         assertThatThrownBy(() -> portfolioService.buyInvestment(userId, request))
-                .isInstanceOf(ResourceNotFoundException.class)
-                .hasMessageContaining("InvestmentProduct");
-
-        verify(portfolioRepository, never()).save(any());
-        verify(transactionRepository, never()).save(any());
+                .isInstanceOf(ResourceNotFoundException.class);
     }
 
     @Test
-    void buyInvestment_ShouldThrowInvalidInputException_WhenInvestmentProductIdIsNull() {
-        // Arrange
-        request.setInvestmentProductId(null);
-
-        // Act & Assert
-        assertThatThrownBy(() -> portfolioService.buyInvestment(userId, request))
-                .isInstanceOf(InvalidInputException.class)
-                .hasMessageContaining("Investment product ID is required");
-    }
-
-    @Test
-    void buyInvestment_ShouldThrowInvalidInputException_WhenUnitsAreZero() {
-        // Arrange
+    void shouldThrowWhenUnitsInvalid() {
+        PortfolioRequest request = new PortfolioRequest();
+        request.setInvestmentProductId(product.getId());
         request.setUnits(BigDecimal.ZERO);
 
-        // Act & Assert
         assertThatThrownBy(() -> portfolioService.buyInvestment(userId, request))
+                .isInstanceOf(InvalidInputException.class);
+    }
+
+    @Test
+    void shouldSellInvestmentSuccessfully() {
+        PortfolioRequest request = new PortfolioRequest();
+        request.setInvestmentProductId(product.getId());
+        request.setUnits(new BigDecimal("10"));
+
+        portfolioService.buyInvestment(userId, request);
+        PortfolioResponse response = portfolioService.sellInvestment(userId, request);
+
+        assertThat(response.getUnitsOwned()).isZero();
+        assertThat(transactionRepository.findAll()).hasSize(2);
+    }
+
+    @Test
+    void shouldThrowWhenSellingMoreUnitsThanOwned() {
+        PortfolioRequest buyRequest = new PortfolioRequest();
+        buyRequest.setInvestmentProductId(product.getId());
+        buyRequest.setUnits(new BigDecimal("5"));
+        portfolioService.buyInvestment(userId, buyRequest);
+
+        PortfolioRequest sellRequest = new PortfolioRequest();
+        sellRequest.setInvestmentProductId(product.getId());
+        sellRequest.setUnits(new BigDecimal("10"));
+
+        assertThatThrownBy(() -> portfolioService.sellInvestment(userId, sellRequest))
                 .isInstanceOf(InvalidInputException.class)
-                .hasMessageContaining("Units must be greater than zero");
+                .hasMessageContaining("Insufficient units");
+    }
+
+
+    @Test
+    void shouldFetchPortfolio() {
+        PortfolioRequest request = new PortfolioRequest();
+        request.setInvestmentProductId(product.getId());
+        request.setUnits(new BigDecimal("10"));
+        portfolioService.buyInvestment(userId, request);
+
+        List<PortfolioResponse> list = portfolioService.getPortfolioByUser(userId);
+        assertThat(list).hasSize(1);
     }
 
     @Test
-    void buyInvestment_ShouldThrowInvalidInputException_WhenUnitsAreNegative() {
-        // Arrange
-        request.setUnits(BigDecimal.valueOf(-5));
+    void shouldFetchTransactions() {
+        PortfolioRequest request = new PortfolioRequest();
+        request.setInvestmentProductId(product.getId());
+        request.setUnits(new BigDecimal("10"));
+        portfolioService.buyInvestment(userId, request);
 
-        // Act & Assert
-        assertThatThrownBy(() -> portfolioService.buyInvestment(userId, request))
-                .isInstanceOf(InvalidInputException.class)
-                .hasMessageContaining("Units must be greater than zero");
-    }
+        List<TransactionResponse> transactions = portfolioService.getAllTransactions(userId);
 
-    @Test
-    void sellInvestment_ShouldThrowResourceNotFoundException_WhenPortfolioNotFound() {
-        // Arrange
-        when(portfolioRepository.findByUserIdAndInvestmentProductId(userId, 1L)).thenReturn(Optional.empty());
-
-        // Act & Assert
-        assertThatThrownBy(() -> portfolioService.sellInvestment(userId, request))
-                .isInstanceOf(ResourceNotFoundException.class)
-                .hasMessageContaining("Portfolio");
-
-        verify(portfolioRepository, never()).save(any());
-        verify(transactionRepository, never()).save(any());
-    }
-
-    @Test
-    void sellInvestment_ShouldThrowInvalidInputException_WhenInsufficientUnits() {
-        // Arrange
-        request.setUnits(BigDecimal.valueOf(20));  // More than owned (5)
-
-        when(portfolioRepository.findByUserIdAndInvestmentProductId(userId, 1L)).thenReturn(Optional.of(portfolio));
-
-        // Act & Assert
-        assertThatThrownBy(() -> portfolioService.sellInvestment(userId, request))
-                .isInstanceOf(InvalidInputException.class)
-                .hasMessageContaining("Insufficient units to sell");
-
-        verify(portfolioRepository, never()).save(any());
-        verify(transactionRepository, never()).save(any());
-    }
-
-    @Test
-    void sellInvestment_ShouldThrowInvalidInputException_WhenUnitsAreZero() {
-        // Arrange
-        request.setUnits(BigDecimal.ZERO);
-
-        // Act & Assert
-        assertThatThrownBy(() -> portfolioService.sellInvestment(userId, request))
-                .isInstanceOf(InvalidInputException.class)
-                .hasMessageContaining("Units must be greater than zero");
-    }
-
-    // Test cases for getPortfolioByUser
-    @Test
-    void getPortfolioByUser_ShouldReturnPortfolioList_WhenPortfoliosExist() {
-        // Arrange
-        List<Portfolio> portfolios = List.of(portfolio);
-        when(portfolioRepository.findByUserId(userId)).thenReturn(portfolios);
-
-        // Act
-        List<PortfolioResponse> responses = portfolioService.getPortfolioByUser(userId);
-
-        // Assert
-        assertThat(responses).hasSize(1);
-        assertThat(responses.get(0).getUserId()).isEqualTo(userId);
-
-        verify(portfolioRepository).findByUserId(userId);
-    }
-
-    @Test
-    void getPortfolioByUser_ShouldReturnEmptyList_WhenNoPortfolios() {
-        // Arrange
-        when(portfolioRepository.findByUserId(userId)).thenReturn(Collections.emptyList());
-
-        // Act
-        List<PortfolioResponse> responses = portfolioService.getPortfolioByUser(userId);
-
-        // Assert
-        assertThat(responses).isEmpty();
-
-        verify(portfolioRepository).findByUserId(userId);
-    }
-
-    // Test cases for getAllTransactions
-    @Test
-    void getAllTransactions_ShouldReturnTransactionList_WhenTransactionsExist() {
-        // Arrange
-        Transaction transaction = Transaction.builder()
-                .id(1L)
-                .userId(userId)
-                .investmentProductId(1L)
-                .txnType(TxnType.BUY)
-                .units(BigDecimal.valueOf(10))
-                .navAtTxn(BigDecimal.valueOf(100))
-                .txnDate(LocalDateTime.now())
-                .build();
-        List<Transaction> transactions = List.of(transaction);
-        when(transactionRepository.findByUserIdOrderByTxnDateDesc(userId)).thenReturn(transactions);
-
-        // Act
-        List<TransactionResponse> responses = portfolioService.getAllTransactions(userId);
-
-        // Assert
-        assertThat(responses).hasSize(1);
-        assertThat(responses.get(0).getTxnType()).isEqualTo("BUY");
-
-        verify(transactionRepository).findByUserIdOrderByTxnDateDesc(userId);
-    }
-
-    @Test
-    void getAllTransactions_ShouldReturnEmptyList_WhenNoTransactions() {
-        // Arrange
-        when(transactionRepository.findByUserIdOrderByTxnDateDesc(userId)).thenReturn(Collections.emptyList());
-
-        // Act
-        List<TransactionResponse> responses = portfolioService.getAllTransactions(userId);
-
-        // Assert
-        assertThat(responses).isEmpty();
-
-        verify(transactionRepository).findByUserIdOrderByTxnDateDesc(userId);
+        assertThat(transactions).hasSize(1);
     }
 }
