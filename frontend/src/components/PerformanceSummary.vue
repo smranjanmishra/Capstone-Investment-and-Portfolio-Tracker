@@ -9,6 +9,7 @@
         <p>No performance data available</p>
       </div>
 
+
       <!-- Data Table -->
       <div v-else class="performance-list">
         <div

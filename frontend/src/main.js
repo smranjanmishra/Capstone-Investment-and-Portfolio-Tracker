@@ -16,6 +16,7 @@ import router from './router'
 import ECharts from 'vue-echarts'
 import { use } from 'echarts/core'
 
+
 // Import only the modules you need
 import {
   CanvasRenderer

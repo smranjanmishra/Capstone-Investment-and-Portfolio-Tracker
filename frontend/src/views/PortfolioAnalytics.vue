@@ -17,6 +17,7 @@
       <p class="mt-3 text-muted">Loading analytics...</p>
     </div>
 
+
     <div v-else-if="error" class="alert alert-danger text-center" role="alert">
       <i class="bi bi-exclamation-triangle me-2"></i>{{ error }}
     </div>

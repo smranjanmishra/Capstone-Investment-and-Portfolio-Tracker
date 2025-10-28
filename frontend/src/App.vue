@@ -17,6 +17,7 @@ function loadCurrentUser() {
   }
 }
 
+
 // Handle user logout - clear session and redirect to home
 function logout() {
   if (confirm('Are you sure you want to logout?')) {

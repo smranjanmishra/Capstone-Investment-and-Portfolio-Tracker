@@ -7,6 +7,7 @@
 
 import axios from 'axios'
 
+
 // Create axios instance with base configuration
 // Base URL points to Spring Boot backend @RequestMapping("/api/v1")
 const apiClient = axios.create({

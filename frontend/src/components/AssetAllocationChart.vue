@@ -10,6 +10,7 @@
       <p>No allocation data available</p>
     </div>
 
+
     <v-chart
       v-else
       :option="chartOption"
