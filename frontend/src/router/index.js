@@ -100,16 +100,6 @@ const router = createRouter({
       meta: { requiresAuth: true }
     },
     {
-       path: '/analytics',
-       name: 'PortfolioAnalytics',
-       component: () => import('../views/PortfolioAnalytics.vue'),
-       meta: {
-            title: 'Portfolio Analytics',
-            description: 'View portfolio insights, performance metrics, and asset distribution',
-            requiresAuth: true
-       }
-    },
-    {
       path: "/buy",
       name: "BuyInvestment",
       component: () => import("@/views/BuyInvestment.vue")

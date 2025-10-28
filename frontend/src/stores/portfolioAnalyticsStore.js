@@ -1,7 +1,6 @@
 // Portfolio Analytics Store
 // Manages portfolio performance, asset allocation, and ROI metrics
 
-
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import {

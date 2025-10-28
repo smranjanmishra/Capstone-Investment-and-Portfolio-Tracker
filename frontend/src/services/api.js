@@ -104,6 +104,3 @@ export const getTransactions = () => apiClient.get("/portfolio/transactions");
 export const getInvestments = () => apiClient.get("/investments");
 
 
-export const getPortfolioSummary = () => apiClient.get('/portfolio/summary');
-export const getPortfolioAllocation = () => apiClient.get('/portfolio/allocation');
-export const getPortfolioGains = () => apiClient.get('/portfolio/gains');
