@@ -6,13 +6,11 @@ import com.zeta.backend.dto.PortfolioResponse;
 import com.zeta.backend.dto.TransactionResponse;
 import com.zeta.backend.service.PortfolioService;
 import com.zeta.backend.util.JwtUtil;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.Authentication;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -43,7 +41,7 @@ public class PortfolioControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    private Long userId = 1L;
+    private final Long userId = 1L;
 
     // Test successful buy
     @Test

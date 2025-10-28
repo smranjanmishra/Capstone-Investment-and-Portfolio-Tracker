@@ -1,6 +1,5 @@
 package com.zeta.backend.dto;
 
-import com.zeta.backend.enums.Role;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
