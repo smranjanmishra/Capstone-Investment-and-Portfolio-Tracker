@@ -220,7 +220,7 @@ function statusIcon(status) {
 function priorityClass(priority) {
   switch (priority) {
     case 'HIGH': return 'bg-danger';
-    case 'MEDIUM': return 'bg-warning text-dark';
+    case 'MEDIUM': return 'bg-warning';
     case 'LOW': return 'bg-secondary';
     default: return 'bg-light text-dark';
   }

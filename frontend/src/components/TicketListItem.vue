@@ -83,7 +83,7 @@ function priorityClass(priority) {
     case 'HIGH':
       return 'bg-danger'
     case 'MEDIUM':
-      return 'bg-warning text-dark'
+      return 'bg-warning'
     case 'LOW':
       return 'bg-secondary'
     default:
