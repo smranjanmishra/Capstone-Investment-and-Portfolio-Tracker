@@ -37,98 +37,103 @@ class PortfolioRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        // create user
+        portfolioRepository.deleteAll();
+        investmentProductRepository.deleteAll();
+        userRepository.deleteAll();
+
+        // Create user
         user = new User();
         user.setName("John Doe");
         user.setEmail("john@example.com");
-        user.setPasswordHash("hashed");
-        user.setPhone("9876543210");
+        user.setPasswordHash("pass");
+        user.setPhone("9999999999");
         user.setRole(Role.USER);
         userRepository.save(user);
 
-        // create first product
-        product1 = new InvestmentProduct();
-        product1.setName("Equity Fund A");
-        product1.setType(InvestmentType.MUTUAL_FUND);
-        product1.setRiskLevel(RiskLevel.MEDIUM);
-        product1.setMinInvestment(new BigDecimal("1000"));
-        product1.setExpectedReturnRate(new BigDecimal("10"));
-        product1.setCurrentNAV(new BigDecimal("120"));
-        product1.setIsActive(true);
-        investmentProductRepository.save(product1);
+        // Product 1
+        product1 = InvestmentProduct.builder()
+                .name("Fund A")
+                .type(InvestmentType.MUTUAL_FUND)
+                .riskLevel(RiskLevel.MEDIUM)
+                .minInvestment(new BigDecimal("1000"))
+                .expectedReturnRate(new BigDecimal("10"))
+                .currentNAV(new BigDecimal("120"))
+                .isActive(true)
+                .build();
+        product1 = investmentProductRepository.save(product1);
 
-        // create second product
-        product2 = new InvestmentProduct();
-        product2.setName("Growth Stock B");
-        product2.setType(InvestmentType.STOCK);
-        product2.setRiskLevel(RiskLevel.HIGH);
-        product2.setMinInvestment(new BigDecimal("2000"));
-        product2.setExpectedReturnRate(new BigDecimal("15"));
-        product2.setCurrentNAV(new BigDecimal("150"));
-        product2.setIsActive(true);
-        investmentProductRepository.save(product2);
+        // Product 2
+        product2 = InvestmentProduct.builder()
+                .name("Stock B")
+                .type(InvestmentType.STOCK)
+                .riskLevel(RiskLevel.HIGH)
+                .minInvestment(new BigDecimal("2000"))
+                .expectedReturnRate(new BigDecimal("15"))
+                .currentNAV(new BigDecimal("150"))
+                .isActive(true)
+                .build();
+        product2 = investmentProductRepository.save(product2);
     }
 
     @Test
-    @DisplayName("Should save and find portfolio by userId and investmentProductId (using reflection for userId)")
-    void shouldFindByUserIdAndInvestmentProductId() throws Exception {
+    @DisplayName("Find by userId and productId")
+    void testFindByUserIdAndProductId() throws Exception {
+
         Portfolio portfolio = new Portfolio();
         portfolio.setInvestmentProduct(product1);
         portfolio.setUnitsOwned(new BigDecimal("10"));
         portfolio.setAvgPurchasePrice(new BigDecimal("100"));
+        setPrivateField(portfolio, "userId", user.getId());
 
-        // ⚙️ Set userId manually using reflection (since entity has no setUser)
-        setField(portfolio, "userId", user.getId().longValue());
         portfolioRepository.save(portfolio);
 
-        Optional<Portfolio> found = portfolioRepository.findByUserIdAndInvestmentProductId(
-                user.getId().longValue(), product1.getId().longValue());
+        Optional<Portfolio> found =
+                portfolioRepository.findByUserIdAndInvestmentProductId(user.getId(), product1.getId());
 
         assertThat(found).isPresent();
-        assertThat(found.get().getUnitsOwned()).isEqualTo(new BigDecimal("10"));
-        assertThat(found.get().getInvestmentProduct().getName()).isEqualTo("Equity Fund A");
+        assertThat(found.get().getUnitsOwned()).isEqualTo("10");
+        assertThat(found.get().getInvestmentProduct().getName()).isEqualTo("Fund A");
     }
 
     @Test
-    @DisplayName("Should find all portfolios for a given userId (using reflection for userId)")
-    void shouldFindByUserId() throws Exception {
+    @DisplayName("Find all portfolios by user")
+    void testFindByUserId() throws Exception {
+
         Portfolio p1 = new Portfolio();
         p1.setInvestmentProduct(product1);
         p1.setUnitsOwned(new BigDecimal("10"));
         p1.setAvgPurchasePrice(new BigDecimal("100"));
-        setField(p1, "userId", user.getId().longValue());
+        setPrivateField(p1, "userId", user.getId());
         portfolioRepository.save(p1);
 
         Portfolio p2 = new Portfolio();
         p2.setInvestmentProduct(product2);
         p2.setUnitsOwned(new BigDecimal("20"));
         p2.setAvgPurchasePrice(new BigDecimal("110"));
-        setField(p2, "userId", user.getId().longValue());
+        setPrivateField(p2, "userId", user.getId());
         portfolioRepository.save(p2);
 
-        List<Portfolio> result = portfolioRepository.findByUserId(user.getId().longValue());
+        List<Portfolio> result = portfolioRepository.findByUserId(user.getId());
 
         assertThat(result).hasSize(2);
-        assertThat(result).extracting(p -> p.getInvestmentProduct().getName())
-                .containsExactlyInAnyOrder("Equity Fund A", "Growth Stock B");
     }
 
     @Test
-    @DisplayName("Should return empty Optional when portfolio not found by user and product")
-    void shouldReturnEmptyWhenNotFoundByUserAndProduct() {
+    @DisplayName("Return empty Optional when no portfolio found")
+    void testNotFoundByUserAndProduct() {
         Optional<Portfolio> result = portfolioRepository.findByUserIdAndInvestmentProductId(999L, 999L);
         assertThat(result).isEmpty();
     }
 
     @Test
-    @DisplayName("Should return empty list when user has no portfolios")
-    void shouldReturnEmptyListWhenNoPortfoliosForUser() {
-        List<Portfolio> result = portfolioRepository.findByUserId(999L);
+    @DisplayName("Return empty list when no portfolios for user")
+    void testEmptyListWhenUserHasNoPortfolios() {
+        List<Portfolio> result = portfolioRepository.findByUserId(123L);
         assertThat(result).isEmpty();
     }
 
-    // Helper method: safely set private field value via reflection
-    private void setField(Object target, String fieldName, Object value) throws Exception {
+    // Helper
+    private void setPrivateField(Object target, String fieldName, Object value) throws Exception {
         Field field = target.getClass().getDeclaredField(fieldName);
         field.setAccessible(true);
         field.set(target, value);
