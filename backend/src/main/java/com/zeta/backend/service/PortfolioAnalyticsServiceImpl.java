@@ -31,7 +31,7 @@ public class PortfolioAnalyticsServiceImpl implements PortfolioAnalyticsService 
     private final PortfolioRepository portfolioRepository;
     private final TransactionRepository transactionRepository;
 
-    /**
+    /*
      * Calculate overall portfolio summary including total invested, current value,
      * absolute return, and annualized return.
      */
@@ -71,17 +71,27 @@ public class PortfolioAnalyticsServiceImpl implements PortfolioAnalyticsService 
         }
 
         BigDecimal absoluteReturn = currentValue.subtract(totalInvested);
+        BigDecimal roi = BigDecimal.ZERO;
+
+        if (totalInvested.compareTo(BigDecimal.ZERO) > 0) {
+            roi = absoluteReturn
+                    .divide(totalInvested, 4, RoundingMode.HALF_UP)
+                    .multiply(BigDecimal.valueOf(100));
+        }
+
         BigDecimal annualizedReturn = calculateAnnualizedReturn(userId, totalInvested, currentValue);
+
 
         return new PortfolioSummaryDTO(
                 formatDecimal(totalInvested),
                 formatDecimal(currentValue),
                 formatDecimal(absoluteReturn),
+                formatDecimal(roi),
                 formatDecimal(annualizedReturn)
         );
     }
 
-    /**
+    /*
      * Calculate the allocation of portfolio by investment type.
      * Returns each type's value and percentage of total portfolio.
      */
@@ -126,7 +136,7 @@ public class PortfolioAnalyticsServiceImpl implements PortfolioAnalyticsService 
                 .collect(Collectors.toList());
     }
 
-    /**
+    /*
      * Calculate gain or loss per investment product in the user's portfolio.
      */
     @Override
@@ -147,17 +157,25 @@ public class PortfolioAnalyticsServiceImpl implements PortfolioAnalyticsService 
             BigDecimal invested = safeMultiply(p.getUnitsOwned(), p.getAvgPurchasePrice());
             BigDecimal absoluteGainLoss = currentValue.subtract(invested);
 
+            BigDecimal gainLossPercent = BigDecimal.ZERO;
+            if (invested.compareTo(BigDecimal.ZERO) > 0) {
+                gainLossPercent = absoluteGainLoss
+                        .divide(invested, 4, RoundingMode.HALF_UP)
+                        .multiply(BigDecimal.valueOf(100));
+            }
+
             return new GainLossDTO(
                     p.getInvestmentProduct().getName(),
                     formatDecimal(p.getUnitsOwned()),
                     formatDecimal(p.getAvgPurchasePrice()),
                     formatDecimal(p.getInvestmentProduct().getCurrentNAV()),
-                    formatDecimal(absoluteGainLoss)
+                    formatDecimal(absoluteGainLoss),
+                    formatDecimal(gainLossPercent)
             );
         }).collect(Collectors.toList());
     }
 
-    /**
+    /*
      * Helper to calculate annualized return using weighted average holding period of BUY transactions.
      */
     private BigDecimal calculateAnnualizedReturn(Long userId, BigDecimal totalInvested, BigDecimal currentValue) {
@@ -191,11 +209,47 @@ public class PortfolioAnalyticsServiceImpl implements PortfolioAnalyticsService 
         BigDecimal weightedAvgDays = weightedDaysSum.divide(totalInvestedForWeight, 6, RoundingMode.HALF_UP);
         BigDecimal years = weightedAvgDays.divide(BigDecimal.valueOf(365), 6, RoundingMode.HALF_UP);
 
+        if (years.compareTo(BigDecimal.ZERO) <= 0) {
+            return BigDecimal.ZERO;
+        }
+
         BigDecimal ratio = currentValue.divide(totalInvested, 10, RoundingMode.HALF_UP);
-        double annualizedDouble = Math.pow(ratio.doubleValue(), 1.0 / years.doubleValue()) - 1;
+        if (ratio.compareTo(BigDecimal.ZERO) <= 0) {
+            return BigDecimal.ZERO;
+        }
+
+        double annualizedDouble;
+
+        try {
+            // If holding < 3 months, use ROI instead (to avoid unrealistic compounding)
+            if (years.doubleValue() < 0.25) {
+                BigDecimal roi = currentValue.subtract(totalInvested)
+                        .divide(totalInvested, 6, RoundingMode.HALF_UP)
+                        .multiply(BigDecimal.valueOf(100));
+                return roi.setScale(2, RoundingMode.HALF_UP);
+            }
+
+            double power = 1.0 / years.doubleValue();
+            annualizedDouble = Math.pow(ratio.doubleValue(), power) - 1;
+
+        } catch (Exception e) {
+            log.error("Error calculating annualized return for userId={}", userId, e);
+            return BigDecimal.ZERO;
+        }
+
+        // Cap to realistic range (-100% to +200%)
+        if (Double.isNaN(annualizedDouble) || Double.isInfinite(annualizedDouble)) {
+            annualizedDouble = 0.0;
+        } else if (annualizedDouble > 2.0) {
+            annualizedDouble = 2.0;
+        } else if (annualizedDouble < -1.0) {
+            annualizedDouble = -1.0;
+        }
 
         return BigDecimal.valueOf(annualizedDouble * 100).setScale(2, RoundingMode.HALF_UP);
     }
+
+
 
     // ---------- Utility Helpers ----------
 

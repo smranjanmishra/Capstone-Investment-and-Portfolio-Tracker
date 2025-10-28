@@ -10,5 +10,6 @@ public record PortfolioSummaryDTO(
         BigDecimal totalInvested,
         BigDecimal currentValue,
         BigDecimal absoluteReturn,
+        BigDecimal roi,
         BigDecimal annualizedReturn
 ) {}
