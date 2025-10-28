@@ -91,20 +91,15 @@ public class TicketService {
                     logger.warn("Ticket not found with ID: {}", ticketId);
                     return new RuntimeException("Ticket not found");
                 });
-
         ticket.setStatus(newStatus);
-
         if (response != null) {
             ticket.setResponse(response);
         }
-
-        if (newPriority != null) { // <-- Added priority logic
+        if (newPriority != null) {
             ticket.setPriority(newPriority);
             logger.info("Priority for ticketId: {} set to {}", ticketId, newPriority);
         }
-
         ticket.setUpdatedAt(LocalDateTime.now());
-
         Ticket updatedTicket = ticketRepository.save(ticket);
         logger.info("Ticket updated successfully with ID: {}", updatedTicket.getId());
         return updatedTicket;

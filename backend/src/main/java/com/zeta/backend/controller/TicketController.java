@@ -140,36 +140,28 @@ public class TicketController {
             Ticket userTicket = userTicketOptional.get();
 
             String responseText = (responseDto != null) ? responseDto.getResponse() : null;
-            TicketPriority newPriority = (responseDto != null) ? responseDto.getPriority() : null; // <-- Get priority
-
+            TicketPriority newPriority = (responseDto != null) ? responseDto.getPriority() : null;
             if (responseText == null || responseText.trim().isEmpty()) {
                 return ResponseEntity.badRequest().body("Response text is required to respond to or close a ticket.");
             }
-
             Ticket updatedOrClosedTicketResult;
             TicketStatus currentStatus = userTicket.getStatus();
-
             if (currentStatus == TicketStatus.OPEN) {
                 logger.info("Admin {} responding to OPEN ticketId: {}. Setting priority: {}", userId, ticketId, newPriority);
 
-                updatedOrClosedTicketResult = ticketService.updateTicket(ticketId, TicketStatus.RESPONDED, responseText, newPriority); // <-- Pass priority
+                updatedOrClosedTicketResult = ticketService.updateTicket(ticketId, TicketStatus.RESPONDED, responseText, newPriority);
                 logger.info("Ticket {} responded successfully by admin {}", ticketId, userId);
-
             } else if (currentStatus == TicketStatus.RESPONDED) {
                 logger.info("Admin {} closing RESPONDED ticketId: {} with final comment. Setting priority: {}", userId, ticketId, newPriority);
-
                 updatedOrClosedTicketResult = ticketService.updateTicket(ticketId, TicketStatus.CLOSED, responseText, null);
                 logger.info("Ticket {} closed successfully by admin {}", ticketId, userId);
-
             } else {
                 logger.warn("Admin {} attempting action on already CLOSED ticket {}", userId, ticketId);
                 return ResponseEntity.badRequest().body("Cannot modify a ticket that is already CLOSED.");
             }
-
             User ticketOwner = userService.getUserById(updatedOrClosedTicketResult.getUserId()).orElse(null);
             TicketResponseDto ticketResponseDto = TicketDtoMapper.mapTicketToDto(updatedOrClosedTicketResult, ticketOwner);
             return ResponseEntity.ok(ticketResponseDto);
-
         } catch (Exception e) {
             logger.error("Failed action on ticket {} by admin", ticketId, e);
             return ResponseEntity.internalServerError().body("Failed action on ticket: " + e.getMessage());
