@@ -35,15 +35,15 @@ public class TicketService {
         String ticketDescription = ticket.getSubject().toLowerCase();
         logger.info("Creating ticket with subject: {}", ticket.getSubject());
 
-        if (ticketDescription.contains("urgent") || ticketDescription.contains("immediately")) {
+        if (ticketDescription.toLowerCase().contains("urgent") || ticketDescription.toLowerCase().contains("immediately")|| ticketDescription.toLowerCase().contains("delay")) {
             ticket.setPriority(TicketPriority.HIGH);
             logger.info("Ticket priority set to HIGH");
-        } else if (ticketDescription.contains("soon") || ticketDescription.contains("problem")) {
-            ticket.setPriority(TicketPriority.MEDIUM);
-            logger.info("Ticket priority set to MEDIUM");
-        } else {
+        } else if (ticketDescription.toLowerCase().contains("soon") || ticketDescription.toLowerCase().contains("problem")||ticketDescription.toLowerCase().contains("slow")) {
             ticket.setPriority(TicketPriority.LOW);
             logger.info("Ticket priority set to LOW");
+        } else {
+            ticket.setPriority(TicketPriority.MEDIUM);
+            logger.info("Ticket priority set to MEDIUM");
         }
 
 

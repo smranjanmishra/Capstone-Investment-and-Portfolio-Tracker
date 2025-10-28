@@ -5,7 +5,6 @@ import apiClient, {
   getUserTickets as apiGetUserTickets,
   getAllTickets as apiGetAllTickets,
   respondToTicket as apiRespondToTicket,
-  closeTicket as apiCloseTicket
 } from '@/services/api';
 
 export const useTicketStore = defineStore('ticket', () => {
@@ -18,7 +17,6 @@ export const useTicketStore = defineStore('ticket', () => {
   const error = ref(null);
 
   // --- API Calls --
-
   //Funtion to create Ticket using Ticket Data
   async function createTicket(ticketData) {
     loading.value = true;
@@ -86,60 +84,41 @@ export const useTicketStore = defineStore('ticket', () => {
       const response = await apiRespondToTicket(ticketId, {
         response: responseText
       });
-      
-      const index = allTickets.value.findIndex(t => t.id === ticketId);
-      if (index !== -1) {
-        allTickets.value[index].status = 'RESPONDED';
-        allTickets.value[index].response = responseText;
+      const updatedTicketData = response.data;
+      if (!updatedTicketData || !updatedTicketData.id) {
+          throw new Error("Invalid response received from server after update.");
       }
-      
-      if (currentTicket.value && currentTicket.value.id === ticketId) {
-        currentTicket.value.status = 'RESPONDED';
-        currentTicket.value.response = responseText;
-      }
+      const ticketIdToUpdate = updatedTicketData.id;
 
-      console.log('Ticket responded to successfully:', response.data);
-      return response.data;
-    } catch (err) {
-      error.value = err.response?.data || 'Failed to respond to ticket';
-      console.error('Error responding to ticket:', err);
+      // Update allTickets list
+      const indexAll = allTickets.value.findIndex(t => t.id === ticketIdToUpdate);
+      if (indexAll !== -1) {
+        allTickets.value[indexAll] = updatedTicketData; 
+      }
+      const indexUser = userTickets.value.findIndex(t => t.id === ticketIdToUpdate);
+       if (indexUser !== -1) {
+         userTickets.value[indexUser] = updatedTicketData; 
+      }
+      if (currentTicket.value && currentTicket.value.id === ticketIdToUpdate) {
+        currentTicket.value = updatedTicketData; 
+      }
+      if (updatedTicketData.ticketStatus === 'CLOSED') {
+         console.log('Ticket closed by admin successfully:', updatedTicketData);
+      } else {
+         console.log('Ticket responded to successfully:', updatedTicketData);
+      }
+      return updatedTicketData; 
+    } 
+    catch (err) {
+      error.value = err.response?.data?.message || err.response?.data || err.message || 'Failed to update ticket';
+      console.error('Error updating ticket (respond/close):', err);
       throw err;
-    } finally {
+    } 
+    finally {
       loading.value = false;
     }
   }
 
-  //Function to close the Ticket (User only )after getting response from the admin
-  async function closeTicket(ticketId) {
-    loading.value = true;
-    error.value = null;
-    try {
-     
-      const response = await apiCloseTicket(ticketId);
-      const updatedStatus = response.data.ticketStatus || 'CLOSED';
-      const userIndex = userTickets.value.findIndex(t => t.id === ticketId);
-      
-      if (userIndex !== -1) {
-        userTickets.value[userIndex].status = updatedStatus;
-        userTickets.value[userIndex].updatedAt = response.data.updatedAt;
-      }
-
-      if (currentTicket.value && currentTicket.value.id === ticketId) {
-        currentTicket.value.status = updatedStatus;
-        currentTicket.value.updatedAt = response.data.updatedAt;
-      }
-      
-      console.log('Ticket closed successfully:', response.data);
-      return response.data;
-
-    } catch (err) {
-      error.value = err.response?.data || 'Failed to close ticket';
-      console.error('Error closing ticket:', err);
-      throw err;
-    } finally {
-      loading.value = false;
-    }
-  }
 //Function to fetch tickets by Ticket Id in order to retrive details of the ticket 
   async function fetchTicketById(ticketId) {
     loading.value = true;
@@ -195,6 +174,6 @@ export const useTicketStore = defineStore('ticket', () => {
     fetchAllTickets,
     respondToTicket,
     fetchTicketById,
-    closeTicket 
+    
   };
 });

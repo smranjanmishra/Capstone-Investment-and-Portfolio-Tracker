@@ -125,72 +125,87 @@ public class TicketController {
                                                  Authentication authentication) {
         try {
             Long userId = extractUserId(authentication);
-            logger.info("Admin request to respond to ticketId: {} by userId: {}", ticketId, userId);
-
-            User loggedInUser = userService.getUserById(userId)
+            logger.info("Admin request action on ticketId: {} by userId: {}", ticketId, userId);
+            User loggedInUser = userService.getUserById(userId) // Your existing variable
                     .orElseThrow(() -> new RuntimeException("User not found"));
-
             if (!userService.isAdmin(loggedInUser)) {
-                logger.warn("Non-admin user attempted to respond to ticket: {}", userId);
-                return ResponseEntity.status(403).body("Access denied only admin can respond to ticket");
+                logger.warn("Non-admin user attempted action on ticket: {}", userId);
+                return ResponseEntity.status(403).body("Access denied: Admin privileges required.");
             }
-
-            Optional<Ticket> userTicketOptional = ticketService.getTicketById(ticketId);
+            Optional<Ticket> userTicketOptional = ticketService.getTicketById(ticketId); // Your existing variable
             if (userTicketOptional.isEmpty()) {
                 logger.warn("Ticket not found with ticketId: {}", ticketId);
-                return ResponseEntity.badRequest().body("No Ticket found");
-            }
 
+                return ResponseEntity.status(404).body("Ticket not found with ID: " + ticketId);
+            }
             Ticket userTicket = userTicketOptional.get();
-            userTicket.setResponse(responseDto.getResponse());
-            userTicket.setStatus(TicketStatus.RESPONDED);
-            ticketService.updateTicket(userTicket.getId(), TicketStatus.RESPONDED, responseDto.getResponse());
-
-            TicketResponseDto userTicketDto = TicketDtoMapper.mapTicketToDto(userTicket, loggedInUser);
-            logger.info("Ticket updated successfully with ID: {} by admin userId: {}", userTicketDto.getId(), userId);
-            return ResponseEntity.ok("Ticket updated successfully " + userTicketDto.getId());
-        } catch (Exception e) {
-            logger.error("Failed to update ticket", e);
-            return ResponseEntity.badRequest().body("Failed to update Ticket " + e.getMessage());
-        }
-    }
-
-    //closing a  responded  ticket (Admin only)
-    // PUT /api/v1/support/{ticketId}/close
-    // requires: valid JWT token for logged in user
-    // validates: ticket is responded and ticket belongs to user
-    // response: 200 OK with confirmation or error message
-    @PutMapping("/{ticketId}/close")
-    public ResponseEntity<?>closeRespondedTicketOfUser(@PathVariable Integer ticketId,Authentication authentication)
-    {
-        try{
-            Long userId = extractUserId(authentication);
-            logger.info("User request to close the responded   ticketId: {} by userId: {}", ticketId, userId);
-            User loggedInUser = userService.getUserById(userId)
-                    .orElseThrow(() -> new RuntimeException("User not found"));
-            Optional<Ticket>ticketOptional=ticketService.getTicketById(ticketId);
-            if(ticketOptional.isEmpty()){
-                logger.warn("Ticket not found with ticketId: {}", ticketId);
-                return ResponseEntity.badRequest().body("No Ticket found");
+            String responseText = (responseDto != null) ? responseDto.getResponse() : null;
+            if (responseText == null || responseText.trim().isEmpty()) {
+                logger.warn("Admin {} attempting action without response text on ticketId: {}", userId, ticketId);
+                return ResponseEntity.badRequest().body("Response text is required to respond to or close a ticket.");
             }
-            Ticket ticket=ticketOptional.get();
-            if(!ticket.getUserId().equals(loggedInUser.getId())){
-                logger.warn("User can only close only his ticket and ticketId does not belong to ",loggedInUser.getId());
-                return ResponseEntity.badRequest().body("ticket does not belong to user ");
+            Ticket updatedOrClosedTicketResult;
+            TicketStatus currentStatus = userTicket.getStatus();
+            if (currentStatus == TicketStatus.OPEN) {
+                logger.info("Admin {} responding to OPEN ticketId: {}", userId, ticketId);
+                updatedOrClosedTicketResult = ticketService.updateTicket(ticketId, TicketStatus.RESPONDED, responseText);
+                logger.info("Ticket {} responded successfully by admin {}", ticketId, userId);
 
+            } else if (currentStatus == TicketStatus.RESPONDED) {
+                logger.info("Admin {} closing RESPONDED ticketId: {} with final comment", userId, ticketId);
+                updatedOrClosedTicketResult = ticketService.updateTicket(ticketId, TicketStatus.CLOSED, responseText);
+                logger.info("Ticket {} closed successfully by admin {}", ticketId, userId);
+
+            } else {
+                logger.warn("Admin {} attempting action on already CLOSED ticket {}", userId, ticketId);
+                return ResponseEntity.badRequest().body("Cannot modify a ticket that is already CLOSED.");
             }
-            if(ticket.getStatus()!=TicketStatus.RESPONDED){
-                logger.warn("Only responded ticket can be closed by the user");
-                return ResponseEntity.badRequest().body("Only responded ticket can be closed by the user");
-            }
-            ticket.setStatus(TicketStatus.CLOSED);
-            ticketService.updateTicket(ticketId,TicketStatus.CLOSED,ticket.getResponse());
-            TicketResponseDto ticketResponseDto=TicketDtoMapper.mapTicketToDto(ticket,loggedInUser);
-            logger.info("Ticket {} closed successfully by user {}", ticketId, userId);
+            User ticketOwner = userService.getUserById(updatedOrClosedTicketResult.getUserId()).orElse(null);
+            TicketResponseDto ticketResponseDto = TicketDtoMapper.mapTicketToDto(updatedOrClosedTicketResult, ticketOwner);
             return ResponseEntity.ok(ticketResponseDto);
+
         } catch (Exception e) {
-            logger.error("Failed to close ticket", e);
-            return ResponseEntity.badRequest().body("Failed to close ticket: " + e.getMessage());
+            logger.error("Failed action on ticket {} by admin", ticketId, e);
+            return ResponseEntity.internalServerError().body("Failed action on ticket: " + e.getMessage());
         }
     }
+
+//    //closing a  responded  ticket (Admin only)
+//    // PUT /api/v1/support/{ticketId}/close
+//    // requires: valid JWT token for logged in user
+//    // validates: ticket is responded and ticket belongs to user
+//    // response: 200 OK with confirmation or error message
+//    @PutMapping("/{ticketId}/close")
+//    public ResponseEntity<?>closeRespondedTicketOfUser(@PathVariable Integer ticketId,Authentication authentication)
+//    {
+//        try{
+//            Long userId = extractUserId(authentication);
+//            logger.info("User request to close the responded   ticketId: {} by userId: {}", ticketId, userId);
+//            User loggedInUser = userService.getUserById(userId)
+//                    .orElseThrow(() -> new RuntimeException("User not found"));
+//            Optional<Ticket>ticketOptional=ticketService.getTicketById(ticketId);
+//            if(ticketOptional.isEmpty()){
+//                logger.warn("Ticket not found with ticketId: {}", ticketId);
+//                return ResponseEntity.badRequest().body("No Ticket found");
+//            }
+//            Ticket ticket=ticketOptional.get();
+//            if(!ticket.getUserId().equals(loggedInUser.getId())){
+//                logger.warn("User can only close only his ticket and ticketId does not belong to ",loggedInUser.getId());
+//                return ResponseEntity.badRequest().body("ticket does not belong to user ");
+//
+//            }
+//            if(ticket.getStatus()!=TicketStatus.RESPONDED){
+//                logger.warn("Only responded ticket can be closed by the user");
+//                return ResponseEntity.badRequest().body("Only responded ticket can be closed by the user");
+//            }
+//            ticket.setStatus(TicketStatus.CLOSED);
+//            ticketService.updateTicket(ticketId,TicketStatus.CLOSED,ticket.getResponse());
+//            TicketResponseDto ticketResponseDto=TicketDtoMapper.mapTicketToDto(ticket,loggedInUser);
+//            logger.info("Ticket {} closed successfully by user {}", ticketId, userId);
+//            return ResponseEntity.ok(ticketResponseDto);
+//        } catch (Exception e) {
+//            logger.error("Failed to close ticket", e);
+//            return ResponseEntity.badRequest().body("Failed to close ticket: " + e.getMessage());
+//        }
+//    }
 }

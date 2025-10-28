@@ -2,25 +2,21 @@
   <div class="container my-5">
     <div class="row justify-content-center">
       <div class="col-lg-10">
-
         <div class="mb-3">
           <RouterLink :to="backLink" class="text-decoration-none">
             <i class="bi bi-arrow-left-circle me-1"></i>
             Back to Ticket List
           </RouterLink>
         </div>
-
         <div v-if="store.loading && !store.currentTicket" class="text-center my-5">
           <div class="spinner-border text-primary" role="status">
             <span class="visually-hidden">Loading ticket...</span>
           </div>
           <p class="mt-2 text-muted">Loading ticket details...</p>
         </div>
-
         <div v-else-if="store.error" class="alert alert-danger">
           <strong>Error:</strong> {{ store.error.message || store.error }}
         </div>
-
         <div v-else-if="ticket" class="card shadow-sm border-0">
           <div class="card-header bg-light p-4">
             <h2 class="h4 mb-0 fw-bold">Ticket #{{ ticket.id }}: {{ ticket.subject }}</h2>
@@ -37,7 +33,6 @@
               </span>
             </div>
           </div>
-
           <div class="card-body p-4 p-md-5">
             <h5 class="fw-bold">User's Request</h5>
             <div class="p-3 bg-light rounded mb-4">
@@ -50,7 +45,6 @@
                 <strong>User:</strong> {{ ticket.userResponse.name }} ({{ ticket.userResponse.email }})
               </p>
             </div>
-
             <h5 class="fw-bold">Response</h5>
             <div v-if="ticket.response" class="p-3 bg-primary bg-opacity-10 rounded-3 border border-primary">
               <p style="white-space: pre-wrap;">{{ ticket.response }}</p>
@@ -62,9 +56,8 @@
             <div v-else class="p-3 bg-light rounded text-muted">
               An administrator has not responded to this ticket yet.
             </div>
-
-            <div v-if="isAdmin && ticket.ticketStatus === 'OPEN'" class="mt-5">
-              <h4 class="fw-bold">Respond to this Ticket</h4>
+            <div v-if="isAdmin && ticket && ticket.ticketStatus !== 'CLOSED'">
+             <h4 class="fw-bold">{{ ticket.ticketStatus === 'OPEN' ? 'Respond to this Ticket' : 'Add Final Comment & Close' }}</h4>
               <form @submit.prevent="handleResponse">
                 <div v-if="responseError" class="alert alert-danger small">
                   {{ responseError }}
@@ -74,21 +67,23 @@
                     v-model="responseText"
                     class="form-control"
                     rows="5"
-                    placeholder="Type your response here..."
+                   :placeholder="ticket.ticketStatus === 'OPEN' ? 'Type your response here...' : 'Type final closing comment (e.g., Ticket closed - resolved)...'"
                     required
                   ></textarea>
                 </div>
-                <button type="submit" class="btn btn-primary" :disabled="store.loading">
-                   <span
-                    v-if="store.loading"
-                    class="spinner-border spinner-border-sm me-2"
-                  ></span>
-                  <i v-else class="bi bi-send-fill me-1"></i>
-                  Submit Response
-                </button>
+                <button type="submit" class="btn"
+        :class="ticket.ticketStatus === 'OPEN' ? 'btn-primary' : 'btn-danger'"
+        :disabled="store.loading">
+   <span v-if="store.loading" class="spinner-border spinner-border-sm me-2"></span>
+   <i v-else :class="ticket.ticketStatus === 'OPEN' ? 'bi bi-send-fill' : 'bi bi-lock-fill'" class="me-1"></i>
+   {{ ticket.ticketStatus === 'OPEN' ? 'Submit Response' : 'Submit & Close Ticket' }}
+</button>
               </form>
             </div>
-
+            <div v-if="ticket && ticket.ticketStatus === 'CLOSED'" class="alert alert-secondary mt-4" role="alert">
+  <i class="bi bi-lock-fill me-2"></i>
+  This ticket has been closed. The final response is shown above.
+</div>
           </div>
         </div>
       </div>
@@ -97,7 +92,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed ,watch} from 'vue'
 import { useRoute, useRouter, RouterLink } from 'vue-router'
 import { useTicketStore } from '@/stores/ticketStore'
 
@@ -135,24 +130,42 @@ onMounted(() => {
     console.error("Failed to load ticket details:", err)
   })
 })
+// Added this 
+watch(ticket, (newTicket) => {
+  if (newTicket && isAdmin.value) {
+    if (newTicket.ticketStatus === 'RESPONDED') {
+      responseText.value = ''; 
+    } else if (newTicket.ticketStatus === 'OPEN') {
+      responseText.value = ''; 
+    }
+  } else if (!newTicket) {
+      responseText.value = ''; 
+  }
+}, { immediate: true });
 
 // --- Methods ---
 async function handleResponse() {
   if (!responseText.value.trim()) {
-    responseError.value = 'Response cannot be empty.'
+    responseError.value = 'Response/Comment cannot be empty.'
     return
   }
+   if (ticket.value.ticketStatus === 'CLOSED') {
+     responseError.value = 'Cannot modify a closed ticket.';
+     return;
+   }
   responseError.value = ''
 
   try {
     await store.respondToTicket(ticket.value.id, responseText.value)
-    // The  Ticket store automatically updates currentTicket, so no extra steps needed.
-    responseText.value = '' // Clear form
+
+    if (store.currentTicket?.ticketStatus === 'RESPONDED') {
+       responseText.value = '';
+    }
+
   } catch (error) {
-    responseError.value = error.message || 'Failed to submit response.'
+    responseError.value = error.message || 'Failed to submit update.'
   }
 }
-
 // --- Helper Functions ---
 function formattedDate(dateString) {
   if (!dateString) return ''

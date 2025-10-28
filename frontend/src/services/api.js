@@ -104,7 +104,6 @@ export const createTicket = (ticketData) => apiClient.post('/support', ticketDat
 export const getUserTickets = () => apiClient.get('/support/user');
 export const getAllTickets = () => apiClient.get('/admin/support');
 export const respondToTicket = (ticketId, responseData) => apiClient.put(`/support/${ticketId}/respond`, responseData);
-export const closeTicket = (ticketId) => apiClient.put(`/support/${ticketId}/close`);
 export const getInvestments = () => apiClient.get("/investments");
 
 
