@@ -77,12 +77,13 @@ export const useTicketStore = defineStore('ticket', () => {
     }
   }
 //Function to respond to Ticket (Admin only )
-  async function respondToTicket(ticketId, responseText) {
+  async function respondToTicket(ticketId, responseText,newPriority) {
     loading.value = true;
     error.value = null;
     try {
       const response = await apiRespondToTicket(ticketId, {
-        response: responseText
+        response: responseText,
+        priority: newPriority
       });
       const updatedTicketData = response.data;
       if (!updatedTicketData || !updatedTicketData.id) {

@@ -84,8 +84,8 @@ public class TicketService {
     // newStatus -> New status to set (e.g., RESPONDED, CLOSED)
     // response -> Admin response text
     // returns -> Updated Ticket object
-    public Ticket updateTicket(Integer ticketId, TicketStatus newStatus, String response) {
-        logger.info("Updating ticketId: {} with status: {}", ticketId, newStatus);
+    public Ticket updateTicket(Integer ticketId, TicketStatus newStatus, String response, TicketPriority newPriority) {
+        logger.info("Updating ticketId: {} with status: {}, priority: {}", ticketId, newStatus, newPriority == null ? "(unchanged)" : newPriority); // Updated log
         Ticket ticket = ticketRepository.findById(ticketId)
                 .orElseThrow(() -> {
                     logger.warn("Ticket not found with ID: {}", ticketId);
@@ -93,7 +93,16 @@ public class TicketService {
                 });
 
         ticket.setStatus(newStatus);
-        ticket.setResponse(response);
+
+        if (response != null) {
+            ticket.setResponse(response);
+        }
+
+        if (newPriority != null) { // <-- Added priority logic
+            ticket.setPriority(newPriority);
+            logger.info("Priority for ticketId: {} set to {}", ticketId, newPriority);
+        }
+
         ticket.setUpdatedAt(LocalDateTime.now());
 
         Ticket updatedTicket = ticketRepository.save(ticket);

@@ -14,8 +14,8 @@
           </div>
           <p class="mt-2 text-muted">Loading ticket details...</p>
         </div>
-        <div v-else-if="store.error" class="alert alert-danger">
-          <strong>Error:</strong> {{ store.error.message || store.error }}
+        <div v-else-if="store.error && !store.currentTicket" class="alert alert-danger">
+          <strong>Error loading ticket:</strong> {{ store.error.message || store.error }}
         </div>
         <div v-else-if="ticket" class="card shadow-sm border-0">
           <div class="card-header bg-light p-4">
@@ -35,35 +35,51 @@
           </div>
           <div class="card-body p-4 p-md-5">
             <h5 class="fw-bold">User's Request</h5>
-            <div class="p-3 bg-light rounded mb-4">
-              <p style="white-space: pre-wrap;">{{ ticket.description }}</p>
-              <hr v-if="ticket.investmentProductId">
+            <div class="p-3 bg-light rounded mb-4 pre-wrap"> 
+              {{ ticket.description }}
+              <hr v-if="ticket.investmentProductId || isAdmin">
               <p v-if="ticket.investmentProductId" class="mb-0 small text-muted">
                 <strong>Related Investment ID:</strong> {{ ticket.investmentProductId }}
               </p>
-              <p v-if="isAdmin" class="mb-0 small text-muted">
+              <p v-if="isAdmin && ticket.userResponse" class="mb-0 small text-muted">
                 <strong>User:</strong> {{ ticket.userResponse.name }} ({{ ticket.userResponse.email }})
               </p>
             </div>
             <h5 class="fw-bold">Response</h5>
-            <div v-if="ticket.response" class="p-3 bg-primary bg-opacity-10 rounded-3 border border-primary">
-              <p style="white-space: pre-wrap;">{{ ticket.response }}</p>
+            <div v-if="ticket.response && ticket.ticketStatus !== 'OPEN'"
+                 class="p-3 rounded-3 mb-4"
+                 :class="ticket.ticketStatus === 'CLOSED' ? 'bg-secondary bg-opacity-10 border border-secondary' : 'bg-primary bg-opacity-10 border border-primary'">
+              <p class="pre-wrap mb-0">{{ ticket.response }}</p>
               <hr>
               <p class="mb-0 small text-muted">
-                <strong>Responded at:</strong> {{ formattedDate(ticket.updatedAt) }}
+                <strong>Last Updated:</strong> {{ formattedDate(ticket.updatedAt) }}
               </p>
             </div>
-            <div v-else class="p-3 bg-light rounded text-muted">
+            <div v-else-if="ticket.ticketStatus === 'OPEN'" class="p-3 bg-light rounded text-muted mb-4">
               An administrator has not responded to this ticket yet.
             </div>
-            <div v-if="isAdmin && ticket && ticket.ticketStatus !== 'CLOSED'">
+            
+             <div v-else-if="!ticket.response && ticket.ticketStatus === 'RESPONDED'" class="p-3 bg-light rounded text-warning mb-4">
+               Ticket marked as responded, but no response text found.
+             </div>
+            <div v-if="isAdmin && ticket && ticket.ticketStatus !== 'CLOSED'" class="mt-4">
              <h4 class="fw-bold">{{ ticket.ticketStatus === 'OPEN' ? 'Respond to this Ticket' : 'Add Final Comment & Close' }}</h4>
               <form @submit.prevent="handleResponse">
-                <div v-if="responseError" class="alert alert-danger small">
+                <div v-if="responseError" class="alert alert-danger small p-2"> <!-- Added p-2 -->
                   {{ responseError }}
                 </div>
+                <div class="mb-3" v-if="ticket.ticketStatus === 'OPEN'">
+                  <label for="adminPriority" class="form-label fw-bold">Set Priority</label>
+                  <select id="adminPriority" v-model="selectedPriority" class="form-select">
+                    <option value="LOW">Low</option>
+                    <option value="MEDIUM">Medium</option>
+                    <option value="HIGH">High</option>
+                  </select>
+                </div>
                 <div class="mb-3">
+                   <label for="adminResponseText" class="form-label fw-bold">Response / Comment</label>
                   <textarea
+                    id="adminResponseText"
                     v-model="responseText"
                     class="form-control"
                     rows="5"
@@ -72,20 +88,23 @@
                   ></textarea>
                 </div>
                 <button type="submit" class="btn"
-        :class="ticket.ticketStatus === 'OPEN' ? 'btn-primary' : 'btn-danger'"
-        :disabled="store.loading">
-   <span v-if="store.loading" class="spinner-border spinner-border-sm me-2"></span>
-   <i v-else :class="ticket.ticketStatus === 'OPEN' ? 'bi bi-send-fill' : 'bi bi-lock-fill'" class="me-1"></i>
-   {{ ticket.ticketStatus === 'OPEN' ? 'Submit Response' : 'Submit & Close Ticket' }}
-</button>
+                        :class="ticket.ticketStatus === 'OPEN' ? 'btn-primary' : 'btn-danger'"
+                        :disabled="store.loading">
+                   <span v-if="store.loading" class="spinner-border spinner-border-sm me-2"></span>
+                   <i v-else :class="ticket.ticketStatus === 'OPEN' ? 'bi bi-send-fill' : 'bi bi-lock-fill'" class="me-1"></i>
+                   {{ ticket.ticketStatus === 'OPEN' ? 'Submit Response' : 'Submit & Close Ticket' }}
+                </button>
               </form>
             </div>
             <div v-if="ticket && ticket.ticketStatus === 'CLOSED'" class="alert alert-secondary mt-4" role="alert">
-  <i class="bi bi-lock-fill me-2"></i>
-  This ticket has been closed. The final response is shown above.
-</div>
+              <i class="bi bi-lock-fill me-2"></i>
+              This ticket has been closed. 
+            </div>
           </div>
         </div>
+         <div v-else-if="!store.loading" class="text-center text-muted mt-5">
+           Ticket data could not be loaded or ticket not found.
+         </div>
       </div>
     </div>
   </div>
@@ -96,7 +115,6 @@ import { ref, onMounted, computed ,watch} from 'vue'
 import { useRoute, useRouter, RouterLink } from 'vue-router'
 import { useTicketStore } from '@/stores/ticketStore'
 
-// Get props (ticket ID) and stores
 const props = defineProps({
   id: {
     type: [String, Number],
@@ -107,43 +125,44 @@ const route = useRoute()
 const router = useRouter()
 const store = useTicketStore()
 
-// --- State ---
 const ticket = computed(() => store.currentTicket)
 const isAdmin = ref(false)
 const responseText = ref('')
+const selectedPriority = ref('MEDIUM')
 const responseError = ref('')
 const backLink = computed(() => {
   return isAdmin.value ? '/admin/tickets' : '/help-center/my-tickets'
 })
 
-// ---  Fetch Data ---
 onMounted(() => {
-  // Check user role from localStorage
   const user = localStorage.getItem('currentUser')
   if (user) {
     isAdmin.value = JSON.parse(user).role === 'ADMIN'
   }
-
-  // Fetch the specific ticket details
-  // The store logic will find it in its list or re-fetch
+  store.error = null;
+  responseError.value = '';
   store.fetchTicketById(Number(props.id)).catch(err => {
-    console.error("Failed to load ticket details:", err)
+    console.error("Failed to load ticket details:", err);
+    responseError.value = `Error loading ticket: ${err.message}`; 
   })
 })
-// Added this 
+
 watch(ticket, (newTicket) => {
-  if (newTicket && isAdmin.value) {
-    if (newTicket.ticketStatus === 'RESPONDED') {
-      responseText.value = ''; 
-    } else if (newTicket.ticketStatus === 'OPEN') {
-      responseText.value = ''; 
+  if (newTicket) {
+    selectedPriority.value = newTicket.ticketPriority || 'MEDIUM'; 
+
+    if (isAdmin.value) { 
+      if (newTicket.ticketStatus === 'RESPONDED') {
+        responseText.value = ''; 
+      } else if (newTicket.ticketStatus === 'OPEN') {
+        responseText.value = '';
+      }
     }
-  } else if (!newTicket) {
-      responseText.value = ''; 
+  } else {
+     responseText.value = '';
+     selectedPriority.value = 'LOW'; 
   }
 }, { immediate: true });
-
-// --- Methods ---
 async function handleResponse() {
   if (!responseText.value.trim()) {
     responseError.value = 'Response/Comment cannot be empty.'
@@ -156,17 +175,21 @@ async function handleResponse() {
   responseError.value = ''
 
   try {
-    await store.respondToTicket(ticket.value.id, responseText.value)
-
+    await store.respondToTicket(
+        ticket.value.id,
+        responseText.value,
+        ticket.value.ticketStatus === 'OPEN' ? selectedPriority.value : null 
+    );
     if (store.currentTicket?.ticketStatus === 'RESPONDED') {
        responseText.value = '';
     }
+     
 
   } catch (error) {
     responseError.value = error.message || 'Failed to submit update.'
   }
 }
-// --- Helper Functions ---
+
 function formattedDate(dateString) {
   if (!dateString) return ''
   const date = new Date(dateString)
@@ -223,4 +246,19 @@ function priorityClass(priority) {
   white-space: pre-wrap;
   word-break: break-word;
 }
+
+.btn-sm {
+   font-size: 0.875rem;
+   padding: 0.25rem 0.5rem;
+}
+.alert.small { 
+   font-size: 0.875rem;
+   padding: 0.5rem 0.75rem;
+}
+
+.form-label {
+  font-size: 0.9rem;
+  color: #495057;
+}
 </style>
+

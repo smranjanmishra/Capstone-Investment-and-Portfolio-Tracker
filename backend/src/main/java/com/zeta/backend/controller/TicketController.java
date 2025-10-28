@@ -2,6 +2,7 @@ package com.zeta.backend.controller;
 
 import com.zeta.backend.dto.RespondDto;
 import com.zeta.backend.dto.TicketResponseDto;
+import com.zeta.backend.enums.TicketPriority;
 import com.zeta.backend.enums.TicketStatus;
 import com.zeta.backend.models.Ticket;
 import com.zeta.backend.models.User;
@@ -125,41 +126,46 @@ public class TicketController {
                                                  Authentication authentication) {
         try {
             Long userId = extractUserId(authentication);
-            logger.info("Admin request action on ticketId: {} by userId: {}", ticketId, userId);
-            User loggedInUser = userService.getUserById(userId) // Your existing variable
+            User loggedInUser = userService.getUserById(userId)
                     .orElseThrow(() -> new RuntimeException("User not found"));
+
             if (!userService.isAdmin(loggedInUser)) {
-                logger.warn("Non-admin user attempted action on ticket: {}", userId);
                 return ResponseEntity.status(403).body("Access denied: Admin privileges required.");
             }
-            Optional<Ticket> userTicketOptional = ticketService.getTicketById(ticketId); // Your existing variable
-            if (userTicketOptional.isEmpty()) {
-                logger.warn("Ticket not found with ticketId: {}", ticketId);
 
+            Optional<Ticket> userTicketOptional = ticketService.getTicketById(ticketId);
+            if (userTicketOptional.isEmpty()) {
                 return ResponseEntity.status(404).body("Ticket not found with ID: " + ticketId);
             }
             Ticket userTicket = userTicketOptional.get();
+
             String responseText = (responseDto != null) ? responseDto.getResponse() : null;
+            TicketPriority newPriority = (responseDto != null) ? responseDto.getPriority() : null; // <-- Get priority
+
             if (responseText == null || responseText.trim().isEmpty()) {
-                logger.warn("Admin {} attempting action without response text on ticketId: {}", userId, ticketId);
                 return ResponseEntity.badRequest().body("Response text is required to respond to or close a ticket.");
             }
+
             Ticket updatedOrClosedTicketResult;
             TicketStatus currentStatus = userTicket.getStatus();
+
             if (currentStatus == TicketStatus.OPEN) {
-                logger.info("Admin {} responding to OPEN ticketId: {}", userId, ticketId);
-                updatedOrClosedTicketResult = ticketService.updateTicket(ticketId, TicketStatus.RESPONDED, responseText);
+                logger.info("Admin {} responding to OPEN ticketId: {}. Setting priority: {}", userId, ticketId, newPriority);
+
+                updatedOrClosedTicketResult = ticketService.updateTicket(ticketId, TicketStatus.RESPONDED, responseText, newPriority); // <-- Pass priority
                 logger.info("Ticket {} responded successfully by admin {}", ticketId, userId);
 
             } else if (currentStatus == TicketStatus.RESPONDED) {
-                logger.info("Admin {} closing RESPONDED ticketId: {} with final comment", userId, ticketId);
-                updatedOrClosedTicketResult = ticketService.updateTicket(ticketId, TicketStatus.CLOSED, responseText);
+                logger.info("Admin {} closing RESPONDED ticketId: {} with final comment. Setting priority: {}", userId, ticketId, newPriority);
+
+                updatedOrClosedTicketResult = ticketService.updateTicket(ticketId, TicketStatus.CLOSED, responseText, null);
                 logger.info("Ticket {} closed successfully by admin {}", ticketId, userId);
 
             } else {
                 logger.warn("Admin {} attempting action on already CLOSED ticket {}", userId, ticketId);
                 return ResponseEntity.badRequest().body("Cannot modify a ticket that is already CLOSED.");
             }
+
             User ticketOwner = userService.getUserById(updatedOrClosedTicketResult.getUserId()).orElse(null);
             TicketResponseDto ticketResponseDto = TicketDtoMapper.mapTicketToDto(updatedOrClosedTicketResult, ticketOwner);
             return ResponseEntity.ok(ticketResponseDto);
