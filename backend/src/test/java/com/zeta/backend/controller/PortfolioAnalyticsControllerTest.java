@@ -1,7 +1,6 @@
 package com.zeta.backend.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.zeta.backend.dto.AssetAllocationDTO;
 import com.zeta.backend.dto.GainLossDTO;
 import com.zeta.backend.dto.PortfolioSummaryDTO;
 import com.zeta.backend.service.PortfolioAnalyticsService;

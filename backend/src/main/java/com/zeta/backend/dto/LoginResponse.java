@@ -4,7 +4,7 @@ public class LoginResponse {
 
     private String token;
 
-//    constructors
+    // Constructors
     public LoginResponse() {
     }
 
@@ -12,7 +12,6 @@ public class LoginResponse {
         this.token = token;
     }
 
-//    getters and setters
     public String getToken() {
         return token;
     }

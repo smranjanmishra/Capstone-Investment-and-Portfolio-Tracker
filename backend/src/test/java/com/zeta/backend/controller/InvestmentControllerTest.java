@@ -1,50 +1,146 @@
 package com.zeta.backend.controller;
 
-import com.zeta.backend.config.JwtAuthenticationFilter;
-import com.zeta.backend.dto.InvestmentProductResponseDTO;
-import com.zeta.backend.service.InvestmentService;
-import com.zeta.backend.util.JwtUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.zeta.backend.dto.InvestmentProductRequestDTO;
+import com.zeta.backend.enums.InvestmentType;
+import com.zeta.backend.enums.RiskLevel;
+import com.zeta.backend.repository.InvestmentProductRepository;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.List;
+import java.math.BigDecimal;
 
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.is;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(controllers = InvestmentController.class)
+@SpringBootTest
+@AutoConfigureMockMvc
+@ActiveProfiles("test")
 class InvestmentControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
-    @MockitoBean
-    private InvestmentService investmentService;
+    @Autowired
+    private ObjectMapper objectMapper;
 
-    @MockitoBean
-    private JwtUtil jwtUtil;  // Mock the security dependencies
+    @Autowired
+    private InvestmentProductRepository repository;
 
-    @MockitoBean
-    private JwtAuthenticationFilter jwtAuthenticationFilter;
+    private InvestmentProductRequestDTO validRequest;
 
+    @BeforeEach
+    void setUp() {
+        // Clean database before each test
+        repository.deleteAll();
+
+        validRequest = InvestmentProductRequestDTO.builder()
+                .name("Test Product " + System.currentTimeMillis())
+                .type(InvestmentType.STOCK)
+                .riskLevel(RiskLevel.MEDIUM)
+                .minInvestment(new BigDecimal("10000"))
+                .expectedReturnRate(new BigDecimal("12.5"))
+                .currentNAV(new BigDecimal("100.0"))
+                .isActive(true)
+                .build();
+    }
+
+    @AfterEach
+    void tearDown() {
+        // Clean up after each test
+        repository.deleteAll();
+    }
+
+    // CRUD - Read (GET)
     @Test
-    @WithMockUser  // Add a mock authenticated user
+    @WithMockUser
     void shouldReturnActiveInvestments() throws Exception {
-        InvestmentProductResponseDTO dto = new InvestmentProductResponseDTO();
-        dto.setId(1L);
-
-        when(investmentService.getAllActiveInvestments()).thenReturn(List.of(dto));
-
-        mockMvc.perform(get("/api/investments/active"))
+        mockMvc.perform(get("/api/v1/investments"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(1)))
-                .andExpect(jsonPath("$[0].id", is(1)));
+                .andExpect(jsonPath("$.success", is(true)))
+                .andExpect(jsonPath("$.data").isArray());
+    }
+
+    // CRUD - Create (POST) + Role-based access (ADMIN)
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void shouldCreateInvestmentWhenAdmin() throws Exception {
+        String requestBody = objectMapper.writeValueAsString(validRequest);
+
+        mockMvc.perform(post("/api/v1/admin/investments")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.success", is(true)))
+                .andExpect(jsonPath("$.data.name", is(validRequest.getName())));
+    }
+
+    // CRUD - Update (PUT) + Role-based access (ADMIN)
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void shouldUpdateInvestmentWhenAdmin() throws Exception {
+        // Create first
+        String createBody = objectMapper.writeValueAsString(validRequest);
+        String createResponse = mockMvc.perform(post("/api/v1/admin/investments")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(createBody))
+                .andExpect(status().isCreated())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        Long productId = objectMapper.readTree(createResponse).get("data").get("id").asLong();
+
+        // Update
+        InvestmentProductRequestDTO updateRequest = InvestmentProductRequestDTO.builder()
+                .name("Updated Product " + System.currentTimeMillis())
+                .type(InvestmentType.MUTUAL_FUND)
+                .riskLevel(RiskLevel.HIGH)
+                .minInvestment(new BigDecimal("15000"))
+                .expectedReturnRate(new BigDecimal("18.0"))
+                .currentNAV(new BigDecimal("150.0"))
+                .isActive(false)
+                .build();
+
+        String updateBody = objectMapper.writeValueAsString(updateRequest);
+
+        mockMvc.perform(put("/api/v1/admin/investments/" + productId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(updateBody))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success", is(true)))
+                .andExpect(jsonPath("$.data.name", is(updateRequest.getName())));
+    }
+
+    // Role-based access - Regular USER should be denied
+    @Test
+    @WithMockUser(roles = "USER")
+    void shouldDenyAccessWhenNotAdmin() throws Exception {
+        String requestBody = objectMapper.writeValueAsString(validRequest);
+
+        mockMvc.perform(post("/api/v1/admin/investments")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andExpect(status().isForbidden());
+    }
+
+    // Role-based access - Unauthenticated should be denied
+    @Test
+    void shouldRequireAuthenticationForAdminEndpoint() throws Exception {
+        String requestBody = objectMapper.writeValueAsString(validRequest);
+
+        mockMvc.perform(post("/api/v1/admin/investments")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andExpect(status().isUnauthorized());
     }
 }

@@ -177,7 +177,7 @@ class PortfolioAnalyticsServiceImplTest {
 
     @Test
     void testGetPortfolioSummary_EmptyTransactions() {
-        when(portfolioRepository.findByUserId(userId)).thenReturn(Arrays.asList(portfolio1));
+        when(portfolioRepository.findByUserId(userId)).thenReturn(Collections.singletonList(portfolio1));
         when(transactionRepository.findByUserIdOrderByTxnDateDesc(userId))
                 .thenReturn(Collections.emptyList());
 
