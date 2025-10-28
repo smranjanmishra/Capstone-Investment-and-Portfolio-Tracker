@@ -1,6 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
-
 // Create router instance with HTML5 history mode
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -99,6 +98,16 @@ const router = createRouter({
       meta: { requiresAuth: true }
     },
     {
+       path: '/analytics',
+       name: 'PortfolioAnalytics',
+       component: () => import('../views/PortfolioAnalytics.vue'),
+       meta: {
+            title: 'Portfolio Analytics',
+            description: 'View portfolio insights, performance metrics, and asset distribution',
+            requiresAuth: true
+       }
+    },
+    {
       path: "/buy",
       name: "BuyInvestment",
       component: () => import("@/views/BuyInvestment.vue")
@@ -108,7 +117,6 @@ const router = createRouter({
       name: "SellInvestment",
       component: () => import("@/views/SellInvestment.vue")
     },
-
     {
       path: '/admin/users',
       name: 'user-list',
@@ -121,13 +129,11 @@ const router = createRouter({
     },
   ],
 })
-
 // Check if user has valid authentication token
 function isAuthenticated() {
   const currentUser = localStorage.getItem('currentUser')
   return !!currentUser
 }
-
 // Check if authenticated user has admin role
 function isAdmin() {
   const currentUser = localStorage.getItem('currentUser')
@@ -135,7 +141,6 @@ function isAdmin() {
   const user = JSON.parse(currentUser)
   return user.role === 'ADMIN'
 }
-
 // Global navigation guard - runs before each route change
 router.beforeEach((to, from, next) => {
   // Update page title based on route metadata
@@ -144,14 +149,12 @@ router.beforeEach((to, from, next) => {
   } else {
     document.title = 'Investment & Portfolio Tracker'
   }
-
   // Redirect to login if route requires authentication
   if (to.meta.requiresAuth && !isAuthenticated()) {
     console.warn('⚠️ Access denied: Authentication required')
     next({ name: 'login', query: { redirect: to.fullPath } })
     return
   }
-
   // Redirect to home if route requires admin but user is not admin
   if (to.meta.requiresAdmin && !isAdmin()) {
     console.warn('⚠️ Access denied: Admin privileges required')
@@ -159,16 +162,13 @@ router.beforeEach((to, from, next) => {
     next({ name: 'home' })
     return
   }
-
   // Redirect authenticated users away from guest-only pages (login/register)
   if (to.meta.guestOnly && isAuthenticated()) {
     console.log('Already authenticated, redirecting to home')
     next({ name: 'home' })
     return
   }
-
   // Allow navigation to proceed
   next()
 })
-
 export default router
