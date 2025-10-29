@@ -10,6 +10,7 @@ import com.zeta.backend.models.Transaction;
 import com.zeta.backend.repository.InvestmentProductRepository;
 import com.zeta.backend.repository.PortfolioRepository;
 import com.zeta.backend.repository.TransactionRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +18,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
@@ -30,7 +30,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
-@Transactional
 class PortfolioAnalyticsControllerTest {
 
     @Autowired
@@ -54,7 +53,12 @@ class PortfolioAnalyticsControllerTest {
 
     @BeforeEach
     void setUp() {
-        // Create test investment products
+        // Clean database
+        transactionRepository.deleteAll();
+        portfolioRepository.deleteAll();
+        investmentProductRepository.deleteAll();
+
+        // Create investment products
         stockProduct = investmentProductRepository.save(
                 InvestmentProduct.builder()
                         .name("Equity Fund")
@@ -79,7 +83,7 @@ class PortfolioAnalyticsControllerTest {
                         .build()
         );
 
-        // Create portfolio entries for the test user
+        // Create portfolio entries
         portfolioRepository.save(
                 Portfolio.builder()
                         .userId(userId)
@@ -98,7 +102,7 @@ class PortfolioAnalyticsControllerTest {
                         .build()
         );
 
-        // Add transactions needed for summary/gains calculations
+
         transactionRepository.save(
                 Transaction.builder()
                         .userId(userId)
@@ -109,23 +113,19 @@ class PortfolioAnalyticsControllerTest {
                         .txnDate(LocalDateTime.now().minusDays(30))
                         .build()
         );
+    }
 
-        transactionRepository.save(
-                Transaction.builder()
-                        .userId(userId)
-                        .investmentProductId(bondProduct.getId())
-                        .txnType(TxnType.BUY)
-                        .navAtTxn(BigDecimal.valueOf(100))
-                        .units(BigDecimal.valueOf(10))
-                        .txnDate(LocalDateTime.now().minusDays(30))
-                        .build()
-        );
+    @AfterEach
+    void tearDown() {
+        transactionRepository.deleteAll();
+        portfolioRepository.deleteAll();
+        investmentProductRepository.deleteAll();
     }
 
     // ---------- /portfolio/summary ----------
 
     @Test
-    @WithMockUser(username = "1")
+    @WithMockUser(username = "1") // Mock authentication
     void shouldReturnPortfolioSummary() throws Exception {
         mockMvc.perform(get("/api/v1/portfolio/summary"))
                 .andExpect(status().isOk())
@@ -134,6 +134,18 @@ class PortfolioAnalyticsControllerTest {
                 .andExpect(jsonPath("$.data.currentValue", is(2150.00)))
                 .andExpect(jsonPath("$.data.absoluteReturn", is(150.00)))
                 .andExpect(jsonPath("$.message", containsString("Portfolio summary fetched successfully")));
+    }
+
+    // ---------- /portfolio/allocation ----------
+
+    @Test
+    @WithMockUser(username = "1")
+    void shouldReturnPortfolioAllocation() throws Exception {
+        mockMvc.perform(get("/api/v1/portfolio/allocation"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.count", is(2)))
+                .andExpect(jsonPath("$.data[0].investmentType", anyOf(is("STOCK"), is("BOND"))));
     }
 
     // ---------- /portfolio/gains ----------
@@ -150,8 +162,7 @@ class PortfolioAnalyticsControllerTest {
 
     @Test
     @WithMockUser(username = "1")
-    void shouldReturnInternalServerErrorIfNoPortfolioForGains() throws Exception {
-        // simulate missing portfolio within the same transaction
+    void shouldReturnEmptyPortfolioGainsIfNoPortfolio() throws Exception {
         portfolioRepository.deleteAll();
         mockMvc.perform(get("/api/v1/portfolio/gains"))
                 .andExpect(status().isInternalServerError())

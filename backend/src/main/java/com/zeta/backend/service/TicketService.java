@@ -35,15 +35,15 @@ public class TicketService {
         String ticketDescription = ticket.getSubject().toLowerCase();
         logger.info("Creating ticket with subject: {}", ticket.getSubject());
 
-        if (ticketDescription.contains("urgent") || ticketDescription.contains("immediately")) {
+        if (ticketDescription.toLowerCase().contains("urgent") || ticketDescription.toLowerCase().contains("immediately")|| ticketDescription.toLowerCase().contains("delay")) {
             ticket.setPriority(TicketPriority.HIGH);
             logger.info("Ticket priority set to HIGH");
-        } else if (ticketDescription.contains("soon") || ticketDescription.contains("problem")) {
-            ticket.setPriority(TicketPriority.MEDIUM);
-            logger.info("Ticket priority set to MEDIUM");
-        } else {
+        } else if (ticketDescription.toLowerCase().contains("soon") || ticketDescription.toLowerCase().contains("problem")||ticketDescription.toLowerCase().contains("slow")) {
             ticket.setPriority(TicketPriority.LOW);
             logger.info("Ticket priority set to LOW");
+        } else {
+            ticket.setPriority(TicketPriority.MEDIUM);
+            logger.info("Ticket priority set to MEDIUM");
         }
 
 
@@ -84,18 +84,22 @@ public class TicketService {
     // newStatus -> New status to set (e.g., RESPONDED, CLOSED)
     // response -> Admin response text
     // returns -> Updated Ticket object
-    public Ticket updateTicket(Integer ticketId, TicketStatus newStatus, String response) {
-        logger.info("Updating ticketId: {} with status: {}", ticketId, newStatus);
+    public Ticket updateTicket(Integer ticketId, TicketStatus newStatus, String response, TicketPriority newPriority) {
+        logger.info("Updating ticketId: {} with status: {}, priority: {}", ticketId, newStatus, newPriority == null ? "(unchanged)" : newPriority); // Updated log
         Ticket ticket = ticketRepository.findById(ticketId)
                 .orElseThrow(() -> {
                     logger.warn("Ticket not found with ID: {}", ticketId);
                     return new RuntimeException("Ticket not found");
                 });
-
         ticket.setStatus(newStatus);
-        ticket.setResponse(response);
+        if (response != null) {
+            ticket.setResponse(response);
+        }
+        if (newPriority != null) {
+            ticket.setPriority(newPriority);
+            logger.info("Priority for ticketId: {} set to {}", ticketId, newPriority);
+        }
         ticket.setUpdatedAt(LocalDateTime.now());
-
         Ticket updatedTicket = ticketRepository.save(ticket);
         logger.info("Ticket updated successfully with ID: {}", updatedTicket.getId());
         return updatedTicket;
