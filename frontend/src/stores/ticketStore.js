@@ -16,13 +16,11 @@ export const useTicketStore = defineStore('ticket', () => {
   const loading = ref(false);
   const error = ref(null);
 
-  // --- API Calls --
   //Funtion to create Ticket using Ticket Data
   async function createTicket(ticketData) {
     loading.value = true;
     error.value = null;
     try {
-      
       const response = await apiCreateTicket(ticketData);
       await fetchUserTickets();
       console.log('Ticket created successfully:', response.data);
@@ -77,48 +75,36 @@ export const useTicketStore = defineStore('ticket', () => {
     }
   }
 //Function to respond to Ticket (Admin only )
-  async function respondToTicket(ticketId, responseText,newPriority) {
-    loading.value = true;
-    error.value = null;
-    try {
-      const response = await apiRespondToTicket(ticketId, {
-        response: responseText,
-        priority: newPriority
-      });
-      const updatedTicketData = response.data;
-      if (!updatedTicketData || !updatedTicketData.id) {
-          throw new Error("Invalid response received from server after update.");
-      }
-      const ticketIdToUpdate = updatedTicketData.id;
+  async function respondToTicket(ticketId, responseText, newPriority) {
+  loading.value = true;
+  error.value = null;
 
-      // Update allTickets list
-      const indexAll = allTickets.value.findIndex(t => t.id === ticketIdToUpdate);
-      if (indexAll !== -1) {
-        allTickets.value[indexAll] = updatedTicketData; 
-      }
-      const indexUser = userTickets.value.findIndex(t => t.id === ticketIdToUpdate);
-       if (indexUser !== -1) {
-         userTickets.value[indexUser] = updatedTicketData; 
-      }
-      if (currentTicket.value && currentTicket.value.id === ticketIdToUpdate) {
-        currentTicket.value = updatedTicketData; 
-      }
-      if (updatedTicketData.ticketStatus === 'CLOSED') {
-         console.log('Ticket closed by admin successfully:', updatedTicketData);
-      } else {
-         console.log('Ticket responded to successfully:', updatedTicketData);
-      }
-      return updatedTicketData; 
-    } 
-    catch (err) {
-      error.value = err.response?.data?.message || err.response?.data || err.message || 'Failed to update ticket';
-      console.error('Error updating ticket (respond/close):', err);
-      throw err;
-    } 
-    finally {
-      loading.value = false;
+  try {
+    const currentStatus = currentTicket.value?.ticketStatus;
+    let updatedStatus = currentStatus;
+    if (currentStatus === "OPEN") {
+      updatedStatus = "RESPONDED";
+    } else if (currentStatus === "RESPONDED") {
+      updatedStatus = "CLOSED";
     }
+    await apiRespondToTicket(ticketId, {
+      response: responseText,
+      priority: newPriority
+    });
+    console.log("Ticket updated — refreshing data...");
+    await fetchAllTickets();
+    await fetchUserTickets();
+    await fetchTicketById(ticketId);
+    return currentTicket.value;
   }
+  catch (err) {
+    console.error("Error updating ticket:", err);
+    throw err;
+  }
+  finally {
+    loading.value = false;
+  }
+}
 
 //Function to fetch tickets by Ticket Id in order to retrive details of the ticket 
   async function fetchTicketById(ticketId) {

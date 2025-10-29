@@ -180,9 +180,8 @@ async function handleResponse() {
         responseText.value,
         ticket.value.ticketStatus === 'OPEN' ? selectedPriority.value : null 
     );
-    if (store.currentTicket?.ticketStatus === 'RESPONDED') {
-       responseText.value = '';
-    }
+    await store.fetchTicketById(ticket.value.id)
+    responseText.value=''
      
 
   } catch (error) {
