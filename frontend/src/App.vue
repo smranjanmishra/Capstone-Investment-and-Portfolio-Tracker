@@ -89,7 +89,12 @@ onMounted(() => {
                 Portfolio
               </RouterLink>
             </li>
-
+            <li class="nav-item" v-if="currentUser">
+              <RouterLink to="/analytics" class="nav-link">
+                <i class="bi bi-pie-chart-fill me-1"></i>
+                Analytics
+              </RouterLink>
+            </li>
 
             <li class="nav-item" v-if="currentUser && currentUser.role === 'ADMIN'">
               <RouterLink to="/admin/investments" class="nav-link">
