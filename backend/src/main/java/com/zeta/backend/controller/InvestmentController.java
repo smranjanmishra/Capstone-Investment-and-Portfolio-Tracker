@@ -9,7 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,15 +43,14 @@ public class InvestmentController {
     // Enforces ADMIN role at method level - complements SecurityConfig rules
     @PostMapping("/admin/investments")
     public ResponseEntity<Map<String, Object>> createInvestment(
-            @Valid @RequestBody InvestmentProductRequestDTO requestDTO) { // @Valid triggers DTO-level validation
+            @Valid @RequestBody InvestmentProductRequestDTO requestDTO) {
         log.info("API Request: POST /admin/investments - Create new investment product '{}'", requestDTO.getName());
 
         InvestmentProductResponseDTO createdInvestment = investmentService.createInvestment(requestDTO);
 
         Map<String, Object> response = new HashMap<>();
-        response.put("success", true);
+        response.put("id", createdInvestment.getId());
         response.put("message", "Investment product created successfully");
-        response.put("data", createdInvestment);
 
         log.info("API Response: Investment product '{}' created with ID: {}",
                 createdInvestment.getName(), createdInvestment.getId());

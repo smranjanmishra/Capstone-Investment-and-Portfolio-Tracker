@@ -149,7 +149,7 @@ public class InvestmentServiceImpl implements InvestmentService {
 
     private InvestmentProductResponseDTO convertToResponseDTO(InvestmentProduct product) {
         InvestmentProductResponseDTO dto = modelMapper.map(product, InvestmentProductResponseDTO.class);
-        dto.populateDisplayNames(); // Add user-friendly display names
+        dto.populateDisplayNames();
         return dto;
     }
 
