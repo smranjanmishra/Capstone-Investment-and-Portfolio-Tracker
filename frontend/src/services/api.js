@@ -100,6 +100,10 @@ export const getPortfolio = () => apiClient.get("/portfolio");
 export const buyInvestment = (payload) => apiClient.post("/portfolio/buy", payload);
 export const sellInvestment = (payload) => apiClient.post("/portfolio/sell", payload);
 export const getTransactions = () => apiClient.get("/portfolio/transactions");
+export const createTicket = (ticketData) => apiClient.post('/support', ticketData);
+export const getUserTickets = () => apiClient.get('/support/user');
+export const getAllTickets = () => apiClient.get('/admin/support');
+export const respondToTicket = (ticketId, responseData) => apiClient.put(`/support/${ticketId}/respond`, responseData);
 export const getInvestments = () => apiClient.get("/investments");
 
 

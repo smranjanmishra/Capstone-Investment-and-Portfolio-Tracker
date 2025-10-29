@@ -12,12 +12,12 @@ import com.zeta.backend.models.Transaction;
 import com.zeta.backend.repository.InvestmentProductRepository;
 import com.zeta.backend.repository.PortfolioRepository;
 import com.zeta.backend.repository.TransactionRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -28,7 +28,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 @ActiveProfiles("test")
-@Transactional
 public class PortfolioAnalyticsServiceImplTest {
 
     @Autowired
@@ -47,10 +46,14 @@ public class PortfolioAnalyticsServiceImplTest {
     private InvestmentProduct stockProduct;
     private InvestmentProduct bondProduct;
 
-
     @BeforeEach
     void setUp() {
-        // Create investment products and persist them
+        // Clean DB before each test
+        transactionRepository.deleteAll();
+        portfolioRepository.deleteAll();
+        investmentProductRepository.deleteAll();
+
+        // Create investment products
         stockProduct = investmentProductRepository.save(
                 InvestmentProduct.builder()
                         .name("Equity Fund")
@@ -75,7 +78,7 @@ public class PortfolioAnalyticsServiceImplTest {
                         .build()
         );
 
-        // Create portfolio entries for the user
+        // Create portfolios
         portfolioRepository.save(
                 Portfolio.builder()
                         .userId(userId)
@@ -107,6 +110,13 @@ public class PortfolioAnalyticsServiceImplTest {
         );
     }
 
+    @AfterEach
+    void tearDown() {
+        transactionRepository.deleteAll();
+        portfolioRepository.deleteAll();
+        investmentProductRepository.deleteAll();
+    }
+
     // ---------- getPortfolioSummary() ----------
 
     @Test
@@ -128,7 +138,6 @@ public class PortfolioAnalyticsServiceImplTest {
 
     @Test
     void shouldThrowExceptionForNoPortfolio() {
-
         portfolioRepository.deleteAll();
         assertThrows(Exception.class, () -> analyticsService.getPortfolioSummary(userId));
     }
