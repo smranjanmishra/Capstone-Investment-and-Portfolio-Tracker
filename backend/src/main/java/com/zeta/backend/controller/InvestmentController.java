@@ -17,30 +17,23 @@ import java.util.Map;
 @RequestMapping("/api/v1")
 @Slf4j
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*", maxAge = 3600) // Allows all origins - restrict in production to specific frontend URLs
+@CrossOrigin(origins = "*", maxAge = 3600)
 
 public class InvestmentController {
+
     private final InvestmentService investmentService;
 
-    // Public endpoint - no authentication required for browsing investments
     @GetMapping("/investments")
     public ResponseEntity<Map<String, Object>> getAllActiveInvestments() {
         log.info("API Request: GET /investments - Fetch all active investment products");
 
         List<InvestmentProductResponseDTO> investments = investmentService.getAllActiveInvestments();
 
-        Map<String, Object> response = new HashMap<>();
-        response.put("success", true);
-        response.put("message", "Investment products fetched successfully");
-        response.put("count", investments.size());
-        response.put("data", investments);
-
         log.info("API Response: Returning {} active investment products", investments.size());
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(buildResponse("Investment products fetched successfully", investments, null, true));
     }
 
-    // Enforces ADMIN role at method level - complements SecurityConfig rules
     @PostMapping("/admin/investments")
     public ResponseEntity<Map<String, Object>> createInvestment(
             @Valid @RequestBody InvestmentProductRequestDTO requestDTO) {
@@ -48,31 +41,41 @@ public class InvestmentController {
 
         InvestmentProductResponseDTO createdInvestment = investmentService.createInvestment(requestDTO);
 
-        Map<String, Object> response = new HashMap<>();
-        response.put("id", createdInvestment.getId());
-        response.put("message", "Investment product created successfully");
-
         log.info("API Response: Investment product '{}' created with ID: {}",
                 createdInvestment.getName(), createdInvestment.getId());
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(buildResponse("Investment product created successfully", null, createdInvestment.getId(), false));
     }
 
     @PutMapping("/admin/investments/{id}")
     public ResponseEntity<Map<String, Object>> updateInvestment(
             @PathVariable Long id,
-            @Valid @RequestBody InvestmentProductRequestDTO requestDTO) { // @Valid ensures business rules are checked
+            @Valid @RequestBody InvestmentProductRequestDTO requestDTO) {
         log.info("API Request: PUT /admin/investments/{} - Update investment product", id);
 
         InvestmentProductResponseDTO updatedInvestment = investmentService.updateInvestment(id, requestDTO);
 
-        Map<String, Object> response = new HashMap<>();
-        response.put("success", true);
-        response.put("message", "Investment product updated successfully");
-        response.put("data", updatedInvestment);
-
         log.info("API Response: Investment product '{}' updated", updatedInvestment.getName());
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(buildResponse("Investment product updated successfully", updatedInvestment, null, true));
+    }
+
+    private Map<String, Object> buildResponse(String message, Object data, Long id, boolean includeSuccess) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", message);
+        if (id != null) {
+            response.put("id", id);
+        }
+        if (includeSuccess) {
+            response.put("success", true);
+        }
+        if (data != null) {
+            if (data instanceof List) {
+                response.put("count", ((List<?>) data).size());
+            }
+            response.put("data", data);
+        }
+        return response;
     }
 }
