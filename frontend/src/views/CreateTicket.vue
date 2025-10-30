@@ -54,7 +54,6 @@
                   class="form-select form-select-lg"
                   @focus="ensurePortfolioLoaded"
                 >
-                  <!-- Use empty-string as the "general inquiry" sentinel (safer for v-model) -->
                   <option value="">-- General Inquiry --</option>
                   <option
                     v-if="portfolioStore.loading"
@@ -98,8 +97,6 @@
                   required
                 ></textarea>
               </div>
-
-              <!-- Inline validation message for whitespace-only -->
               <div v-if="formError" class="alert alert-danger small mb-3">
                 {{ formError }}
               </div>
@@ -154,13 +151,10 @@ const successMessage = ref('')
 const formData = reactive({
   subject: '',
   description: '',
-  // use empty string as default so v-model is simple; treat '' as no-investment
   investmentProductId: '',
 })
 
 const formError = ref('')
-
-// Computed to ensure fields are not whitespace-only
 const isFormValid = computed(() => {
   const subjectOk = !!(formData.subject && formData.subject.trim().length > 0)
   const descOk = !!(formData.description && formData.description.trim().length > 0)
@@ -169,13 +163,11 @@ const isFormValid = computed(() => {
 
 // Fetch the user's portfolio when the component loads
 onMounted(() => {
-  // initial attempt; errors will be surfaced via portfolioStore.error
   portfolioStore.fetchPortfolio().catch(err => {
     console.error("Failed to load portfolio for dropdown:", err)
   })
 })
 
-// ensurePortfolioLoaded: optionally force retry
 async function ensurePortfolioLoaded(force = false) {
   if (portfolioStore.loading) return
   if (portfolioStore.portfolioItems && portfolioStore.portfolioItems.length > 0 && !force) return
@@ -188,7 +180,6 @@ async function ensurePortfolioLoaded(force = false) {
 
 async function handleSubmit() {
   formError.value = ''
-  // Validate trimmed input
   const trimmedSubject = formData.subject ? formData.subject.trim() : ''
   const trimmedDescription = formData.description ? formData.description.trim() : ''
 
@@ -198,7 +189,6 @@ async function handleSubmit() {
   }
 
   try {
-    // Do NOT convert investmentProductId to Number — send as-is or null for general inquiry
     const payload = {
       subject: trimmedSubject,
       description: trimmedDescription,
@@ -206,22 +196,15 @@ async function handleSubmit() {
     }
 
     await ticketStore.createTicket(payload)
-    
-    // Show success message
     successMessage.value = 'Your ticket has been submitted successfully! We will get back to you soon.'
-
-    // Reset form
     formData.subject = ''
     formData.description = ''
     formData.investmentProductId = ''
-
-    // Optional: Redirect after a delay
     setTimeout(() => {
       router.push('/help-center/my-tickets')
-    }, 3000)
+    }, 2000)
 
   } catch (error) {
-    // Error is already handled and set in the store
     console.error('Submission failed:', error)
     formError.value = ticketStore.error?.message || ticketStore.error || 'Failed to submit ticket.'
   }
@@ -237,7 +220,7 @@ async function handleSubmit() {
 }
 .form-select-lg {
   padding: 0.75rem 1rem;
-  font-size: 1rem; /* Fix for select font size */
+  font-size: 1rem; 
 }
 .form-label {
   font-size: 0.9rem;
