@@ -19,16 +19,16 @@ public class Ticket {
     private Integer id;
 
     @Column(name = "userId", nullable = false)
-    private Long userId;  // FK to User
+    private Long userId;
 
     @Column(name = "investmentProductId")
-    private Long investmentProductId;  // FK to Investment
+    private Long investmentProductId;
 
     @Column(columnDefinition = "VARCHAR(255)")
-    private String subject;  // subject of the issue
+    private String subject;
 
     @Column(columnDefinition = "TEXT")
-    private String description;  // Detailed description of the issue
+    private String description;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
