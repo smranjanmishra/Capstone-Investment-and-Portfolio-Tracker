@@ -5,7 +5,7 @@ import com.zeta.backend.exceptions.InvalidInputException;
 import java.math.BigDecimal;
 
 public class ValidationUtil {
-    // Prevents instantiation of utility class
+    // Prevents instantiation of utility class (private con)
     private ValidationUtil() {
         throw new UnsupportedOperationException("Utility class cannot be instantiated");
     }

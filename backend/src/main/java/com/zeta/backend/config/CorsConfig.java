@@ -40,7 +40,9 @@ public class CorsConfig {
         configuration.setMaxAge(3600L);
         // Apply configuration to all paths
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        // Applies CORS settings to all API paths
         source.registerCorsConfiguration("/**", configuration);
+        // Returns a bean for Spring to use in SecurityConfig automatically
         return source;
     }
 }
