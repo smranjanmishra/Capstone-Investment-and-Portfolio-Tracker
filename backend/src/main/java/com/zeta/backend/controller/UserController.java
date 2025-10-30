@@ -35,7 +35,7 @@ public class UserController {
     @GetMapping("/profile")
     public ResponseEntity<UserResponse> getProfile(Authentication authentication) {
         // extract userId from authentication principal (set by JwtAuthenticationFilter)
-        Integer userId = (Integer) authentication.getPrincipal();
+        Long userId = (Long) authentication.getPrincipal();
         logger.info("Profile request for userId: {}", userId);
 
         UserResponse response = userService.getUserProfile(userId);

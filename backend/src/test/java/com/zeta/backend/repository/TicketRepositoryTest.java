@@ -27,7 +27,7 @@ class TicketRepositoryTest {
         t.setUserId(5L);
         ticketRepository.save(t);
 
-        List<Ticket> byUser = ticketRepository.findByUserId(5);
+        List<Ticket> byUser = ticketRepository.findByUserId(5L);
         assertFalse(byUser.isEmpty());
 
         Optional<Ticket> byId = ticketRepository.findById(byUser.get(0).getId());

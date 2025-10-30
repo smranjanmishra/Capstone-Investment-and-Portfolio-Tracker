@@ -43,8 +43,6 @@ public class TicketController {
 
         if (principal instanceof Long)
             return (Long) principal;
-        if (principal instanceof Integer)
-            return ((Integer) principal).longValue();
         throw new IllegalStateException("Unexpected principal type: " + principal.getClass());
     }
 

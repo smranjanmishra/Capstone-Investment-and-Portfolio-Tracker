@@ -52,14 +52,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             // Validate token signature and expiration
             if (jwtUtil.validateToken(token)) {
                 // Extract userId and role from token claims
-                Integer userId = jwtUtil.extractUserId(token);
+                Long userId = jwtUtil.extractUserId(token);
                 Role role = jwtUtil.extractRole(token);
 
                 // Create authentication object with role as authority
                 SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + role.name());
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(
-                                userId,  // Principal is userId
+                                userId,  // Principal is userId (Long)
                                 null,    // Credentials not needed after authentication
                                 Collections.singletonList(authority)
                         );

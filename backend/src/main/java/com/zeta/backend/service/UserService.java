@@ -97,7 +97,7 @@ public class UserService {
         }
 
         // Generate JWT token with userId and role claims
-        String token = jwtUtil.generateToken(Math.toIntExact(user.getId()), user.getRole());
+        String token = jwtUtil.generateToken(user.getId(), user.getRole());
         logger.info("Login successful for userId: {}, role: {}", user.getId(), user.getRole());
 
         return new LoginResponse(token);
@@ -108,7 +108,7 @@ public class UserService {
 //     return UserResponse with user details (excluding password)
 //     throws UserNotFoundException if user not found
 
-    public UserResponse getUserProfile(Integer userId) {
+    public UserResponse getUserProfile(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> {
                     logger.warn("User not found: userId={}", userId);

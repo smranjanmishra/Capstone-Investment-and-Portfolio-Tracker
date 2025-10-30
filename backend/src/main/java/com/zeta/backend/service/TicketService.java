@@ -71,7 +71,7 @@ public class TicketService {
     // returns -> List of Ticket objects belonging to the user
     public List<Ticket> getTicketsByUserId(Long userId) {
         logger.info("Fetching tickets for userId: {}", userId);
-        List<Ticket> tickets = ticketRepository.findByUserId(Math.toIntExact(userId));
+        List<Ticket> tickets = ticketRepository.findByUserId(userId);
         logger.info("Total tickets found for userId {}: {}", userId, tickets.size());
         return tickets;
     }

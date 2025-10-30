@@ -44,7 +44,7 @@ public class JwtUtil {
 //     role -> the user's role
 //     return generated JWT token string
 
-    public String generateToken(Integer userId, Role role) {
+    public String generateToken(Long userId, Role role) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("userId", userId);
         claims.put("role", role.name());
@@ -97,9 +97,9 @@ public class JwtUtil {
 //     token -> the JWT token
 //     return user ID from token claims
 
-    public Integer extractUserId(String token) {
+    public Long extractUserId(String token) {
         Claims claims = extractClaims(token);
-        return claims.get("userId", Integer.class);
+        return claims.get("userId", Long.class);
     }
 
 //     extract role from JWT token.
