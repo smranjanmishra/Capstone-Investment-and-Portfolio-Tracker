@@ -128,7 +128,7 @@ export default {
       return 'text-muted'
     },
 
-    // ✅ NAV FIX — No fallback to avg price
+    // NAV FIX — No fallback to avg price
     effectiveNAV() {
       const nav = Number(this.holding.investmentProduct.currentNAV)
       return Number.isFinite(nav) && nav > 0 ? nav : null

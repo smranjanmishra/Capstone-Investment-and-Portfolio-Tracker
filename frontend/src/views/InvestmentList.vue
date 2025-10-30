@@ -152,7 +152,11 @@ function clearFilters() {
 }
 
 async function loadInvestments() {
-  try { await investmentStore.fetchInvestments() } catch (err) {}
+  try { 
+    await investmentStore.fetchInvestments() 
+  } catch {
+    // Error already handled by store
+  }
 }
 
 const filteredInvestments = computed(() => {
@@ -236,7 +240,7 @@ onMounted(loadInvestments)
   align-items:center;
   gap:1rem;
   flex-wrap:wrap;
-  margin-left:auto; /* ✅ pushes filters to the right */
+  margin-left:auto; /* pushes filters to the right */
 }
 .filter-pill-group{display:flex;align-items:center;gap:.5rem}
 .filter-label{font-size:.875rem;font-weight:600;color:#666;margin:0;white-space:nowrap}

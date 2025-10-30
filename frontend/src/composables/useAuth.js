@@ -1,9 +1,6 @@
-/**
- * useAuth Composable
- * 
- * Provides reactive authentication state and user profile management.
- * Fetches user profile data from API and stores in memory (not localStorage).
- */
+// useAuth Composable
+// Provides reactive authentication state and user profile management.
+// Fetches user profile data from API and stores in memory.
 import { ref, computed } from 'vue'
 import { isAuthenticated, isAdmin as checkIsAdmin, getUserRole, clearAuth } from '@/utils/auth'
 import apiClient from '@/services/api'
@@ -21,10 +18,8 @@ export function useAuth() {
   // Computed property for user info
   const currentUser = computed(() => userProfile.value)
 
-  /**
-   * Fetch user profile from API
-   * Only fetches if not already loaded and user is authenticated
-   */
+  // Fetch user profile from API
+  // Only fetches if not already loaded and user is authenticated
   async function loadUserProfile() {
     if (!isAuthenticated()) {
       userProfile.value = null
@@ -45,9 +40,9 @@ export function useAuth() {
         fullName: response.data.name || response.data.fullName,
       }
       
-      console.log('✅ User profile loaded from API')
+      console.log('User profile loaded from API')
     } catch (error) {
-      console.error('❌ Failed to load user profile:', error)
+      console.error('Failed to load user profile:', error)
       
       // If unauthorized, clear auth
       if (error.response?.status === 401) {
@@ -58,20 +53,11 @@ export function useAuth() {
     }
   }
 
-  /**
-   * Logout user - clear token and profile
-   */
+  // Logout user - clear token and profile
   function logout() {
     clearAuth()
     userProfile.value = null
-    console.log('🔓 User logged out')
-  }
-
-  /**
-   * Clear profile cache (useful after login)
-   */
-  function clearProfileCache() {
-    userProfile.value = null
+    console.log('User logged out')
   }
 
   return {
@@ -85,6 +71,5 @@ export function useAuth() {
     // Methods
     loadUserProfile,
     logout,
-    clearProfileCache,
   }
 }

@@ -177,13 +177,13 @@ router.beforeEach((to, from, next) => {
   }
   // Redirect to login if route requires authentication
   if (to.meta.requiresAuth && !isAuthenticated()) {
-    console.warn('⚠️ Access denied: Authentication required')
+    console.warn('Access denied: Authentication required')
     next({ name: 'login', query: { redirect: to.fullPath } })
     return
   }
   // Redirect to home if route requires admin but user is not admin
   if (to.meta.requiresAdmin && !isAdmin()) {
-    console.warn('⚠️ Access denied: Admin privileges required')
+    console.warn('Access denied: Admin privileges required')
     alert('Access denied! This page is only accessible to administrators.')
     next({ name: 'home' })
     return
