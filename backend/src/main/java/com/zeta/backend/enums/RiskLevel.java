@@ -27,7 +27,7 @@ public enum RiskLevel {
         return description;
     }
 
-    // Accepts both enum name (e.g., "LOW") and display name (e.g., "Low Risk") for flexible API input
+    // Accepts both enum name (Ex: "LOW") and display name (EX: "Low Risk") for flexible API input
     public static RiskLevel fromString(String value) {
         for (RiskLevel level : RiskLevel.values()) {
             if (level.name().equalsIgnoreCase(value) ||

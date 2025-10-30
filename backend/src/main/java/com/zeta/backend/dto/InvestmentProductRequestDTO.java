@@ -4,7 +4,6 @@ import com.zeta.backend.enums.InvestmentType;
 import com.zeta.backend.enums.RiskLevel;
 import jakarta.validation.constraints.*;
 import lombok.*;
-
 import java.math.BigDecimal;
 
 @Getter

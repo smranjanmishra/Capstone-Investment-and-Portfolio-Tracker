@@ -4,7 +4,6 @@ public class LoginResponse {
 
     private String token;
 
-    // Constructors
     public LoginResponse() {
     }
 

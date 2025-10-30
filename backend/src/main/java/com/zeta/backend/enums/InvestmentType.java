@@ -25,7 +25,7 @@ public enum InvestmentType {
         return description;
     }
 
-    // Accepts both enum name (e.g., "STOCK") and display name (e.g., "Stock") for flexible API input
+    // Accepts both enum name (Ex: "STOCK") and display name (Ex: "Stock") for flexible API input
     public static InvestmentType fromString(String value) {
         for (InvestmentType type : InvestmentType.values()) {
             if (type.name().equalsIgnoreCase(value) ||

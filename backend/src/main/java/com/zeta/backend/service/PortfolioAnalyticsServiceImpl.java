@@ -14,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Duration;
@@ -31,10 +30,8 @@ public class PortfolioAnalyticsServiceImpl implements PortfolioAnalyticsService 
     private final PortfolioRepository portfolioRepository;
     private final TransactionRepository transactionRepository;
 
-    /*
-     * Calculate overall portfolio summary including total invested, current value,
-     * absolute return, and annualized return.
-     */
+    // Calculate overall portfolio summary including total invested, current value, absolute return, and annualized return.
+
     @Override
     public PortfolioSummaryDTO getPortfolioSummary(Long userId) {
         log.info("Calculating portfolio summary for userId={}", userId);
@@ -92,8 +89,8 @@ public class PortfolioAnalyticsServiceImpl implements PortfolioAnalyticsService 
     }
 
     /*
-     * Calculate the allocation of portfolio by investment type.
-     * Returns each type's value and percentage of total portfolio.
+        Calculate the allocation of portfolio by investment type.
+        Returns each type's value and percentage of total portfolio.
      */
     @Override
     public List<AssetAllocationDTO> getPortfolioAllocation(Long userId) {
@@ -137,7 +134,7 @@ public class PortfolioAnalyticsServiceImpl implements PortfolioAnalyticsService 
     }
 
     /*
-     * Calculate gain or loss per investment product in the user's portfolio.
+        Calculate gain or loss per investment product in the user's portfolio.
      */
     @Override
     public List<GainLossDTO> getPortfolioGains(Long userId) {
@@ -176,7 +173,7 @@ public class PortfolioAnalyticsServiceImpl implements PortfolioAnalyticsService 
     }
 
     /*
-     * Helper to calculate annualized return using weighted average holding period of BUY transactions.
+        Helper to calculate annualized return using weighted average holding period of BUY transactions.
      */
     private BigDecimal calculateAnnualizedReturn(Long userId, BigDecimal totalInvested, BigDecimal currentValue) {
         if (totalInvested.compareTo(BigDecimal.ZERO) == 0) {
@@ -248,10 +245,6 @@ public class PortfolioAnalyticsServiceImpl implements PortfolioAnalyticsService 
 
         return BigDecimal.valueOf(annualizedDouble * 100).setScale(2, RoundingMode.HALF_UP);
     }
-
-
-
-    // ---------- Utility Helpers ----------
 
     private BigDecimal safeMultiply(BigDecimal a, BigDecimal b) {
         if (a == null || b == null) return BigDecimal.ZERO;

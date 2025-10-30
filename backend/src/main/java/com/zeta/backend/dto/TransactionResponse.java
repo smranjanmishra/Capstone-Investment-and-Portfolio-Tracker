@@ -4,9 +4,6 @@ import lombok.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-/**
- * DTO representing a transaction record (BUY/SELL).
- */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

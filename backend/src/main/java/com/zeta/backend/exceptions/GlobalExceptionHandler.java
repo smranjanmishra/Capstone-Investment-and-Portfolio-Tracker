@@ -65,8 +65,6 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
     }
 
-    // ==================== RESOURCE EXCEPTIONS ====================
-
     // Handle resource not found exception (404 Not Found). Thrown when requested resource doesn't exist (e.g., Investment Product, Portfolio).
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<Map<String, Object>> handleResourceNotFoundException(
@@ -101,7 +99,6 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
-    // ==================== VALIDATION EXCEPTIONS ====================
 
     // Handle validation errors (400 Bad Request). Triggered when @Valid annotation fails on request DTOs. Returns detailed field-level error information.
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -130,8 +127,6 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
-    // ==================== GLOBAL EXCEPTION HANDLER ====================
-
     // Handle all other uncaught exceptions (500Internal Server Error). This is the fallback handler for unexpected errors.
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleGlobalException(
@@ -149,8 +144,7 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    // Handle Invalid Arguments (400)
-    // Example: Below minimum investment, negative units, etc.
+    // Handle Invalid Arguments (400) Example: Below minimum investment, negative units, etc.
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Map<String, Object>> handleIllegalArgument(IllegalArgumentException ex) {
         Map<String, Object> response = new HashMap<>();
