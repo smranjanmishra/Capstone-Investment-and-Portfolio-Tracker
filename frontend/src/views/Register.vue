@@ -182,7 +182,7 @@
                 <button
                   type="submit"
                   class="btn btn-primary w-100 py-2 fw-bold"
-                  :disabled="loading"
+                  :disabled="loading || !formData.fullName || !formData.email || !formData.password || !formData.confirmPassword"
                 >
                   <span v-if="loading">
                     <span class="spinner-border spinner-border-sm me-2" role="status"></span>
@@ -290,6 +290,7 @@ export default {
     async function handleRegister() {
       errorMessage.value = ''
       successMessage.value = ''
+      const normalizedEmail = formData.email.trim().toLowerCase()
 
       if (!validateForm()) {
         errorMessage.value = 'Please fix the errors and try again'
@@ -302,15 +303,15 @@ export default {
         // Call backend register API directly
         const requestData = {
           name: formData.fullName,
-          email: formData.email,
+          email: normalizedEmail,
           password: formData.password
         }
-        
+
         // Only include phone if provided
         if (formData.phone.trim()) {
           requestData.phone = formData.phone
         }
-        
+
         const response = await apiClient.post('/auth/register', requestData)
 
         // Registration successful
@@ -324,7 +325,7 @@ export default {
         }, 2000)
       } catch (error) {
         console.error('Registration error:', error)
-        
+
         if (error.response?.status === 409 || error.response?.status === 400) {
           const errorMsg = error.response?.data?.message || error.response?.data?.error
           errorMessage.value = errorMsg || 'Email already registered or invalid data'
@@ -453,5 +454,10 @@ a:hover {
 small.text-muted {
   font-size: 0.8rem;
   color: #6c757d;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 </style>
