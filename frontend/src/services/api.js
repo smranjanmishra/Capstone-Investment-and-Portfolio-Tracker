@@ -18,8 +18,8 @@ const apiClient = axios.create({
 // Request interceptor for adding authentication token if needed
 apiClient.interceptors.request.use(
   (config) => {
-    // Add auth token if available in localStorage
-    const token = localStorage.getItem('authToken')
+    // Add auth token if available in sessionStorage
+    const token = sessionStorage.getItem('authToken')
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
     }
@@ -45,7 +45,7 @@ apiClient.interceptors.response.use(
       // Handle 401 Unauthorized - Session expired or invalid token
       if (status === 401) {
         console.warn('⚠️ Unauthorized access - clearing auth token')
-        localStorage.removeItem('authToken')
+        sessionStorage.removeItem('authToken')
         // Dispatch event for components to react
         window.dispatchEvent(new CustomEvent('auth-token-expired'))
         // Only redirect if not already on login/register page

@@ -7,11 +7,11 @@
 import { jwtDecode } from 'jwt-decode'
 
 /**
- * Get the authentication token from localStorage
+ * Get the authentication token from sessionStorage
  * @returns {string|null} The JWT token or null if not found
  */
 export function getAuthToken() {
-  return localStorage.getItem('authToken')
+  return sessionStorage.getItem('authToken')
 }
 
 /**
@@ -101,7 +101,7 @@ export function getUserRole() {
  * Clear authentication token
  */
 export function clearAuth() {
-  localStorage.removeItem('authToken')
+  sessionStorage.removeItem('authToken')
 }
 
 /**
@@ -109,5 +109,5 @@ export function clearAuth() {
  * @param {string} token - JWT token to store
  */
 export function setAuthToken(token) {
-  localStorage.setItem('authToken', token)
+  sessionStorage.setItem('authToken', token)
 }

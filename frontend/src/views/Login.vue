@@ -117,7 +117,7 @@ export default {
           password: formData.password
         })
         const token = loginResponse.data.token
-        localStorage.setItem('authToken', token)
+        sessionStorage.setItem('authToken', token)
 
         // Dispatch login event for App.vue to load user profile
         window.dispatchEvent(new CustomEvent('user-logged-in'))

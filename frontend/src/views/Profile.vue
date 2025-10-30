@@ -124,7 +124,7 @@ export default {
         
         // If session expired or unauthorized, redirect to login
         if (error.response?.status === 401) {
-          localStorage.removeItem('authToken')
+          sessionStorage.removeItem('authToken')
           router.push('/login')
         }
       } finally {
@@ -148,7 +148,7 @@ export default {
     // Handle logout
     function handleLogout() {
       if (confirm('Are you sure you want to logout?')) {
-        localStorage.removeItem('authToken')
+        sessionStorage.removeItem('authToken')
         console.log(' Logged out successfully')
         router.push('/login')
       }
