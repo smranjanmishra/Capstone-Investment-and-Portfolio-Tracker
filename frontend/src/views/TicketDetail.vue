@@ -112,8 +112,9 @@
 
 <script setup>
 import { ref, onMounted, computed ,watch} from 'vue'
-import { useRoute, useRouter, RouterLink } from 'vue-router'
+import { RouterLink } from 'vue-router'
 import { useTicketStore } from '@/stores/ticketStore'
+import { isAdmin as checkIsAdmin } from '@/utils/auth'
 
 const props = defineProps({
   id: {
@@ -121,8 +122,6 @@ const props = defineProps({
     required: true,
   },
 })
-const route = useRoute()
-const router = useRouter()
 const store = useTicketStore()
 
 const ticket = computed(() => store.currentTicket)
@@ -135,10 +134,7 @@ const backLink = computed(() => {
 })
 
 onMounted(() => {
-  const user = localStorage.getItem('currentUser')
-  if (user) {
-    isAdmin.value = JSON.parse(user).role === 'ADMIN'
-  }
+  isAdmin.value = checkIsAdmin()
   store.error = null;
   responseError.value = '';
   store.fetchTicketById(Number(props.id)).catch(err => {

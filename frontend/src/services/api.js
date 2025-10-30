@@ -46,7 +46,6 @@ apiClient.interceptors.response.use(
       if (status === 401) {
         console.warn('⚠️ Unauthorized access - clearing auth token')
         localStorage.removeItem('authToken')
-        localStorage.removeItem('currentUser')
         // Dispatch event for components to react
         window.dispatchEvent(new CustomEvent('auth-token-expired'))
         // Only redirect if not already on login/register page

@@ -1,5 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
+import { isAuthenticated, isAdmin } from '@/utils/auth'
+
 // Create router instance with HTML5 history mode
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -164,18 +166,7 @@ const router = createRouter({
     },
   ],
 })
-// Check if user has valid authentication token
-function isAuthenticated() {
-  const currentUser = localStorage.getItem('currentUser')
-  return !!currentUser
-}
-// Check if authenticated user has admin role
-function isAdmin() {
-  const currentUser = localStorage.getItem('currentUser')
-  if (!currentUser) return false
-  const user = JSON.parse(currentUser)
-  return user.role === 'ADMIN'
-}
+
 // Global navigation guard - runs before each route change
 router.beforeEach((to, from, next) => {
   // Update page title based on route metadata

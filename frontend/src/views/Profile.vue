@@ -78,6 +78,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import apiClient from '@/services/api'
+import { isAuthenticated } from '@/utils/auth'
 
 export default {
   name: 'UserProfile',
@@ -93,12 +94,6 @@ export default {
       fullName: '',
       phone: '',
     })
-
-    // Check if user is authenticated
-    function isAuthenticated() {
-      const token = localStorage.getItem('authToken')
-      return !!token
-    }
 
     // Load current user from backend
     async function loadCurrentUser() {
@@ -130,7 +125,6 @@ export default {
         // If session expired or unauthorized, redirect to login
         if (error.response?.status === 401) {
           localStorage.removeItem('authToken')
-          localStorage.removeItem('currentUser')
           router.push('/login')
         }
       } finally {
@@ -155,7 +149,6 @@ export default {
     function handleLogout() {
       if (confirm('Are you sure you want to logout?')) {
         localStorage.removeItem('authToken')
-        localStorage.removeItem('currentUser')
         console.log(' Logged out successfully')
         router.push('/login')
       }

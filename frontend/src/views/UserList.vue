@@ -155,6 +155,7 @@ import apiClient from '@/services/api'
 import UserStatCard from '@/components/UserStatCard.vue'
 import UserTableRow from '@/components/UserTableRow.vue'
 import UserDetailsModal from '@/components/UserDetailsModal.vue'
+import { useAuth } from '@/composables/useAuth'
 
 export default {
   name: 'UserListView',
@@ -166,20 +167,16 @@ export default {
   },
 
   setup() {
+    const { isAdmin } = useAuth()
+
     // State
     const users = ref([])
-    const currentUser = ref(null)
     const searchQuery = ref('')
     const filterRole = ref('')
     const showDetailsModal = ref(false)
     const selectedUser = ref(null)
     const loading = ref(false)
     const error = ref(null)
-
-    // Check if current user is admin
-    const isAdmin = computed(() => {
-      return currentUser.value && currentUser.value.role === 'ADMIN'
-    })
 
     // Filtered users
     const filteredUsers = computed(() => {
@@ -236,14 +233,6 @@ export default {
       }
     }
 
-    // Load current user from localStorage
-    function loadCurrentUser() {
-      const storedCurrentUser = localStorage.getItem('currentUser')
-      if (storedCurrentUser) {
-        currentUser.value = JSON.parse(storedCurrentUser)
-      }
-    }
-
     // View user details
     function viewUser(user) {
       selectedUser.value = user
@@ -257,13 +246,11 @@ export default {
     }
 
     onMounted(() => {
-      loadCurrentUser()
       loadUsers()
     })
 
     return {
       users,
-      currentUser,
       isAdmin,
       searchQuery,
       filterRole,
