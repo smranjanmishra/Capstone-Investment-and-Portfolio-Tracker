@@ -135,12 +135,6 @@ onMounted(() => {
               >
                 <i class="bi bi-person-circle me-1"></i>
                 {{ currentUser.fullName }}
-                <!-- <span
-                  class="badge ms-2"
-                  :class="currentUser.role === 'ADMIN' ? 'bg-danger' : 'bg-light text-dark'"
-                >
-                  {{ currentUser.role }}
-                </span> -->
               </a>
               <ul class="dropdown-menu dropdown-menu-end">
                 <li>
