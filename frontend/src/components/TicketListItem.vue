@@ -27,7 +27,7 @@
           User: {{ ticket.userResponse.name }} ({{ ticket.userResponse.email }})
         </span>
         <span class="badge" :class="priorityClass(ticket.ticketPriority)">
-          {{ ticket.ticketPriority }}
+          {{ ticket.ticketPriority }} PRIORITY
         </span>
         
       </div>
