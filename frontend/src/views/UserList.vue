@@ -172,9 +172,7 @@ export default {
     const searchQuery = ref('')
     const filterRole = ref('')
     const showDetailsModal = ref(false)
-    const showDeleteModal = ref(false)
     const selectedUser = ref(null)
-    const userToDelete = ref(null)
     const loading = ref(false)
     const error = ref(null)
 
@@ -233,13 +231,6 @@ export default {
       } catch (err) {
         console.error('Error loading users:', err)
         error.value = err.response?.data?.message || 'Failed to load users'
-        
-        // Fallback to localStorage if API fails (for development)
-        const storedUsers = localStorage.getItem('users')
-        if (storedUsers) {
-          users.value = JSON.parse(storedUsers)
-          console.log('⚠️ Loaded users from localStorage fallback')
-        }
       } finally {
         loading.value = false
       }
@@ -280,9 +271,7 @@ export default {
       adminCount,
       regularUserCount,
       showDetailsModal,
-      showDeleteModal,
       selectedUser,
-      userToDelete,
       loading,
       error,
       loadUsers,
