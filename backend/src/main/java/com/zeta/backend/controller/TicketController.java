@@ -91,10 +91,12 @@ public class TicketController {
             Long userId = extractUserId(authentication);
             logger.info("Get tickets request received from userId: {}", userId);
 
-            // Fetch tickets directly by userId - no need to verify user exists (JWT guarantees it)
+            // Fetch tickets directly by userId - no need to verify user exists (JWT
+            // guarantees it)
             List<Ticket> ticketListOfUser = ticketService.getTicketsByUserId(userId);
-            
-            // Map tickets to DTOs without user object (user info not critical for this endpoint)
+
+            // Map tickets to DTOs without user object (user info not critical for this
+            // endpoint)
             List<TicketResponseDto> listOfTicketDto = ticketListOfUser.stream()
                     .map(ticket -> TicketDtoMapper.mapTicketToDto(ticket, null))
                     .toList();

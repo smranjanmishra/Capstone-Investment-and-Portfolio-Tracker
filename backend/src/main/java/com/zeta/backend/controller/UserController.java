@@ -25,12 +25,13 @@ public class UserController {
         this.userService = userService;
     }
 
-//     get authenticated user's profile.
-//     GET /user/profile
-//     requires: Valid JWT token in Authorization header
-//     response: 200 OK with user details
-//     authentication -> Spring Security authentication object (contains userId from JWT)
-//     return ResponseEntity with UserResponse
+    // get authenticated user's profile.
+    // GET /user/profile
+    // requires: Valid JWT token in Authorization header
+    // response: 200 OK with user details
+    // authentication -> Spring Security authentication object (contains userId from
+    // JWT)
+    // return ResponseEntity with UserResponse
 
     @GetMapping("/profile")
     public ResponseEntity<UserResponse> getProfile(Authentication authentication) {

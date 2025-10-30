@@ -35,7 +35,7 @@ class JwtUtilTest {
         field.set(target, value);
     }
 
-// Token Generation Tests
+    // Token Generation Tests
 
     @Test
     @DisplayName("Should generate valid JWT token")
@@ -59,7 +59,8 @@ class JwtUtilTest {
         Role role = Role.USER;
 
         String token1 = jwtUtil.generateToken(userId, role);
-        Thread.sleep(1100); // 1.1 second delay to ensure different issuedAt time (JWT uses seconds precision)
+        Thread.sleep(1100); // 1.1 second delay to ensure different issuedAt time (JWT uses seconds
+                            // precision)
         String token2 = jwtUtil.generateToken(userId, role);
 
         assertNotEquals(token1, token2, "Tokens should be different due to different issued times");
@@ -117,7 +118,7 @@ class JwtUtilTest {
         assertEquals(Role.ADMIN, extractedRole, "Role should be ADMIN");
     }
 
-// Token Validation Tests
+    // Token Validation Tests
 
     @Test
     @DisplayName("Should validate correct token successfully")
@@ -179,7 +180,7 @@ class JwtUtilTest {
     @Test
     @DisplayName("Should reject token with wrong signature")
     void testValidateToken_WrongSignature() {
-         // create token with different secret
+        // create token with different secret
         JwtUtil differentSecretUtil = new JwtUtil();
         try {
             setField(differentSecretUtil, "secret", "differentSecretKey12345678901234567890123456789012");
@@ -195,7 +196,7 @@ class JwtUtilTest {
         assertFalse(isValid, "Token signed with different secret should fail validation");
     }
 
-// Token Expiry Tests
+    // Token Expiry Tests
 
     @Test
     @DisplayName("Should not be expired immediately after generation")
@@ -246,7 +247,7 @@ class JwtUtilTest {
         assertFalse(isValid, "Expired token should fail validation");
     }
 
-// Claim Extraction Tests
+    // Claim Extraction Tests
 
     @Test
     @DisplayName("Should extract userId claim correctly")

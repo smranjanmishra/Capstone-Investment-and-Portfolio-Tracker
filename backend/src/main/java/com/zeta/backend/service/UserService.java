@@ -36,15 +36,16 @@ public class UserService {
     public UserService(UserRepository userRepository, JwtUtil jwtUtil) {
         this.userRepository = userRepository;
         this.jwtUtil = jwtUtil;
-//        BCrypt with strength 12
+        // BCrypt with strength 12
         passwordEncoder = new BCryptPasswordEncoder(12);
     }
 
-//     register a new user with role USER by default.
-//     validates email uniqueness and hashes password using bcrypt with cost factor 12.
-//     request -> registration details
-//     return UserResponse with created user details (excluding password)
-//     throws DuplicateEmailException if email already exists
+    // register a new user with role USER by default.
+    // validates email uniqueness and hashes password using bcrypt with cost factor
+    // 12.
+    // request -> registration details
+    // return UserResponse with created user details (excluding password)
+    // throws DuplicateEmailException if email already exists
 
     @Transactional
     public UserResponse registerUser(RegisterRequest request) {
@@ -65,8 +66,7 @@ public class UserService {
                 request.getEmail(),
                 hashedPassword,
                 request.getPhone(),
-                Role.USER
-        );
+                Role.USER);
 
         User savedUser = userRepository.save(user);
         logger.info("User registered successfully: userId={}, email={}", savedUser.getId(), savedUser.getEmail());
@@ -74,11 +74,11 @@ public class UserService {
         return UserResponse.fromUser(savedUser);
     }
 
-//     authenticate user and generate JWT token.
-//     verifies credentials using bcrypt password matching.
-//     request -> login credentials
-//     return LoginResponse containing JWT token
-//     throws InvalidCredentialsException if credentials are invalid
+    // authenticate user and generate JWT token.
+    // verifies credentials using bcrypt password matching.
+    // request -> login credentials
+    // return LoginResponse containing JWT token
+    // throws InvalidCredentialsException if credentials are invalid
 
     public LoginResponse loginUser(LoginRequest request) {
         logger.info("Login attempt for email: {}", request.getEmail());
@@ -103,10 +103,10 @@ public class UserService {
         return new LoginResponse(token);
     }
 
-//     get user profile by user ID.
-//     userId -> the user's ID
-//     return UserResponse with user details (excluding password)
-//     throws UserNotFoundException if user not found
+    // get user profile by user ID.
+    // userId -> the user's ID
+    // return UserResponse with user details (excluding password)
+    // throws UserNotFoundException if user not found
 
     public UserResponse getUserProfile(Long userId) {
         User user = userRepository.findById(userId)
@@ -118,9 +118,9 @@ public class UserService {
         return UserResponse.fromUser(user);
     }
 
-//     get all users (admin only).
-//     returns all users excluding password hashes.
-//     return List of UserResponse objects
+    // get all users (admin only).
+    // returns all users excluding password hashes.
+    // return List of UserResponse objects
 
     public List<UserResponse> getAllUsers() {
         logger.info("Fetching all users for admin");

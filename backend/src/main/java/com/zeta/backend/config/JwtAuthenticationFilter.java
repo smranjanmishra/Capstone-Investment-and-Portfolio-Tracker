@@ -57,12 +57,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                 // Create authentication object with role as authority
                 SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + role.name());
-                UsernamePasswordAuthenticationToken authentication =
-                        new UsernamePasswordAuthenticationToken(
-                                userId,  // Principal is userId (Long)
-                                null,    // Credentials not needed after authentication
-                                Collections.singletonList(authority)
-                        );
+                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                        userId, // Principal is userId (Long)
+                        null, // Credentials not needed after authentication
+                        Collections.singletonList(authority));
 
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 

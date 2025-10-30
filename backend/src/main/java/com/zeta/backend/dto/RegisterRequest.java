@@ -2,6 +2,7 @@ package com.zeta.backend.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 // DTO for user registration request.
@@ -18,10 +19,12 @@ public class RegisterRequest {
     @Size(min = 6, message = "Password must be at least 6 characters")
     private String password;
 
+    @Pattern(regexp = "^$|^[0-9]{10}$", message = "Phone number must be exactly 10 digits if provided")
     private String phone; // optional field
 
     // Default Constructor
-    public RegisterRequest() {}
+    public RegisterRequest() {
+    }
 
     // Constructor with all fields
     public RegisterRequest(String name, String email, String password, String phone) {
