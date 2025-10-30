@@ -159,8 +159,10 @@ watch(ticket, (newTicket) => {
      selectedPriority.value = 'LOW'; 
   }
 }, { immediate: true });
+
 async function handleResponse() {
-  if (!responseText.value.trim()) {
+  const trimmed = responseText.value ? responseText.value.trim() : ''
+  if (!trimmed) {
     responseError.value = 'Response/Comment cannot be empty.'
     return
   }
@@ -168,12 +170,19 @@ async function handleResponse() {
      responseError.value = 'Cannot modify a closed ticket.';
      return;
    }
+
+   // If admin is closing (ticket is RESPONDED) ask for confirmation
+   if (isAdmin.value && ticket.value.ticketStatus === 'RESPONDED') {
+     const ok = window.confirm('You are about to close this ticket. This action cannot be undone. Are you sure you want to proceed?')
+     if (!ok) return
+   }
+
   responseError.value = ''
 
   try {
     await store.respondToTicket(
         ticket.value.id,
-        responseText.value,
+        trimmed,
         ticket.value.ticketStatus === 'OPEN' ? selectedPriority.value : null 
     );
     await store.fetchTicketById(ticket.value.id)
