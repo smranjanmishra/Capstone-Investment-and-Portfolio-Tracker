@@ -52,8 +52,9 @@
                   id="investment"
                   v-model="formData.investmentProductId"
                   class="form-select form-select-lg"
+                  @focus="ensurePortfolioLoaded"
                 >
-                  <option :value="null">-- General Inquiry --</option>
+                  <option value="">-- General Inquiry --</option>
                   <option
                     v-if="portfolioStore.loading"
                     disabled
@@ -68,8 +69,18 @@
                     {{ item.investmentProductName }} (ID: {{ item.investmentProductId }})
                   </option>
                 </select>
-                <div v-if="portfolioStore.error" class="text-danger small mt-1">
-                  Could not load your investments.
+                <div class="d-flex align-items-center mt-1">
+                  <div v-if="portfolioStore.error" class="text-danger small">
+                    Could not load your investments.
+                  </div>
+                  <button
+                    v-if="portfolioStore.error"
+                    type="button"
+                    class="btn btn-sm btn-outline-secondary ms-2"
+                    @click="ensurePortfolioLoaded(true)"
+                  >
+                    Retry
+                  </button>
                 </div>
               </div>
 
@@ -86,12 +97,15 @@
                   required
                 ></textarea>
               </div>
+              <div v-if="formError" class="alert alert-danger small mb-3">
+                {{ formError }}
+              </div>
 
               <div class="d-grid">
                 <button
                   type="submit"
                   class="btn btn-primary btn-lg fw-bold"
-                  :disabled="ticketStore.loading"
+                  :disabled="ticketStore.loading || !isFormValid"
                 >
                   <span
                     v-if="ticketStore.loading"
@@ -123,7 +137,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useTicketStore } from '@/stores/ticketStore'
 import { usePortfolioStore } from '@/stores/portfolioStore'
@@ -137,7 +151,14 @@ const successMessage = ref('')
 const formData = reactive({
   subject: '',
   description: '',
-  investmentProductId: null, // Default to null for "General Inquiry"
+  investmentProductId: '',
+})
+
+const formError = ref('')
+const isFormValid = computed(() => {
+  const subjectOk = !!(formData.subject && formData.subject.trim().length > 0)
+  const descOk = !!(formData.description && formData.description.trim().length > 0)
+  return subjectOk && descOk
 })
 
 // Fetch the user's portfolio when the component loads
@@ -147,26 +168,45 @@ onMounted(() => {
   })
 })
 
-async function handleSubmit() {
+async function ensurePortfolioLoaded(force = false) {
+  if (portfolioStore.loading) return
+  if (portfolioStore.portfolioItems && portfolioStore.portfolioItems.length > 0 && !force) return
   try {
-    await ticketStore.createTicket({ ...formData })
-    
-    // Show success message
-    successMessage.value = 'Your ticket has been submitted successfully! We will get back to you soon.'
+    await portfolioStore.fetchPortfolio()
+  } catch (err) {
+    console.error('Portfolio load retry failed:', err)
+  }
+}
 
-    // Reset form
+async function handleSubmit() {
+  formError.value = ''
+  const trimmedSubject = formData.subject ? formData.subject.trim() : ''
+  const trimmedDescription = formData.description ? formData.description.trim() : ''
+
+  if (!trimmedSubject || !trimmedDescription) {
+    formError.value = 'Blank spaces are not valid. Please provide a valid subject and description.'
+    return
+  }
+
+  try {
+    const payload = {
+      subject: trimmedSubject,
+      description: trimmedDescription,
+      investmentProductId: formData.investmentProductId === '' ? null : formData.investmentProductId
+    }
+
+    await ticketStore.createTicket(payload)
+    successMessage.value = 'Your ticket has been submitted successfully! We will get back to you soon.'
     formData.subject = ''
     formData.description = ''
-    formData.investmentProductId = null
-
-    // Optional: Redirect after a delay
+    formData.investmentProductId = ''
     setTimeout(() => {
       router.push('/help-center/my-tickets')
-    }, 3000)
+    }, 2000)
 
   } catch (error) {
-    // Error is already handled and set in the store
     console.error('Submission failed:', error)
+    formError.value = ticketStore.error?.message || ticketStore.error || 'Failed to submit ticket.'
   }
 }
 </script>
@@ -180,7 +220,7 @@ async function handleSubmit() {
 }
 .form-select-lg {
   padding: 0.75rem 1rem;
-  font-size: 1rem; /* Fix for select font size */
+  font-size: 1rem; 
 }
 .form-label {
   font-size: 0.9rem;
