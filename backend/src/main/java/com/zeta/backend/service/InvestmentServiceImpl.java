@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 
 public class InvestmentServiceImpl implements InvestmentService {
-    // Dependencies injected via constructor (best practice)
+
     private final InvestmentProductRepository investmentRepository;
     private final ModelMapper modelMapper;
 

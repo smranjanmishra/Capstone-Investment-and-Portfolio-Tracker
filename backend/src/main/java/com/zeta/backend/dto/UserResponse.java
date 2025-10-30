@@ -2,10 +2,7 @@ package com.zeta.backend.dto;
 
 import com.zeta.backend.enums.Role;
 import com.zeta.backend.models.User;
-
 import java.time.ZonedDateTime;
-
-//DTO for user response. Excludes password_hash for security.
 
 public class UserResponse {
 
@@ -16,8 +13,8 @@ public class UserResponse {
     private Role role;
     private ZonedDateTime createdAt;
 
-    //    constructors
-    public UserResponse(){}
+    public UserResponse() {
+    }
 
     public UserResponse(String email, Integer id, String string) {
 
@@ -43,7 +40,6 @@ public class UserResponse {
         );
     }
 
-//    getters and setters
 
     public Long getId() {
         return id;

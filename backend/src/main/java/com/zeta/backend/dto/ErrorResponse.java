@@ -1,7 +1,5 @@
 package com.zeta.backend.dto;
 
-//DTO for error responses
-
 public class ErrorResponse {
 
     private String error;

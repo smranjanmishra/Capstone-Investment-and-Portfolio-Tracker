@@ -7,7 +7,6 @@ import jakarta.validation.constraints.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
@@ -44,7 +43,6 @@ public class InvestmentProduct {
     @NotNull(message = "Risk level is required")
     private RiskLevel riskLevel;
 
-    // Precision 15,2 supports up to 999,999,999,999.99 for large investments
     @Column(name = "min_investment", nullable = false, precision = 15, scale = 2)
     @NotNull(message = "Minimum investment amount is required")
     @DecimalMin(value = "0.0", inclusive = false, message = "Minimum investment must be greater than 0")
@@ -56,13 +54,11 @@ public class InvestmentProduct {
     @DecimalMax(value = "100.0", message = "Expected return rate cannot exceed 100%")
     private BigDecimal expectedReturnRate;
 
-    // Scale 4 provides precision for fractional unit prices (e.g., mutual fund NAV)
     @Column(name = "current_nav", nullable = false, precision = 15, scale = 4)
     @NotNull(message = "Current NAV is required")
     @DecimalMin(value = "0.0", inclusive = false, message = "Current NAV must be greater than 0")
     private BigDecimal currentNAV;
 
-    // Soft delete flag - preserves historical data and relationships
     @Column(name = "is_active", nullable = false)
     @NotNull(message = "Active status is required")
     private Boolean isActive;
@@ -71,17 +67,14 @@ public class InvestmentProduct {
     @Size(max = 2000, message = "Description cannot exceed 2000 characters")
     private String description;
 
-    // Automatically set on entity creation, immutable thereafter
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    // Automatically updated on every entity modification
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    // Ensures new products are active by default if not explicitly set
     @PrePersist
     protected void onCreate() {
         if (isActive == null) {

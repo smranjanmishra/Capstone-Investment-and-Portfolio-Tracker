@@ -4,7 +4,6 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-// DTO for user registration request.
 public class RegisterRequest {
 
     @NotBlank(message = "Name is required")
@@ -20,18 +19,14 @@ public class RegisterRequest {
 
     private String phone; // optional field
 
-    // Default Constructor
     public RegisterRequest() {}
 
-    // Constructor with all fields
     public RegisterRequest(String name, String email, String password, String phone) {
         this.name = name;
         this.email = email;
         this.password = password;
         this.phone = phone;
     }
-
-    // getters and setters
 
     public String getName() {
         return name;
