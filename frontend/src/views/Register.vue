@@ -157,27 +157,6 @@
                   </div>
                 </div>
 
-                <!-- Terms and Conditions -->
-                <!-- <div class="mb-4">
-                  <div class="form-check">
-                    <input
-                      id="terms"
-                      v-model="formData.acceptTerms"
-                      class="form-check-input"
-                      type="checkbox"
-                      :class="{ 'is-invalid': errors.acceptTerms }"
-                      required
-                    />
-                    <label class="form-check-label" for="terms">
-                      I agree to the <a href="#" class="text-decoration-none">Terms & Conditions</a>
-                      and <a href="#" class="text-decoration-none">Privacy Policy</a>
-                    </label>
-                  </div>
-                  <div v-if="errors.acceptTerms" class="invalid-feedback d-block">
-                    {{ errors.acceptTerms }}
-                  </div>
-                </div> -->
-
                 <!-- Submit Button -->
                 <button
                   type="submit"

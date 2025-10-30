@@ -41,11 +41,19 @@ public class InvestmentController {
 
         InvestmentProductResponseDTO createdInvestment = investmentService.createInvestment(requestDTO);
 
+        Map<String, Object> response = new HashMap<>();
+
+        response.put("success", true);
+
+        response.put("message", "Investment product created successfully");
+
+        response.put("data", createdInvestment);
+
+
         log.info("API Response: Investment product '{}' created with ID: {}",
                 createdInvestment.getName(), createdInvestment.getId());
 
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(buildResponse("Investment product created successfully", null, createdInvestment.getId(), false));
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PutMapping("/admin/investments/{id}")

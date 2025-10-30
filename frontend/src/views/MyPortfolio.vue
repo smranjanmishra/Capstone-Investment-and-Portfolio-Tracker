@@ -6,14 +6,14 @@
       <p class="page-subtitle">Track and manage your investment holdings</p>
     </div>
 
-    <!-- ✅ Summary Cards -->
+    <!-- Summary Cards -->
     <div v-if="portfolio.length > 0" class="row mt-4 mb-5">
       <StatisticsCard title="Total Holdings" :value="filteredPortfolio.length" />
       <StatisticsCard title="Portfolio Value" :value="formatCurrency(totalValue)" />
       <StatisticsCard title="Total Investment" :value="formatCurrency(totalCost)" />
     </div>
 
-    <!-- ✅ Filters Section -->
+    <!-- Filters Section -->
     <div class="filters-section mb-4">
       <div class="filter-container">
 
@@ -86,26 +86,26 @@
       </div>
     </div>
 
-    <!-- ✅ Loading -->
+    <!-- Loading -->
     <div v-if="loading" class="text-center py-5">
       <div class="spinner-border text-primary"></div>
       <p class="mt-3 text-muted">Loading portfolio...</p>
     </div>
 
-    <!-- ✅ Error -->
+    <!-- Error -->
     <div v-else-if="error" class="alert alert-danger text-center">
       {{ error }}
       <button class="btn btn-sm btn-outline-danger ms-2" @click="loadPortfolio">Retry</button>
     </div>
 
-    <!-- ✅ Empty -->
+    <!-- Empty -->
     <div v-else-if="filteredPortfolio.length === 0" class="empty-state text-center py-5">
       <i class="bi bi-inbox display-1 text-muted"></i>
       <h3 class="mt-3">No Portfolio Holdings Found</h3>
       <button class="btn btn-primary mt-3" @click="goToInvestments">Start Investing</button>
     </div>
 
-    <!-- ✅ Portfolio Grid -->
+    <!-- Portfolio Grid -->
     <div v-else class="investment-grid">
       <div v-for="item in filteredPortfolio" :key="item.id" class="investment-card">
 
@@ -147,7 +147,7 @@
           </div>
         </div>
 
-        <!-- ✅ Risk Section (Matches InvestmentCard) -->
+        <!-- Risk Section (Matches InvestmentCard) -->
         <div class="card-details">
           <span class="detail-label"><i class="bi bi-exclamation-triangle"></i> Risk Level:</span>
           <span class="risk-badge" :class="getRiskBadgeClass(item.risk)">
@@ -155,7 +155,7 @@
           </span>
         </div>
 
-        <!-- ✅ Buttons -->
+        <!-- Buttons -->
         <div class="invest-buttons">
           <button class="invest-btn buy-btn"
             :disabled="!item.isActive"

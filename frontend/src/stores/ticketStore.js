@@ -1,11 +1,12 @@
 import { defineStore } from "pinia";
 import { ref } from 'vue';
-import apiClient, {
+import {
   createTicket as apiCreateTicket,
   getUserTickets as apiGetUserTickets,
   getAllTickets as apiGetAllTickets,
   respondToTicket as apiRespondToTicket,
 } from '@/services/api';
+import { isAdmin } from '@/utils/auth';
 
 export const useTicketStore = defineStore('ticket', () => {
 
@@ -96,6 +97,7 @@ export const useTicketStore = defineStore('ticket', () => {
   error.value = null;
 
   try {
+
     const trimmedResponse = responseText ? String(responseText).trim() : ''
     if (!trimmedResponse) {
       error.value = 'Response/Comment cannot be empty.'
@@ -109,6 +111,7 @@ export const useTicketStore = defineStore('ticket', () => {
     } else if (currentStatus === "RESPONDED") {
       updatedStatus = "CLOSED";
     }
+
     await apiRespondToTicket(ticketId, {
       response: trimmedResponse,
       priority: newPriority
@@ -143,15 +146,13 @@ export const useTicketStore = defineStore('ticket', () => {
         currentTicket.value = ticket;
         return ticket;
       } else {
-        if (localStorage.getItem('currentUser')) {
-           const userRole = JSON.parse(localStorage.getItem('currentUser')).role;
-           if (userRole === 'ADMIN') {
-             await fetchAllTickets();
-             ticket = allTickets.value.find(t => t.id === ticketId);
-           } else {
-             await fetchUserTickets();
-             ticket = userTickets.value.find(t => t.id === ticketId);
-           }
+        // Fetch tickets if not in cache
+        if (isAdmin()) {
+          await fetchAllTickets();
+          ticket = allTickets.value.find(t => t.id === ticketId);
+        } else {
+          await fetchUserTickets();
+          ticket = userTickets.value.find(t => t.id === ticketId);
         }
         
         if (ticket) {

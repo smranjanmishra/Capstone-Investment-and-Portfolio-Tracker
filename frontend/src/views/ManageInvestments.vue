@@ -155,9 +155,9 @@
                     required
                   >
                     <option value="">Select Risk Level</option>
-                    <option value="LOW">Low Risk</option>
-                    <option value="MEDIUM">Medium Risk</option>
-                    <option value="HIGH">High Risk</option>
+                    <option value="LOW">Low</option>
+                    <option value="MEDIUM">Medium</option>
+                    <option value="HIGH">High</option>
                   </select>
                   <div v-if="validationErrors.riskLevel" class="invalid-feedback">
                     {{ validationErrors.riskLevel }}
@@ -467,7 +467,13 @@ export default {
         return
       }
 
+      const confirmed = confirm(`Are you sure you want to ${isEditMode.value ? 'update' : 'create'} this investment product?`)
+      if (!confirmed) {
+        return
+      }
+
       try {
+
         if (isEditMode.value) {
           await investmentStore.updateInvestment(formData.id, formData)
           successMessage.value = `Successfully updated "${formData.name}"`

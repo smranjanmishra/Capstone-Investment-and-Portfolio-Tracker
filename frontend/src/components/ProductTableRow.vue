@@ -86,9 +86,9 @@ export default {
     // @returns {string} - Formatted risk level
     formatRiskLevel(riskLevel) {
       const displayNames = {
-        LOW: 'Low Risk',
-        MEDIUM: 'Medium Risk',
-        HIGH: 'High Risk',
+        LOW: 'Low',
+        MEDIUM: 'Medium',
+        HIGH: 'High',
       }
       return displayNames[riskLevel] || riskLevel
     },
