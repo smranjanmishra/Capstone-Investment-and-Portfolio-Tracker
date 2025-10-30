@@ -52,8 +52,10 @@
                   id="investment"
                   v-model="formData.investmentProductId"
                   class="form-select form-select-lg"
+                  @focus="ensurePortfolioLoaded"
                 >
-                  <option :value="null">-- General Inquiry --</option>
+                  <!-- Use empty-string as the "general inquiry" sentinel (safer for v-model) -->
+                  <option value="">-- General Inquiry --</option>
                   <option
                     v-if="portfolioStore.loading"
                     disabled
@@ -68,8 +70,18 @@
                     {{ item.investmentProductName }} (ID: {{ item.investmentProductId }})
                   </option>
                 </select>
-                <div v-if="portfolioStore.error" class="text-danger small mt-1">
-                  Could not load your investments.
+                <div class="d-flex align-items-center mt-1">
+                  <div v-if="portfolioStore.error" class="text-danger small">
+                    Could not load your investments.
+                  </div>
+                  <button
+                    v-if="portfolioStore.error"
+                    type="button"
+                    class="btn btn-sm btn-outline-secondary ms-2"
+                    @click="ensurePortfolioLoaded(true)"
+                  >
+                    Retry
+                  </button>
                 </div>
               </div>
 
@@ -87,11 +99,16 @@
                 ></textarea>
               </div>
 
+              <!-- Inline validation message for whitespace-only -->
+              <div v-if="formError" class="alert alert-danger small mb-3">
+                {{ formError }}
+              </div>
+
               <div class="d-grid">
                 <button
                   type="submit"
                   class="btn btn-primary btn-lg fw-bold"
-                  :disabled="ticketStore.loading"
+                  :disabled="ticketStore.loading || !isFormValid"
                 >
                   <span
                     v-if="ticketStore.loading"
@@ -123,7 +140,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useTicketStore } from '@/stores/ticketStore'
 import { usePortfolioStore } from '@/stores/portfolioStore'
@@ -137,19 +154,58 @@ const successMessage = ref('')
 const formData = reactive({
   subject: '',
   description: '',
-  investmentProductId: null, // Default to null for "General Inquiry"
+  // use empty string as default so v-model is simple; treat '' as no-investment
+  investmentProductId: '',
+})
+
+const formError = ref('')
+
+// Computed to ensure fields are not whitespace-only
+const isFormValid = computed(() => {
+  const subjectOk = !!(formData.subject && formData.subject.trim().length > 0)
+  const descOk = !!(formData.description && formData.description.trim().length > 0)
+  return subjectOk && descOk
 })
 
 // Fetch the user's portfolio when the component loads
 onMounted(() => {
+  // initial attempt; errors will be surfaced via portfolioStore.error
   portfolioStore.fetchPortfolio().catch(err => {
     console.error("Failed to load portfolio for dropdown:", err)
   })
 })
 
-async function handleSubmit() {
+// ensurePortfolioLoaded: optionally force retry
+async function ensurePortfolioLoaded(force = false) {
+  if (portfolioStore.loading) return
+  if (portfolioStore.portfolioItems && portfolioStore.portfolioItems.length > 0 && !force) return
   try {
-    await ticketStore.createTicket({ ...formData })
+    await portfolioStore.fetchPortfolio()
+  } catch (err) {
+    console.error('Portfolio load retry failed:', err)
+  }
+}
+
+async function handleSubmit() {
+  formError.value = ''
+  // Validate trimmed input
+  const trimmedSubject = formData.subject ? formData.subject.trim() : ''
+  const trimmedDescription = formData.description ? formData.description.trim() : ''
+
+  if (!trimmedSubject || !trimmedDescription) {
+    formError.value = 'Blank spaces are not valid. Please provide a valid subject and description.'
+    return
+  }
+
+  try {
+    // Do NOT convert investmentProductId to Number — send as-is or null for general inquiry
+    const payload = {
+      subject: trimmedSubject,
+      description: trimmedDescription,
+      investmentProductId: formData.investmentProductId === '' ? null : formData.investmentProductId
+    }
+
+    await ticketStore.createTicket(payload)
     
     // Show success message
     successMessage.value = 'Your ticket has been submitted successfully! We will get back to you soon.'
@@ -157,7 +213,7 @@ async function handleSubmit() {
     // Reset form
     formData.subject = ''
     formData.description = ''
-    formData.investmentProductId = null
+    formData.investmentProductId = ''
 
     // Optional: Redirect after a delay
     setTimeout(() => {
@@ -167,6 +223,7 @@ async function handleSubmit() {
   } catch (error) {
     // Error is already handled and set in the store
     console.error('Submission failed:', error)
+    formError.value = ticketStore.error?.message || ticketStore.error || 'Failed to submit ticket.'
   }
 }
 </script>
