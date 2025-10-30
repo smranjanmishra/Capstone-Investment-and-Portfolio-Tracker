@@ -6,15 +6,9 @@ import com.zeta.backend.dto.InvestmentProductResponseDTO;
 import java.util.List;
 
 public interface InvestmentService {
-    // Returns only active products - public endpoint
     List<InvestmentProductResponseDTO> getAllActiveInvestments();
-
     InvestmentProductResponseDTO getInvestmentById(Long id);
-
     InvestmentProductResponseDTO createInvestment(InvestmentProductRequestDTO requestDTO);
-
     InvestmentProductResponseDTO updateInvestment(Long id, InvestmentProductRequestDTO requestDTO);
-
-    // Soft delete - sets isActive=false, preserves data for audit
     void deactivateInvestment(Long id);
 }

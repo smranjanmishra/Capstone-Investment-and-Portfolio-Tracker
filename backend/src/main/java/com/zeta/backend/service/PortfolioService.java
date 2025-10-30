@@ -3,7 +3,6 @@ package com.zeta.backend.service;
 import com.zeta.backend.dto.PortfolioRequest;
 import com.zeta.backend.dto.PortfolioResponse;
 import com.zeta.backend.dto.TransactionResponse;
-
 import java.util.List;
 
 public interface PortfolioService {

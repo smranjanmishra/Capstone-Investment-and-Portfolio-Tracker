@@ -3,8 +3,6 @@ package com.zeta.backend.dto;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
-// DTO for login request.
-
 public class LoginRequest {
 
     @NotBlank(message = "Email is required")
@@ -14,7 +12,6 @@ public class LoginRequest {
     @NotBlank(message = "Password is required")
     private String password;
 
-    // Constructors
     public LoginRequest() {
     }
 

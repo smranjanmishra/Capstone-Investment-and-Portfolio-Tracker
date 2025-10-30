@@ -2,7 +2,6 @@ package com.zeta.backend.util;
 
 import com.zeta.backend.dto.InvestmentProductRequestDTO;
 import com.zeta.backend.exceptions.InvalidInputException;
-
 import java.math.BigDecimal;
 
 public class ValidationUtil {

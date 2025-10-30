@@ -10,7 +10,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TicketRequestDto {
-
     private String description;
     private Integer investmentProductId;
     private String subject;

@@ -4,9 +4,6 @@ import jakarta.validation.constraints.*;
 import lombok.*;
 import java.math.BigDecimal;
 
-/**
- * DTO for handling incoming portfolio operations such as buy or sell.
- */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
