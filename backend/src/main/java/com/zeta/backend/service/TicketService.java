@@ -1,7 +1,6 @@
 package com.zeta.backend.service;
 
 import com.zeta.backend.models.Ticket;
-import com.zeta.backend.models.User;
 import com.zeta.backend.enums.TicketPriority;
 import com.zeta.backend.enums.TicketStatus;
 import com.zeta.backend.repository.TicketRepository;
@@ -21,10 +20,6 @@ public class TicketService {
 
     @Autowired
     private TicketRepository ticketRepository;
-
-    @Autowired
-    private UserService userService;
-
 
     // Create a new support ticket.
     // Automatically sets ticket priority based on subject keywords.
@@ -70,13 +65,14 @@ public class TicketService {
         logger.info("Fetching ticket with ID: {}", ticketId);
         return ticketRepository.findById(ticketId);
     }
-    // Retrieve all tickets for a specific user
-    // user -> User object whose tickets need to be fetched
+
+    // Retrieve all tickets for a specific user by userId
+    // userId -> ID of the user whose tickets need to be fetched
     // returns -> List of Ticket objects belonging to the user
-    public List<Ticket> getTicketsByUser(User user) {
-        logger.info("Fetching tickets for userId: {}", user.getId());
-        List<Ticket> tickets = ticketRepository.findByUserId(Math.toIntExact(user.getId()));
-        logger.info("Total tickets found for userId {}: {}", user.getId(), tickets.size());
+    public List<Ticket> getTicketsByUserId(Long userId) {
+        logger.info("Fetching tickets for userId: {}", userId);
+        List<Ticket> tickets = ticketRepository.findByUserId(Math.toIntExact(userId));
+        logger.info("Total tickets found for userId {}: {}", userId, tickets.size());
         return tickets;
     }
     // Update a ticket's status and admin response

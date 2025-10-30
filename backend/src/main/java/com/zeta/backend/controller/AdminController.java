@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.Optional;
 
 // controller for admin endpoints.
 // handles admin-only operations (requires ADMIN role).
@@ -61,13 +60,6 @@ public class AdminController {
             Long userId = Long.parseLong(authentication.getPrincipal().toString());
             logger.info("Admin request to get all tickets, userId: {}", userId);
 
-            Optional<User> loggedInUseroptional = userService.getUserById(userId);
-            if (loggedInUseroptional.isEmpty()) {
-                logger.warn("Admin user not found: {}", userId);
-                return ResponseEntity.status(403).body("User not found");
-            }
-
-            User loggedInUser = loggedInUseroptional.get();
             List<Ticket> allTickets = ticketService.getAllTickets();
 
             List<TicketResponseDto> listOfAllTicketDto = allTickets.stream()
