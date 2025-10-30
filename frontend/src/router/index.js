@@ -86,18 +86,6 @@ const router = createRouter({
       }
     },
     {
-      path: "/portfolio/buy",
-      name: "buy-investment",
-      component: () => import("../views/BuyInvestment.vue"),
-      meta: { requiresAuth: true }
-    },
-    {
-      path: "/portfolio/sell",
-      name: "sell-investment",
-      component: () => import("../views/SellInvestment.vue"),
-      meta: { requiresAuth: true }
-    },
-    {
        path: '/analytics',
        name: 'PortfolioAnalytics',
        component: () => import('../views/PortfolioAnalytics.vue'),
