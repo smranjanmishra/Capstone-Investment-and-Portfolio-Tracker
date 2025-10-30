@@ -95,19 +95,6 @@ onMounted(() => {
                 Analytics
               </RouterLink>
             </li>
-
-            <li class="nav-item" v-if="currentUser && currentUser.role === 'ADMIN'">
-              <RouterLink to="/admin/investments" class="nav-link">
-                <i class="bi bi-gear-fill me-1"></i>
-                Manage Products
-              </RouterLink>
-            </li>
-            <li class="nav-item" v-if="currentUser && currentUser.role === 'ADMIN'">
-              <RouterLink to="/admin/users" class="nav-link">
-                <i class="bi bi-people-fill me-1"></i>
-                Manage Users
-              </RouterLink>
-            </li>
             <li class="nav-item">
               <RouterLink to="/about" class="nav-link">
                 <i class="bi bi-info-circle-fill me-1"></i>
@@ -148,7 +135,7 @@ onMounted(() => {
               >
                 <i class="bi bi-person-circle me-1"></i>
                 {{ currentUser.fullName }}
-                <!-- <span 
+                <!-- <span
                   class="badge ms-2"
                   :class="currentUser.role === 'ADMIN' ? 'bg-danger' : 'bg-light text-dark'"
                 >
@@ -162,6 +149,21 @@ onMounted(() => {
                     Profile
                   </RouterLink>
                 </li>
+                <li v-if="currentUser.role === 'ADMIN'">
+                      <hr class="dropdown-divider" />
+                    </li>
+                    <li v-if="currentUser.role === 'ADMIN'">
+                      <RouterLink to="/admin/investments" class="dropdown-item">
+                        <i class="bi bi-gear-fill me-2"></i>
+                        Manage Products
+                      </RouterLink>
+                    </li>
+                    <li v-if="currentUser.role === 'ADMIN'">
+                      <RouterLink to="/admin/users" class="dropdown-item">
+                        <i class="bi bi-people-fill me-2"></i>
+                        Manage Users
+                      </RouterLink>
+                    </li>
                 <li>
                   <RouterLink to="/transactions" class="dropdown-item">
                     <i class="bi bi-clock-history me-2"></i>
