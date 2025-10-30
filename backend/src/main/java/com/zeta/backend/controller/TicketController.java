@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,8 +40,10 @@ public class TicketController {
     // handles different principal types (Integer / Long)
     private Long extractUserId(Authentication authentication) {
         Object principal = authentication.getPrincipal();
-        if (principal instanceof Integer) return ((Integer) principal).longValue();
-        if (principal instanceof Long) return (Long) principal;
+        if (principal instanceof Integer)
+            return ((Integer) principal).longValue();
+        if (principal instanceof Long)
+            return (Long) principal;
         throw new IllegalStateException("Unexpected principal type: " + principal.getClass());
     }
 
@@ -120,18 +123,14 @@ public class TicketController {
     // requires: valid JWT token for admin user
     // validates: admin privileges and existing ticket
     // response: 200 OK with confirmation or error message
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{ticketId}/respond")
     public ResponseEntity<?> updateTicketByAdmin(@PathVariable Integer ticketId,
-                                                 @RequestBody RespondDto responseDto,
-                                                 Authentication authentication) {
+            @RequestBody RespondDto responseDto,
+            Authentication authentication) {
         try {
             Long userId = extractUserId(authentication);
-            User loggedInUser = userService.getUserById(userId)
-                    .orElseThrow(() -> new RuntimeException("User not found"));
-
-            if (!userService.isAdmin(loggedInUser)) {
-                return ResponseEntity.status(403).body("Access denied: Admin privileges required.");
-            }
+            logger.info("Admin {} attempting to respond to ticketId: {}", userId, ticketId);
 
             Optional<Ticket> userTicketOptional = ticketService.getTicketById(ticketId);
             if (userTicketOptional.isEmpty()) {
@@ -147,20 +146,25 @@ public class TicketController {
             Ticket updatedOrClosedTicketResult;
             TicketStatus currentStatus = userTicket.getStatus();
             if (currentStatus == TicketStatus.OPEN) {
-                logger.info("Admin {} responding to OPEN ticketId: {}. Setting priority: {}", userId, ticketId, newPriority);
+                logger.info("Admin {} responding to OPEN ticketId: {}. Setting priority: {}", userId, ticketId,
+                        newPriority);
 
-                updatedOrClosedTicketResult = ticketService.updateTicket(ticketId, TicketStatus.RESPONDED, responseText, newPriority);
+                updatedOrClosedTicketResult = ticketService.updateTicket(ticketId, TicketStatus.RESPONDED, responseText,
+                        newPriority);
                 logger.info("Ticket {} responded successfully by admin {}", ticketId, userId);
             } else if (currentStatus == TicketStatus.RESPONDED) {
-                logger.info("Admin {} closing RESPONDED ticketId: {} with final comment. Setting priority: {}", userId, ticketId, newPriority);
-                updatedOrClosedTicketResult = ticketService.updateTicket(ticketId, TicketStatus.CLOSED, responseText, null);
+                logger.info("Admin {} closing RESPONDED ticketId: {} with final comment. Setting priority: {}", userId,
+                        ticketId, newPriority);
+                updatedOrClosedTicketResult = ticketService.updateTicket(ticketId, TicketStatus.CLOSED, responseText,
+                        null);
                 logger.info("Ticket {} closed successfully by admin {}", ticketId, userId);
             } else {
                 logger.warn("Admin {} attempting action on already CLOSED ticket {}", userId, ticketId);
                 return ResponseEntity.badRequest().body("Cannot modify a ticket that is already CLOSED.");
             }
             User ticketOwner = userService.getUserById(updatedOrClosedTicketResult.getUserId()).orElse(null);
-            TicketResponseDto ticketResponseDto = TicketDtoMapper.mapTicketToDto(updatedOrClosedTicketResult, ticketOwner);
+            TicketResponseDto ticketResponseDto = TicketDtoMapper.mapTicketToDto(updatedOrClosedTicketResult,
+                    ticketOwner);
             return ResponseEntity.ok(ticketResponseDto);
         } catch (Exception e) {
             logger.error("Failed action on ticket {} by admin", ticketId, e);
