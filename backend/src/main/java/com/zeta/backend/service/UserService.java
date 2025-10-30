@@ -51,8 +51,10 @@ public class UserService {
     public UserResponse registerUser(RegisterRequest request) {
         logger.info("Attempting to register user with email: {}", request.getEmail());
 
+        String normalizedEmail = request.getEmail().toLowerCase().trim();
+
         // Check if email already exists
-        if (userRepository.existsByEmail(request.getEmail())) {
+        if (userRepository.existsByEmail(normalizedEmail)) {
             logger.warn("Registration failed: email already exists - {}", request.getEmail());
             throw new DuplicateEmailException("Email already exists");
         }
@@ -63,7 +65,7 @@ public class UserService {
         // create new user with USER role by default
         User user = new User(
                 request.getName(),
-                request.getEmail(),
+                normalizedEmail,
                 hashedPassword,
                 request.getPhone(),
                 Role.USER);
@@ -83,8 +85,9 @@ public class UserService {
     public LoginResponse loginUser(LoginRequest request) {
         logger.info("Login attempt for email: {}", request.getEmail());
 
+        String normalizedEmail = request.getEmail().toLowerCase().trim();
         // Find user by email
-        User user = userRepository.findByEmail(request.getEmail())
+        User user = userRepository.findByEmail(normalizedEmail)
                 .orElseThrow(() -> {
                     logger.warn("Login failed: user not found - {}", request.getEmail());
                     return new InvalidCredentialsException("Invalid email or password");
