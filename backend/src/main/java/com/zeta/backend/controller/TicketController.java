@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,15 +40,16 @@ public class TicketController {
     // handles different principal types (Integer / Long)
     private Long extractUserId(Authentication authentication) {
         Object principal = authentication.getPrincipal();
-        if (principal instanceof Integer) return ((Integer) principal).longValue();
-        if (principal instanceof Long) return (Long) principal;
+
+        if (principal instanceof Long)
+            return (Long) principal;
         throw new IllegalStateException("Unexpected principal type: " + principal.getClass());
     }
 
     // create a new support ticket (User only)
     // POST /api/v1/support
     // requires: valid JWT token
-    // validates: user exists and owns the investment (if provided)
+    // validates: user owns the investment (if provided)
     // response: 200 OK on success with ticket ID or error message
     @PostMapping
     public ResponseEntity<?> createTicket(@RequestBody Ticket ticket, Authentication authentication) {
@@ -55,13 +57,7 @@ public class TicketController {
             Long userId = extractUserId(authentication);
             logger.info("Create ticket request received from userId: {}", userId);
 
-            Optional<User> loggedInUseroptional = userService.getUserById(userId);
-            if (loggedInUseroptional.isEmpty()) {
-                logger.warn("User not found for UserId: {}", userId);
-                return ResponseEntity.status(403).body("User not found");
-            }
-            User loggedInUser = loggedInUseroptional.get();
-
+            // Validate investment ownership if investmentProductId is provided
             if (ticket.getInvestmentProductId() != null) {
                 boolean ownsInvestment = portfolioService.getPortfolioByUser(userId)
                         .stream()
@@ -73,12 +69,12 @@ public class TicketController {
                 }
             }
 
-            ticket.setUserId(loggedInUser.getId());
+            // Set userId directly from JWT authentication and create ticket
+            ticket.setUserId(userId);
             Ticket createdTicket = ticketService.createTicket(ticket);
-            TicketResponseDto ticketResponseDto = TicketDtoMapper.mapTicketToDto(createdTicket, loggedInUser);
 
-            logger.info("Ticket created successfully with ID: {} by userId: {}", ticketResponseDto.getId(), userId);
-            return ResponseEntity.ok("Ticket created successfully with ID: " + ticketResponseDto.getId());
+            logger.info("Ticket created successfully with ID: {} by userId: {}", createdTicket.getId(), userId);
+            return ResponseEntity.ok("Ticket created successfully with ID: " + createdTicket.getId());
         } catch (Exception e) {
             logger.error("Failed to create ticket", e);
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -95,16 +91,14 @@ public class TicketController {
             Long userId = extractUserId(authentication);
             logger.info("Get tickets request received from userId: {}", userId);
 
-            Optional<User> loggedInUseroptional = userService.getUserById(userId);
-            if (loggedInUseroptional.isEmpty()) {
-                logger.warn("User not found for userId: {}", userId);
-                return ResponseEntity.status(403).body("User not found");
-            }
-            User loggedInUser = loggedInUseroptional.get();
+            // Fetch tickets directly by userId - no need to verify user exists (JWT
+            // guarantees it)
+            List<Ticket> ticketListOfUser = ticketService.getTicketsByUserId(userId);
 
-            List<Ticket> ticketListOfUser = ticketService.getTicketsByUser(loggedInUser);
+            // Map tickets to DTOs without user object (user info not critical for this
+            // endpoint)
             List<TicketResponseDto> listOfTicketDto = ticketListOfUser.stream()
-                    .map(ticket -> TicketDtoMapper.mapTicketToDto(ticket, loggedInUser))
+                    .map(ticket -> TicketDtoMapper.mapTicketToDto(ticket, null))
                     .toList();
 
             logger.info("Returning {} tickets for userId: {}", listOfTicketDto.size(), userId);
@@ -120,18 +114,14 @@ public class TicketController {
     // requires: valid JWT token for admin user
     // validates: admin privileges and existing ticket
     // response: 200 OK with confirmation or error message
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{ticketId}/respond")
     public ResponseEntity<?> updateTicketByAdmin(@PathVariable Integer ticketId,
-                                                 @RequestBody RespondDto responseDto,
-                                                 Authentication authentication) {
+            @RequestBody RespondDto responseDto,
+            Authentication authentication) {
         try {
             Long userId = extractUserId(authentication);
-            User loggedInUser = userService.getUserById(userId)
-                    .orElseThrow(() -> new RuntimeException("User not found"));
-
-            if (!userService.isAdmin(loggedInUser)) {
-                return ResponseEntity.status(403).body("Access denied: Admin privileges required.");
-            }
+            logger.info("Admin {} attempting to respond to ticketId: {}", userId, ticketId);
 
             Optional<Ticket> userTicketOptional = ticketService.getTicketById(ticketId);
             if (userTicketOptional.isEmpty()) {
@@ -147,20 +137,25 @@ public class TicketController {
             Ticket updatedOrClosedTicketResult;
             TicketStatus currentStatus = userTicket.getStatus();
             if (currentStatus == TicketStatus.OPEN) {
-                logger.info("Admin {} responding to OPEN ticketId: {}. Setting priority: {}", userId, ticketId, newPriority);
+                logger.info("Admin {} responding to OPEN ticketId: {}. Setting priority: {}", userId, ticketId,
+                        newPriority);
 
-                updatedOrClosedTicketResult = ticketService.updateTicket(ticketId, TicketStatus.RESPONDED, responseText, newPriority);
+                updatedOrClosedTicketResult = ticketService.updateTicket(ticketId, TicketStatus.RESPONDED, responseText,
+                        newPriority);
                 logger.info("Ticket {} responded successfully by admin {}", ticketId, userId);
             } else if (currentStatus == TicketStatus.RESPONDED) {
-                logger.info("Admin {} closing RESPONDED ticketId: {} with final comment. Setting priority: {}", userId, ticketId, newPriority);
-                updatedOrClosedTicketResult = ticketService.updateTicket(ticketId, TicketStatus.CLOSED, responseText, null);
+                logger.info("Admin {} closing RESPONDED ticketId: {} with final comment. Setting priority: {}", userId,
+                        ticketId, newPriority);
+                updatedOrClosedTicketResult = ticketService.updateTicket(ticketId, TicketStatus.CLOSED, responseText,
+                        null);
                 logger.info("Ticket {} closed successfully by admin {}", ticketId, userId);
             } else {
                 logger.warn("Admin {} attempting action on already CLOSED ticket {}", userId, ticketId);
                 return ResponseEntity.badRequest().body("Cannot modify a ticket that is already CLOSED.");
             }
             User ticketOwner = userService.getUserById(updatedOrClosedTicketResult.getUserId()).orElse(null);
-            TicketResponseDto ticketResponseDto = TicketDtoMapper.mapTicketToDto(updatedOrClosedTicketResult, ticketOwner);
+            TicketResponseDto ticketResponseDto = TicketDtoMapper.mapTicketToDto(updatedOrClosedTicketResult,
+                    ticketOwner);
             return ResponseEntity.ok(ticketResponseDto);
         } catch (Exception e) {
             logger.error("Failed action on ticket {} by admin", ticketId, e);

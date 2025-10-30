@@ -2,6 +2,9 @@ package com.zeta.backend.models;
 
 import com.zeta.backend.enums.Role;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.ZonedDateTime;
@@ -18,15 +21,20 @@ public class User {
     private Long id;
 
     @Column(nullable = false)
+    @NotBlank(message = "Name is required")
     private String name;
 
     @Column(nullable = false, unique = true)
+    @NotBlank(message = "Email is required")
+    @Email(message = "Email must be valid")
     private String email;
 
     @Column(name = "password_hash", nullable = false)
+    @NotBlank(message = "Password hash is required")
     private String passwordHash;
 
     @Column
+    @Pattern(regexp = "^$|^[0-9]{10}$", message = "Phone number must be exactly 10 digits if provided")
     private String phone;
 
     @Enumerated(EnumType.STRING)

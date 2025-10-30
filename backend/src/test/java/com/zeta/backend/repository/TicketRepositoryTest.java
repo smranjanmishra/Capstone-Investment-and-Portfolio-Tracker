@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
-
 import java.util.List;
 import java.util.Optional;
 
@@ -27,7 +26,7 @@ class TicketRepositoryTest {
         t.setUserId(5L);
         ticketRepository.save(t);
 
-        List<Ticket> byUser = ticketRepository.findByUserId(5);
+        List<Ticket> byUser = ticketRepository.findByUserId(5L);
         assertFalse(byUser.isEmpty());
 
         Optional<Ticket> byId = ticketRepository.findById(byUser.get(0).getId());

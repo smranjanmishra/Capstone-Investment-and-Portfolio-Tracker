@@ -13,8 +13,6 @@ import com.zeta.backend.repository.UserRepository;
 import com.zeta.backend.util.JwtUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,22 +35,25 @@ public class UserService {
     public UserService(UserRepository userRepository, JwtUtil jwtUtil) {
         this.userRepository = userRepository;
         this.jwtUtil = jwtUtil;
-//        BCrypt with strength 12
+        // BCrypt with strength 12
         passwordEncoder = new BCryptPasswordEncoder(12);
     }
 
-//     register a new user with role USER by default.
-//     validates email uniqueness and hashes password using bcrypt with cost factor 12.
-//     request -> registration details
-//     return UserResponse with created user details (excluding password)
-//     throws DuplicateEmailException if email already exists
+    // register a new user with role USER by default.
+    // validates email uniqueness and hashes password using bcrypt with cost factor
+    // 12.
+    // request -> registration details
+    // return UserResponse with created user details (excluding password)
+    // throws DuplicateEmailException if email already exists
 
     @Transactional
     public UserResponse registerUser(RegisterRequest request) {
         logger.info("Attempting to register user with email: {}", request.getEmail());
 
+        String normalizedEmail = request.getEmail().toLowerCase().trim();
+
         // Check if email already exists
-        if (userRepository.existsByEmail(request.getEmail())) {
+        if (userRepository.existsByEmail(normalizedEmail)) {
             logger.warn("Registration failed: email already exists - {}", request.getEmail());
             throw new DuplicateEmailException("Email already exists");
         }
@@ -63,11 +64,10 @@ public class UserService {
         // create new user with USER role by default
         User user = new User(
                 request.getName(),
-                request.getEmail(),
+                normalizedEmail,
                 hashedPassword,
                 request.getPhone(),
-                Role.USER
-        );
+                Role.USER);
 
         User savedUser = userRepository.save(user);
         logger.info("User registered successfully: userId={}, email={}", savedUser.getId(), savedUser.getEmail());
@@ -75,17 +75,18 @@ public class UserService {
         return UserResponse.fromUser(savedUser);
     }
 
-//     authenticate user and generate JWT token.
-//     verifies credentials using bcrypt password matching.
-//     request -> login credentials
-//     return LoginResponse containing JWT token
-//     throws InvalidCredentialsException if credentials are invalid
+    // authenticate user and generate JWT token.
+    // verifies credentials using bcrypt password matching.
+    // request -> login credentials
+    // return LoginResponse containing JWT token
+    // throws InvalidCredentialsException if credentials are invalid
 
     public LoginResponse loginUser(LoginRequest request) {
         logger.info("Login attempt for email: {}", request.getEmail());
 
+        String normalizedEmail = request.getEmail().toLowerCase().trim();
         // Find user by email
-        User user = userRepository.findByEmail(request.getEmail())
+        User user = userRepository.findByEmail(normalizedEmail)
                 .orElseThrow(() -> {
                     logger.warn("Login failed: user not found - {}", request.getEmail());
                     return new InvalidCredentialsException("Invalid email or password");
@@ -98,18 +99,18 @@ public class UserService {
         }
 
         // Generate JWT token with userId and role claims
-        String token = jwtUtil.generateToken(Math.toIntExact(user.getId()), user.getRole());
+        String token = jwtUtil.generateToken(user.getId(), user.getRole());
         logger.info("Login successful for userId: {}, role: {}", user.getId(), user.getRole());
 
         return new LoginResponse(token);
     }
 
-//     get user profile by user ID.
-//     userId -> the user's ID
-//     return UserResponse with user details (excluding password)
-//     throws UserNotFoundException if user not found
+    // get user profile by user ID.
+    // userId -> the user's ID
+    // return UserResponse with user details (excluding password)
+    // throws UserNotFoundException if user not found
 
-    public UserResponse getUserProfile(Integer userId) {
+    public UserResponse getUserProfile(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> {
                     logger.warn("User not found: userId={}", userId);
@@ -119,9 +120,9 @@ public class UserService {
         return UserResponse.fromUser(user);
     }
 
-//     get all users (admin only).
-//     returns all users excluding password hashes.
-//     return List of UserResponse objects
+    // get all users (admin only).
+    // returns all users excluding password hashes.
+    // return List of UserResponse objects
 
     public List<UserResponse> getAllUsers() {
         logger.info("Fetching all users for admin");
@@ -130,36 +131,11 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
-    // Retrieve the currently logged-in user from the security context.
-    // Uses Spring Security's SecurityContextHolder to get Authentication object.
-    // Throws RuntimeException if user is not authenticated or not found in database.
-    // return -> User object of the logged-in user.
-
-    public User getLoggedInUserFromSecurityContext() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        if (authentication == null || authentication.getPrincipal() == null) {
-            throw new RuntimeException("User not authenticated");
-        }
-
-        Integer userId = (Integer) authentication.getPrincipal(); // stored by JwtFilter
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found with ID: " + userId));
-    }
-
     // Retrieve a user by their unique ID.
     // id -> ID of the user to fetch
     // return -> Optional<User> containing the user if found
 
     public Optional<User> getUserById(Long id) {
         return userRepository.findById(id);
-    }
-
-    // Check if a user has ADMIN role.
-    // user -> User object to check
-    // return -> true if user's role is ADMIN, false otherwise
-
-    public boolean isAdmin(User user) {
-        return user.getRole() == Role.ADMIN;
     }
 }
