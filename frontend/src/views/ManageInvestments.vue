@@ -167,7 +167,7 @@
                 <!-- Minimum Investment -->
                 <div class="col-md-6">
                   <label for="minInvestment" class="form-label">
-                    Minimum Investment ($) <span class="text-danger">*</span>
+                    Minimum Investment (₹) <span class="text-danger">*</span>
                   </label>
                   <input
                     id="minInvestment"
@@ -207,7 +207,7 @@
                 <!-- Current NAV -->
                 <div class="col-md-6">
                   <label for="currentNAV" class="form-label">
-                    Current NAV ($) <span class="text-danger">*</span>
+                    Current NAV (₹) <span class="text-danger">*</span>
                   </label>
                   <input
                     id="currentNAV"
@@ -280,7 +280,7 @@
           </div>
           <div class="modal-body">
             <p>
-              Are you sure you want to deactivate 
+              Are you sure you want to deactivate
               <strong>{{ investmentToDeactivate?.name }}</strong>?
             </p>
             <p class="text-muted small">
@@ -330,7 +330,7 @@ export default {
     const successMessage = ref('')
     const errorMessage = ref('')
     const investmentToDeactivate = ref(null)
-    
+
     const formData = reactive({
       id: null,
       name: '',
@@ -483,13 +483,13 @@ export default {
         }
         closeModal()
         await loadInvestments()
-        
+
         // Clear success message after 5 seconds
         setTimeout(() => {
           successMessage.value = ''
         }, 5000)
       } catch (err) {
-        errorMessage.value = err.response?.data?.message || 
+        errorMessage.value = err.response?.data?.message ||
           `Failed to ${isEditMode.value ? 'update' : 'create'} investment. Please try again.`
         console.error('Form submission error:', err)
       }
@@ -510,7 +510,7 @@ export default {
         showConfirmModal.value = false
         investmentToDeactivate.value = null
         await loadInvestments()
-        
+
         // Clear success message after 5 seconds
         setTimeout(() => {
           successMessage.value = ''
@@ -529,7 +529,7 @@ export default {
         await investmentStore.toggleActiveStatus(investment.id, true)
         successMessage.value = `Successfully activated "${investment.name}"`
         await loadInvestments()
-        
+
         // Clear success message after 5 seconds
         setTimeout(() => {
           successMessage.value = ''

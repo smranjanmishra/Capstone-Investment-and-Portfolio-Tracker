@@ -36,13 +36,9 @@
             <label class="filter-label">Type:</label>
             <select v-model="selectedType" class="form-select form-select-sm filter-select">
               <option value="">All Types</option>
-              <option value="STOCK">Stocks</option>
-              <option value="MUTUAL_FUND">Mutual Funds</option>
-              <option value="BOND">Bonds</option>
-              <option value="ETF">ETFs</option>
-              <option value="REAL_ESTATE">Real Estate</option>
-              <option value="COMMODITY">Commodities</option>
-              <option value="CRYPTOCURRENCY">Crypto</option>
+              <option v-for="type in availableTypes" :key="type.value" :value="type.value">
+                {{ type.label }}
+              </option>
             </select>
           </div>
 
@@ -246,6 +242,7 @@ function sortPortfolio(r) {
 
 const filteredPortfolio = computed(() => {
   let r = portfolio.value.filter(i =>
+    i.unitsOwned > 0 &&
     (!searchQuery.value || i.investmentProductName.toLowerCase().includes(searchQuery.value.toLowerCase())) &&
     (!selectedType.value || i.type === selectedType.value) &&
     (!selectedRisk.value || i.risk === selectedRisk.value)
@@ -254,11 +251,35 @@ const filteredPortfolio = computed(() => {
 });
 
 const totalValue = computed(() =>
-  portfolio.value.reduce((s,i)=>s+getCurrentValue(i),0)
+  portfolio.value.filter(i => i.unitsOwned > 0).reduce((s,i)=>s+getCurrentValue(i),0)
 );
 const totalCost = computed(() =>
-  portfolio.value.reduce((s,i)=>s+i.unitsOwned*i.avgPurchasePrice,0)
+  portfolio.value.filter(i => i.unitsOwned > 0).reduce((s,i)=>s+i.unitsOwned*i.avgPurchasePrice,0)
 );
+
+// Dynamic type options based on actual portfolio
+const availableTypes = computed(() => {
+  const types = new Set(
+    portfolio.value
+      .filter(i => i.unitsOwned > 0)
+      .map(i => i.type)
+      .filter(Boolean)
+  );
+
+  const typeMap = {
+    STOCK: "Stocks",
+    MUTUAL_FUND: "Mutual Funds",
+    BOND: "Bonds",
+    ETF: "ETFs",
+    REAL_ESTATE: "Real Estate",
+    COMMODITY: "Commodities",
+    CRYPTOCURRENCY: "Cryptocurrency"
+  };
+
+  return Array.from(types)
+    .map(type => ({ value: type, label: typeMap[type] || type }))
+    .sort((a, b) => a.label.localeCompare(b.label));
+});
 
 function goToBuy(item) {
   if (!item.isActive) return;
@@ -367,4 +388,3 @@ transition:.3s;display:flex;align-items:center;justify-content:center;gap:.5rem}
   .filter-select{width:100%}
 }
 </style>
-
