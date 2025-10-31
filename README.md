@@ -96,7 +96,7 @@ A comprehensive, enterprise-grade Investment & Portfolio Tracker platform design
 
 1. **Clone and navigate to backend**
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/smranjanmishra/Investment-and-Portfolio-Tracker.git
    cd Capstone-Investment-and-Portfolio-Tracker/backend
    ```
 
@@ -446,7 +446,7 @@ docker-compose up -d  # For database and external services
 npm run dev
 ```
 
-## Support & Contact
+<!-- ## Support & Contact
 
 ### Technical Support
 - **Issue Tracking**: [GitHub Issues](https://github.com/your-repo/issues)
@@ -456,7 +456,7 @@ npm run dev
 ### Development Team
 - **Project Lead**: [Your Name](mailto:lead@yourcompany.com)
 - **Backend Team**: [Backend Lead](mailto:backend@yourcompany.com)
-- **Frontend Team**: [Frontend Lead](mailto:frontend@yourcompany.com)
+- **Frontend Team**: [Frontend Lead](mailto:frontend@yourcompany.com) -->
 
 ---
 
