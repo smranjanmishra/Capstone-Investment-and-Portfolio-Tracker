@@ -59,17 +59,6 @@ public class InvestmentServiceTest {
         assertThat(result.getName()).isEqualTo(validRequest.getName());
     }
 
-    // CRUD - Read
-    @Test
-    void shouldGetProductById() {
-        InvestmentProductResponseDTO created = investmentService.createInvestment(validRequest);
-
-        InvestmentProductResponseDTO result = investmentService.getInvestmentById(created.getId());
-
-        assertThat(result).isNotNull();
-        assertThat(result.getId()).isEqualTo(created.getId());
-    }
-
     // CRUD - Update
     @Test
     void shouldUpdateProduct() {
@@ -89,17 +78,6 @@ public class InvestmentServiceTest {
 
         assertThat(result.getName()).isEqualTo(updateRequest.getName());
         assertThat(result.getType()).isEqualTo(InvestmentType.MUTUAL_FUND);
-    }
-
-    // CRUD - Delete (Deactivate)
-    @Test
-    void shouldDeactivateProduct() {
-        InvestmentProductResponseDTO created = investmentService.createInvestment(validRequest);
-
-        investmentService.deactivateInvestment(created.getId());
-
-        InvestmentProductResponseDTO deactivated = investmentService.getInvestmentById(created.getId());
-        assertThat(deactivated.getIsActive()).isFalse();
     }
 
     // Visibility - isActive

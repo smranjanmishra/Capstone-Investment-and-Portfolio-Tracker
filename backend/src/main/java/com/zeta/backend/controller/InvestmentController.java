@@ -17,7 +17,6 @@ import java.util.Map;
 @RequestMapping("/api/v1")
 @Slf4j
 @RequiredArgsConstructor
-//@CrossOrigin(origins = "*", maxAge = 3600)
 
 public class InvestmentController {
 
