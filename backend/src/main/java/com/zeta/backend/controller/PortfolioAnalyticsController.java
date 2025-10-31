@@ -31,7 +31,7 @@ public class PortfolioAnalyticsController {
 
         log.info("API Response: Portfolio summary retrieved for user {}", userId);
 
-        return ResponseEntity.ok(buildResponse("Portfolio summary fetched successfully", summary, null, true));
+        return ResponseEntity.ok(buildResponse("Portfolio summary fetched successfully", summary, null));
     }
 
     @GetMapping("/allocation")
@@ -43,7 +43,7 @@ public class PortfolioAnalyticsController {
 
         log.info("API Response: Fetched {} allocation records for user {}", allocationList.size(), userId);
 
-        return ResponseEntity.ok(buildResponse("Portfolio allocation fetched successfully", allocationList, null, true));
+        return ResponseEntity.ok(buildResponse("Portfolio allocation fetched successfully", allocationList, null));
     }
 
     @GetMapping("/gains")
@@ -55,17 +55,14 @@ public class PortfolioAnalyticsController {
 
         log.info("API Response: Fetched {} gain/loss records for user {}", gainLossList.size(), userId);
 
-        return ResponseEntity.ok(buildResponse("Gain/Loss data fetched successfully", gainLossList, null, true));
+        return ResponseEntity.ok(buildResponse("Gain/Loss data fetched successfully", gainLossList, null));
     }
 
-    private Map<String, Object> buildResponse(String message, Object data, Long id, boolean includeSuccess) {
+    private Map<String, Object> buildResponse(String message, Object data, Long id) {
         Map<String, Object> response = new HashMap<>();
         response.put("message", message);
         if (id != null) {
             response.put("id", id);
-        }
-        if (includeSuccess) {
-            response.put("success", true);
         }
         if (data != null) {
             if (data instanceof List) {
