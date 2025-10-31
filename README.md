@@ -13,41 +13,245 @@ A comprehensive, enterprise-grade Investment & Portfolio Tracker platform design
 
 ### System Architecture
 ```
-┌─────────────────┐    HTTP/REST API    ┌─────────────────┐
-│   Frontend      │◄──────────────────►│   Backend       │
-│   (Vue.js 3)    │                    │ (Spring Boot)   │
-└─────────────────┘                    └─────────────────┘
-│                                       │
-│ ┌─────────────┐                      │ ┌─────────────┐
-│ │ Vue Router  │                      │ │ Spring      │
-│ │ Pinia Store │                      │ │ Security    │
-│ │ Axios       │                      │ │ JWT Auth    │
-│ └─────────────┘                      │ └─────────────┘
-│                                       │
-│                                       ▼
-│                                    ┌─────────────────┐
-│                                    │    Database     │
-│                                    │ (H2/MySQL/PSQL) │
-│                                    └─────────────────┘
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                              FRONTEND LAYER                                    │
+├─────────────────────────────────────────────────────────────────────────────────┤
+│                                Vue.js 3                                        │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────────┐ │
+│  │    Views    │  │ Components  │  │   Router    │  │      Pinia Store       │ │
+│  │             │  │             │  │             │  │                         │ │
+│  │ • Login.vue │  │ • Header    │  │ • Auth      │  │ • User State           │ │
+│  │ • Register  │  │ • Sidebar   │  │ • Portfolio │  │ • Portfolio State      │ │
+│  │ • Portfolio │  │ • Cards     │  │ • Admin     │  │ • Investment State     │ │
+│  │ • Analytics │  │ • Forms     │  │ • Support   │  │ • Auth State           │ │
+│  │ • Support   │  │ • Charts    │  │             │  │                         │ │
+│  └─────────────┘  └─────────────┘  └─────────────┘  └─────────────────────────┘ │
+│                                                                                 │
+│  ┌─────────────────────────────────────────────────────────────────────────────┐ │
+│  │                        HTTP Client (Axios)                                 │ │
+│  │ • Request Interceptors  • Response Interceptors  • Error Handling          │ │
+│  └─────────────────────────────────────────────────────────────────────────────┘ │
+└─────────────────────────────────────────────────────────────────────────────────┘
+                                       │
+                             HTTP REST API Calls
+                                       │
+                                       ▼
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                               BACKEND LAYER                                    │
+├─────────────────────────────────────────────────────────────────────────────────┤
+│                              Spring Boot 3.x                                  │
+│                                                                                 │
+│  ┌─────────────────────────────────────────────────────────────────────────────┐ │
+│  │                        Security Layer                                      │ │
+│  │ ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────┐ │ │
+│  │ │   CORS      │  │   JWT Auth  │  │ Role-Based  │  │   Security Config   │ │ │
+│  │ │ Configuration│  │  Filter     │  │ Access      │  │                     │ │ │
+│  │ └─────────────┘  └─────────────┘  └─────────────┘  └─────────────────────┘ │ │
+│  └─────────────────────────────────────────────────────────────────────────────┘ │
+│                                       │                                         │
+│                                       ▼                                         │
+│  ┌─────────────────────────────────────────────────────────────────────────────┐ │
+│  │                       Controller Layer                                     │ │
+│  │ ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────┐ │ │
+│  │ │    Auth     │  │  Investment │  │  Portfolio  │  │      Support        │ │ │
+│  │ │ Controller  │  │ Controller  │  │ Controller  │  │    Controller       │ │ │
+│  │ │             │  │             │  │             │  │                     │ │ │
+│  │ │ • /auth/*   │  │ • /invest*  │  │ • /portfolio│  │ • /support/*        │ │ │
+│  │ │ • /user/*   │  │ • /admin/*  │  │ • /analytics│  │ • /admin/support/*  │ │ │
+│  │ └─────────────┘  └─────────────┘  └─────────────┘  └─────────────────────┘ │ │
+│  └─────────────────────────────────────────────────────────────────────────────┘ │
+│                                       │                                         │
+│                                       ▼                                         │
+│  ┌─────────────────────────────────────────────────────────────────────────────┐ │
+│  │                        Service Layer                                       │ │
+│  │ ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────┐ │ │
+│  │ │    Auth     │  │  Investment │  │  Portfolio  │  │      Support        │ │ │
+│  │ │   Service   │  │   Service   │  │   Service   │  │      Service        │ │ │
+│  │ │             │  │             │  │             │  │                     │ │ │
+│  │ │ • JWT Logic │  │ • CRUD Ops  │  │ • Buy/Sell  │  │ • Ticket Management │ │ │
+│  │ │ • Password  │  │ • NAV Calc  │  │ • Analytics │  │ • Status Updates    │ │ │
+│  │ │   Hashing   │  │ • Validation│  │ • Portfolio │  │ • Priority Handling │ │ │
+│  │ └─────────────┘  └─────────────┘  └─────────────┘  └─────────────────────┘ │ │
+│  └─────────────────────────────────────────────────────────────────────────────┘ │
+│                                       │                                         │
+│                                       ▼                                         │
+│  ┌─────────────────────────────────────────────────────────────────────────────┐ │
+│  │                      Repository Layer                                      │ │
+│  │ ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────┐ │ │
+│  │ │    User     │  │  Investment │  │  Portfolio  │  │     Support         │ │ │
+│  │ │ Repository  │  │ Repository  │  │ Repository  │  │   Repository        │ │ │
+│  │ │             │  │             │  │             │  │                     │ │ │
+│  │ │ • JPA CRUD  │  │ • JPA CRUD  │  │ • JPA CRUD  │  │ • JPA CRUD          │ │ │
+│  │ │ • Custom    │  │ • Custom    │  │ • Custom    │  │ • Custom Queries    │ │ │
+│  │ │   Queries   │  │   Queries   │  │   Queries   │  │                     │ │ │
+│  │ └─────────────┘  └─────────────┘  └─────────────┘  └─────────────────────┘ │ │
+│  └─────────────────────────────────────────────────────────────────────────────┘ │
+└─────────────────────────────────────────────────────────────────────────────────┘
+                                       │
+                                       ▼
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                             DATABASE LAYER                                     │
+├─────────────────────────────────────────────────────────────────────────────────┤
+│                                H2 Database                                     │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────────┐ │
+│  │    Users    │  │ Investment  │  │  Portfolio  │  │    Support Tickets      │ │
+│  │    Table    │  │ Products    │  │   Table     │  │       Table             │ │
+│  │             │  │   Table     │  │             │  │                         │ │
+│  │ • id (PK)   │  │ • id (PK)   │  │ • id (PK)   │  │ • id (PK)              │ │
+│  │ • name      │  │ • name      │  │ • userId    │  │ • userId (FK)          │ │
+│  │ • email     │  │ • type      │  │ • product   │  │ • subject              │ │
+│  │ • password  │  │ • riskLevel │  │ • units     │  │ • description          │ │
+│  │ • role      │  │ • currentNAV│  │ • avgPrice  │  │ • status               │ │
+│  └─────────────┘  └─────────────┘  └─────────────┘  └─────────────────────────┘ │
+│                                       │                                         │
+│                         ┌─────────────┴─────────────┐                         │
+│                         │      Transactions         │                         │
+│                         │         Table             │                         │
+│                         │                           │                         │
+│                         │ • id (PK)                 │                         │
+│                         │ • userId (FK)             │                         │
+│                         │ • investmentId (FK)       │                         │
+│                         │ • txnType (BUY/SELL)      │                         │
+│                         │ • units                   │                         │
+│                         │ • navAtTxn                │                         │
+│                         │ • txnDate                 │                         │
+│                         └───────────────────────────┘                         │
+└─────────────────────────────────────────────────────────────────────────────────┘
+```
+
+### Frontend Architecture Details
+
+**Component Structure**
+```
+src/
+├── views/                      # Page-level components
+│   ├── Login.vue              # User authentication
+│   ├── Register.vue           # User registration
+│   ├── Portfolio.vue          # Portfolio overview
+│   ├── InvestmentList.vue     # Browse investments
+│   ├── Analytics.vue          # Portfolio analytics
+│   ├── TransactionHistory.vue # Transaction records
+│   ├── SupportTickets.vue     # Support system
+│   └── admin/                 # Admin-only views
+│       ├── UserManagement.vue
+│       ├── InvestmentMgmt.vue
+│       └── SupportManagement.vue
+│
+├── components/                 # Reusable components
+│   ├── common/
+│   │   ├── Header.vue         # Navigation header
+│   │   ├── Sidebar.vue        # Side navigation
+│   │   ├── LoadingSpinner.vue
+│   │   └── AlertMessage.vue
+│   ├── forms/
+│   │   ├── LoginForm.vue
+│   │   ├── BuyInvestmentForm.vue
+│   │   └── SupportTicketForm.vue
+│   └── charts/
+│       ├── AssetAllocationChart.vue
+│       └── PerformanceChart.vue
+│
+├── stores/                     # Pinia state management
+│   ├── auth.js                # Authentication state
+│   ├── portfolio.js           # Portfolio state
+│   ├── investments.js         # Investment products state
+│   └── support.js             # Support tickets state
+│
+├── services/                   # API service layer
+│   ├── api.js                 # Axios configuration
+│   ├── authService.js         # Authentication APIs
+│   ├── portfolioService.js    # Portfolio APIs
+│   └── supportService.js      # Support APIs
+│
+└── router/                     # Vue Router configuration
+    └── index.js               # Route definitions & guards
+```
+
+**State Management Flow**
+```
+Vue Component ──► Pinia Action ──► API Service ──► Backend
+     ▲                                               │
+     │                                               ▼
+ UI Update ◄── Pinia State ◄── Response ◄── HTTP Response
+```
+
+### Backend Architecture Details
+
+**Package Structure**
+```
+src/main/java/com/zeta/backend/
+├── controller/                 # REST Controllers
+│   ├── AuthController.java    # Authentication endpoints
+│   ├── UserController.java    # User management
+│   ├── InvestmentController.java # Investment products
+│   ├── PortfolioController.java  # Portfolio operations
+│   ├── AnalyticsController.java  # Portfolio analytics
+│   └── SupportController.java    # Support system
+│
+├── service/                    # Business logic layer
+│   ├── AuthService.java       # Authentication logic
+│   ├── UserService.java       # User operations
+│   ├── InvestmentService.java # Investment CRUD
+│   ├── PortfolioService.java  # Portfolio management
+│   ├── AnalyticsService.java  # Calculations & analytics
+│   └── SupportService.java    # Ticket management
+│
+├── repository/                 # Data access layer
+│   ├── UserRepository.java    # User data access
+│   ├── InvestmentRepository.java # Investment data
+│   ├── PortfolioRepository.java  # Portfolio data
+│   ├── TransactionRepository.java # Transaction history
+│   └── SupportRepository.java    # Support tickets
+│
+├── models/                     # JPA entities
+│   ├── User.java             # User entity
+│   ├── InvestmentProduct.java # Investment product entity
+│   ├── Portfolio.java        # Portfolio holdings
+│   ├── Transaction.java      # Transaction records
+│   └── SupportTicket.java    # Support tickets
+│
+├── dto/                        # Data transfer objects
+│   ├── request/               # Request DTOs
+│   └── response/              # Response DTOs
+│
+├── config/                     # Configuration classes
+│   ├── SecurityConfig.java    # Spring Security setup
+│   ├── JwtConfig.java         # JWT configuration
+│   └── CorsConfig.java        # CORS settings
+│
+└── exceptions/                 # Custom exception handling
+    ├── GlobalExceptionHandler.java
+    ├── UserNotFoundException.java
+    └── InsufficientFundsException.java
+```
+
+**Request/Response Flow**
+```
+HTTP Request ──► Security Filter ──► Controller ──► Service ──► Repository ──► Database
+     ▲                                    │             │          │            │
+     │                                    ▼             ▼          ▼            ▼
+HTTP Response ◄─── Response DTO ◄─── Business Logic ◄─── JPA ◄─── Query ◄─── H2 DB
 ```
 
 ### Technology Stack
 
+**Frontend Application**
+- **Framework**: Vue.js 3 with Composition API
+- **State Management**: Pinia for centralized state management
+- **Routing**: Vue Router 4 with navigation guards
+- **UI Library**: Bootstrap 5 with custom styling
+- **HTTP Client**: Axios with request/response interceptors
+- **Build System**: Vite for fast development and optimized builds
+- **Icons**: Bootstrap Icons for consistent iconography
+
 **Backend Services**
 - **Framework**: Spring Boot 3.x with Spring WebMVC
 - **Security**: Spring Security with JWT authentication
-- **Database**: JPA/Hibernate with H2 (dev) / PostgreSQL/MySQL (prod)
-- **Testing**: JUnit 5, Mockito, TestContainers
-- **Documentation**: OpenAPI 3.0 (Swagger)
-- **Build**: Maven 3.8+
-
-**Frontend Application**
-- **Framework**: Vue.js 3 with Composition API
-- **State Management**: Pinia
-- **Routing**: Vue Router 4
-- **UI Library**: Bootstrap 5 with custom components
-- **HTTP Client**: Axios with interceptors
-- **Build System**: Vite
+- **Database**: JPA/Hibernate with H2 in-memory database
+- **Validation**: Bean Validation (JSR-303) with custom validators
+- **Testing**: JUnit 5 with Mockito for unit testing
+- **Documentation**: Spring Boot Actuator for monitoring
+- **Build**: Maven for dependency management and build automation
 
 ## Features
 
@@ -89,7 +293,6 @@ A comprehensive, enterprise-grade Investment & Portfolio Tracker platform design
 ### Prerequisites
 - **Java Development Kit**: 17 or higher
 - **Node.js**: 16.x or higher with npm/yarn
-- **Database**: PostgreSQL 13+ (recommended) or MySQL 8+
 - **Git**: Latest version
 
 ### Backend Setup
@@ -100,30 +303,27 @@ A comprehensive, enterprise-grade Investment & Portfolio Tracker platform design
    cd Capstone-Investment-and-Portfolio-Tracker/backend
    ```
 
-2. **Configure application properties**
+2. **Configure application properties** (H2 Database - No additional setup required)
    ```properties
-   # src/main/resources/application-prod.properties
-   spring.datasource.url=jdbc:postgresql://localhost:5432/investment_tracker
-   spring.datasource.username=${DB_USERNAME:postgres}
-   spring.datasource.password=${DB_PASSWORD:password}
+   # src/main/resources/application.properties
+   spring.datasource.url=jdbc:h2:mem:testdb
+   spring.datasource.driverClassName=org.h2.Driver
+   spring.jpa.database-platform=org.hibernate.dialect.H2Dialect
+   spring.h2.console.enabled=true
    
-   spring.jpa.hibernate.ddl-auto=update
-   spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect
-   
-   jwt.secret=${JWT_SECRET:your-secure-secret-key}
-   jwt.expiration=${JWT_EXPIRATION:86400000}
+   jwt.secret=mySecretKey
+   jwt.expiration=86400000
    ```
 
 3. **Build and run the application**
    ```bash
    ./mvnw clean install
-   ./mvnw spring-boot:run -Dspring-boot.run.profiles=prod
+   ./mvnw spring-boot:run
    ```
 
 4. **Verify backend deployment**
    - API Base URL: `http://localhost:8080/api/v1`
-   - Health Check: `http://localhost:8080/actuator/health`
-   - API Documentation: `http://localhost:8080/swagger-ui.html`
+   - H2 Console: `http://localhost:8080/h2-console`
 
 ### Frontend Setup
 
@@ -135,23 +335,17 @@ A comprehensive, enterprise-grade Investment & Portfolio Tracker platform design
 2. **Install dependencies**
    ```bash
    npm install
-   # or
-   yarn install
    ```
 
 3. **Configure environment variables**
-   ```bash
-   # .env.production
-   VITE_API_BASE_URL=http://localhost:8080/api/v1
-   VITE_APP_TITLE=Investment & Portfolio Tracker
-   VITE_APP_VERSION=1.0.0
+   ```javascript
+   // src/services/api.js
+   const API_BASE_URL = 'http://localhost:8080/api/v1'
    ```
 
 4. **Start development server**
    ```bash
    npm run dev
-   # or
-   yarn dev
    ```
 
 5. **Access the application**
@@ -189,7 +383,6 @@ A comprehensive, enterprise-grade Investment & Portfolio Tracker platform design
 | GET | `/portfolio/summary` | Portfolio summary | User |
 | GET | `/portfolio/allocation` | Asset allocation | User |
 | GET | `/portfolio/gains` | Gain/Loss analysis | User |
-| GET | `/analytics/performance` | Performance metrics | User |
 
 ### Support System
 | Method | Endpoint | Description | Access Level |
@@ -230,7 +423,7 @@ A comprehensive, enterprise-grade Investment & Portfolio Tracker platform design
 **User Entity**
 ```sql
 CREATE TABLE users (
-    id UUID PRIMARY KEY,
+    id BIGINT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
@@ -243,7 +436,7 @@ CREATE TABLE users (
 **Investment Product Entity**
 ```sql
 CREATE TABLE investment_products (
-    id UUID PRIMARY KEY,
+    id BIGINT PRIMARY KEY,
     name VARCHAR(200) NOT NULL,
     type VARCHAR(50) NOT NULL,
     risk_level VARCHAR(20) NOT NULL,
@@ -324,7 +517,6 @@ npm run test:coverage
 
 ### Scalability Considerations
 - **Database Connection Pooling**: HikariCP for optimal connection management
-- **Caching Strategy**: Redis integration for session and data caching
 - **API Rate Limiting**: Implemented to prevent abuse
 - **Horizontal Scaling**: Stateless design for easy horizontal scaling
 
@@ -354,14 +546,8 @@ Client Request → JWT Verification → Role Validation → Resource Access
 # Build production JAR
 ./mvnw clean package -Dmaven.test.skip=true
 
-# Docker deployment
-docker build -t investment-tracker-backend .
-docker run -p 8080:8080 investment-tracker-backend
-
-# Environment variables for production
-export DB_HOST=your-db-host
-export DB_USERNAME=your-db-user
-export JWT_SECRET=your-production-secret
+# Run production JAR
+java -jar target/backend-0.0.1-SNAPSHOT.jar
 ```
 
 **Frontend Deployment**
@@ -369,50 +555,10 @@ export JWT_SECRET=your-production-secret
 # Build for production
 npm run build
 
-# Deploy to static hosting
-npm run deploy
-
-# Docker deployment
-docker build -t investment-tracker-frontend .
-docker run -p 80:80 investment-tracker-frontend
+# Serve built files (example with serve)
+npm install -g serve
+serve -s dist
 ```
-
-### Environment Configuration
-
-**Production Environment Variables**
-```env
-# Database Configuration
-DB_HOST=production-db-host
-DB_PORT=5432
-DB_NAME=investment_tracker_prod
-DB_USERNAME=prod_user
-DB_PASSWORD=secure_password
-
-# JWT Configuration
-JWT_SECRET=your-production-jwt-secret-key
-JWT_EXPIRATION=86400000
-
-# Application Configuration
-SPRING_PROFILES_ACTIVE=prod
-CORS_ALLOWED_ORIGINS=https://your-domain.com
-
-# Monitoring
-MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE=health,info,metrics
-```
-
-## Monitoring & Maintenance
-
-### Application Monitoring
-- **Health Checks**: Spring Boot Actuator endpoints
-- **Performance Metrics**: Custom metrics for business operations
-- **Error Tracking**: Comprehensive logging with structured format
-- **Database Monitoring**: Connection pool and query performance metrics
-
-### Maintenance Procedures
-- **Database Backups**: Automated daily backups with retention policy
-- **Log Rotation**: Automated log management with archival
-- **Security Updates**: Regular dependency updates and security patches
-- **Performance Tuning**: Regular performance analysis and optimization
 
 ## Contributing
 
@@ -436,27 +582,10 @@ MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE=health,info,metrics
 npm install -g @vue/cli vue-tsc
 ./mvnw install -DskipTests
 
-# Setup pre-commit hooks
-npm install husky --save-dev
-npx husky install
-
 # Run development environment
-docker-compose up -d  # For database and external services
 ./mvnw spring-boot:run --debug
 npm run dev
 ```
-
-<!-- ## Support & Contact
-
-### Technical Support
-- **Issue Tracking**: [GitHub Issues](https://github.com/your-repo/issues)
-- **Documentation**: [Wiki](https://github.com/your-repo/wiki)
-- **Security Issues**: security@yourcompany.com
-
-### Development Team
-- **Project Lead**: [Your Name](mailto:lead@yourcompany.com)
-- **Backend Team**: [Backend Lead](mailto:backend@yourcompany.com)
-- **Frontend Team**: [Frontend Lead](mailto:frontend@yourcompany.com) -->
 
 ---
 
