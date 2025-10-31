@@ -6,14 +6,14 @@
       <p class="page-subtitle">Track and manage your investment holdings</p>
     </div>
 
-    <!-- ✅ Summary Cards -->
+    <!-- Summary Cards -->
     <div v-if="portfolio.length > 0" class="row mt-4 mb-5">
       <StatisticsCard title="Total Holdings" :value="filteredPortfolio.length" />
       <StatisticsCard title="Portfolio Value" :value="formatCurrency(totalValue)" />
       <StatisticsCard title="Total Investment" :value="formatCurrency(totalCost)" />
     </div>
 
-    <!-- ✅ Filters Section -->
+    <!-- Filters Section -->
     <div class="filters-section mb-4">
       <div class="filter-container">
 
@@ -36,13 +36,9 @@
             <label class="filter-label">Type:</label>
             <select v-model="selectedType" class="form-select form-select-sm filter-select">
               <option value="">All Types</option>
-              <option value="STOCK">Stocks</option>
-              <option value="MUTUAL_FUND">Mutual Funds</option>
-              <option value="BOND">Bonds</option>
-              <option value="ETF">ETFs</option>
-              <option value="REAL_ESTATE">Real Estate</option>
-              <option value="COMMODITY">Commodities</option>
-              <option value="CRYPTOCURRENCY">Crypto</option>
+              <option v-for="type in availableTypes" :key="type.value" :value="type.value">
+                {{ type.label }}
+              </option>
             </select>
           </div>
 
@@ -86,26 +82,26 @@
       </div>
     </div>
 
-    <!-- ✅ Loading -->
+    <!-- Loading -->
     <div v-if="loading" class="text-center py-5">
       <div class="spinner-border text-primary"></div>
       <p class="mt-3 text-muted">Loading portfolio...</p>
     </div>
 
-    <!-- ✅ Error -->
+    <!-- Error -->
     <div v-else-if="error" class="alert alert-danger text-center">
       {{ error }}
       <button class="btn btn-sm btn-outline-danger ms-2" @click="loadPortfolio">Retry</button>
     </div>
 
-    <!-- ✅ Empty -->
+    <!-- Empty -->
     <div v-else-if="filteredPortfolio.length === 0" class="empty-state text-center py-5">
       <i class="bi bi-inbox display-1 text-muted"></i>
       <h3 class="mt-3">No Portfolio Holdings Found</h3>
       <button class="btn btn-primary mt-3" @click="goToInvestments">Start Investing</button>
     </div>
 
-    <!-- ✅ Portfolio Grid -->
+    <!-- Portfolio Grid -->
     <div v-else class="investment-grid">
       <div v-for="item in filteredPortfolio" :key="item.id" class="investment-card">
 
@@ -147,7 +143,7 @@
           </div>
         </div>
 
-        <!-- ✅ Risk Section (Matches InvestmentCard) -->
+        <!-- Risk Section (Matches InvestmentCard) -->
         <div class="card-details">
           <span class="detail-label"><i class="bi bi-exclamation-triangle"></i> Risk Level:</span>
           <span class="risk-badge" :class="getRiskBadgeClass(item.risk)">
@@ -155,7 +151,7 @@
           </span>
         </div>
 
-        <!-- ✅ Buttons -->
+        <!-- Buttons -->
         <div class="invest-buttons">
           <button class="invest-btn buy-btn"
             :disabled="!item.isActive"
@@ -246,6 +242,7 @@ function sortPortfolio(r) {
 
 const filteredPortfolio = computed(() => {
   let r = portfolio.value.filter(i =>
+    i.unitsOwned > 0 &&
     (!searchQuery.value || i.investmentProductName.toLowerCase().includes(searchQuery.value.toLowerCase())) &&
     (!selectedType.value || i.type === selectedType.value) &&
     (!selectedRisk.value || i.risk === selectedRisk.value)
@@ -254,11 +251,35 @@ const filteredPortfolio = computed(() => {
 });
 
 const totalValue = computed(() =>
-  portfolio.value.reduce((s,i)=>s+getCurrentValue(i),0)
+  portfolio.value.filter(i => i.unitsOwned > 0).reduce((s,i)=>s+getCurrentValue(i),0)
 );
 const totalCost = computed(() =>
-  portfolio.value.reduce((s,i)=>s+i.unitsOwned*i.avgPurchasePrice,0)
+  portfolio.value.filter(i => i.unitsOwned > 0).reduce((s,i)=>s+i.unitsOwned*i.avgPurchasePrice,0)
 );
+
+// Dynamic type options based on actual portfolio
+const availableTypes = computed(() => {
+  const types = new Set(
+    portfolio.value
+      .filter(i => i.unitsOwned > 0)
+      .map(i => i.type)
+      .filter(Boolean)
+  );
+
+  const typeMap = {
+    STOCK: "Stocks",
+    MUTUAL_FUND: "Mutual Funds",
+    BOND: "Bonds",
+    ETF: "ETFs",
+    REAL_ESTATE: "Real Estate",
+    COMMODITY: "Commodities",
+    CRYPTOCURRENCY: "Cryptocurrency"
+  };
+
+  return Array.from(types)
+    .map(type => ({ value: type, label: typeMap[type] || type }))
+    .sort((a, b) => a.label.localeCompare(b.label));
+});
 
 function goToBuy(item) {
   if (!item.isActive) return;
@@ -367,4 +388,3 @@ transition:.3s;display:flex;align-items:center;justify-content:center;gap:.5rem}
   .filter-select{width:100%}
 }
 </style>
-

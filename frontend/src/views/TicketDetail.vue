@@ -112,8 +112,9 @@
 
 <script setup>
 import { ref, onMounted, computed ,watch} from 'vue'
-import { useRoute, useRouter, RouterLink } from 'vue-router'
+import { RouterLink } from 'vue-router'
 import { useTicketStore } from '@/stores/ticketStore'
+import { isAdmin as checkIsAdmin } from '@/utils/auth'
 
 const props = defineProps({
   id: {
@@ -121,8 +122,6 @@ const props = defineProps({
     required: true,
   },
 })
-const route = useRoute()
-const router = useRouter()
 const store = useTicketStore()
 
 const ticket = computed(() => store.currentTicket)
@@ -135,10 +134,7 @@ const backLink = computed(() => {
 })
 
 onMounted(() => {
-  const user = localStorage.getItem('currentUser')
-  if (user) {
-    isAdmin.value = JSON.parse(user).role === 'ADMIN'
-  }
+  isAdmin.value = checkIsAdmin()
   store.error = null;
   responseError.value = '';
   store.fetchTicketById(Number(props.id)).catch(err => {
@@ -163,8 +159,10 @@ watch(ticket, (newTicket) => {
      selectedPriority.value = 'LOW'; 
   }
 }, { immediate: true });
+
 async function handleResponse() {
-  if (!responseText.value.trim()) {
+  const trimmed = responseText.value ? responseText.value.trim() : ''
+  if (!trimmed) {
     responseError.value = 'Response/Comment cannot be empty.'
     return
   }
@@ -172,12 +170,19 @@ async function handleResponse() {
      responseError.value = 'Cannot modify a closed ticket.';
      return;
    }
+
+   // If admin is closing (ticket is RESPONDED) ask for confirmation
+   if (isAdmin.value && ticket.value.ticketStatus === 'RESPONDED') {
+     const ok = window.confirm('You are about to close this ticket. This action cannot be undone. Are you sure you want to proceed?')
+     if (!ok) return
+   }
+
   responseError.value = ''
 
   try {
     await store.respondToTicket(
         ticket.value.id,
-        responseText.value,
+        trimmed,
         ticket.value.ticketStatus === 'OPEN' ? selectedPriority.value : null 
     );
     await store.fetchTicketById(ticket.value.id)

@@ -23,7 +23,7 @@ export const usePortfolioAnalyticsStore = defineStore('portfolioAnalytics', () =
       loading.value = true
       const res = await getPortfolioSummary()
       summary.value = res.data.data || res.data
-      console.log('✅ Portfolio summary loaded:', summary.value)
+      console.log('Portfolio summary loaded:', summary.value)
     } catch (err) {
       error.value = 'Failed to load portfolio summary'
       console.error(err)
@@ -37,7 +37,7 @@ export const usePortfolioAnalyticsStore = defineStore('portfolioAnalytics', () =
       loading.value = true
       const res = await getPortfolioAllocation()
       allocation.value = res.data.data || res.data
-      console.log('✅ Asset allocation loaded:', allocation.value)
+      console.log('Asset allocation loaded:', allocation.value)
     } catch (err) {
       error.value = 'Failed to load allocation data'
       console.error(err)
@@ -51,7 +51,7 @@ export const usePortfolioAnalyticsStore = defineStore('portfolioAnalytics', () =
       loading.value = true
       const res = await getPortfolioGains()
       gains.value = res.data.data || res.data
-      console.log('✅ Gains data loaded:', gains.value)
+      console.log('Gains data loaded:', gains.value)
     } catch (err) {
       error.value = 'Failed to load gains data'
       console.error(err)
@@ -70,7 +70,7 @@ export const usePortfolioAnalyticsStore = defineStore('portfolioAnalytics', () =
         fetchPortfolioAllocation(),
         fetchPortfolioGains()
       ])
-    } catch (err) {
+    } catch {
       error.value = 'Failed to load portfolio analytics'
     } finally {
       loading.value = false

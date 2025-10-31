@@ -16,10 +16,6 @@ public class UserResponse {
     public UserResponse() {
     }
 
-    public UserResponse(String email, Integer id, String string) {
-
-    }
-
     public UserResponse(Long id, String name, String email, String phone, Role role, ZonedDateTime createdAt) {
         this.id = id;
         this.name = name;

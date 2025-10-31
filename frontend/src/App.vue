@@ -1,29 +1,16 @@
 <script setup>
 import { RouterLink, RouterView } from 'vue-router'
-import { ref, onMounted } from 'vue'
+import { onMounted } from 'vue'
+import { useAuth } from '@/composables/useAuth'
 
-// Currently logged-in user (null if not authenticated)
-const currentUser = ref(null)
-
-// Load current user data from localStorage
-function loadCurrentUser() {
-  const user = localStorage.getItem('currentUser')
-  if (user) {
-    currentUser.value = JSON.parse(user)
-    console.log(' Current user loaded:', currentUser.value)
-  } else {
-    currentUser.value = null
-    console.log('No user logged in')
-  }
-}
+// Use auth composable for authentication state
+const { currentUser, authenticated, loadUserProfile, logout: logoutUser } = useAuth()
 
 // Handle user logout - clear session and redirect to home
 function logout() {
   if (confirm('Are you sure you want to logout?')) {
-    // Clear authentication data from localStorage
-    localStorage.removeItem('currentUser')
-    localStorage.removeItem('authToken')
-    currentUser.value = null
+    // Clear authentication data
+    logoutUser()
 
     // Dispatch custom event for other components to react
     window.dispatchEvent(new CustomEvent('user-logged-out'))
@@ -34,18 +21,19 @@ function logout() {
 }
 
 onMounted(() => {
-  // Load user data on app initialization
-  loadCurrentUser()
-
-  // Listen for storage changes (cross-tab synchronization)
-  window.addEventListener('storage', loadCurrentUser)
+  // Load user profile on app initialization if authenticated
+  if (authenticated.value) {
+    loadUserProfile()
+  }
 
   // Listen for custom login event (same-tab updates after login)
-  window.addEventListener('user-logged-in', loadCurrentUser)
+  window.addEventListener('user-logged-in', () => {
+    loadUserProfile()
+  })
 
   // Listen for custom logout event (same-tab updates after logout)
   window.addEventListener('user-logged-out', () => {
-    currentUser.value = null
+    // Profile already cleared by logout()
   })
 })
 </script>
@@ -135,12 +123,6 @@ onMounted(() => {
               >
                 <i class="bi bi-person-circle me-1"></i>
                 {{ currentUser.fullName }}
-                <!-- <span
-                  class="badge ms-2"
-                  :class="currentUser.role === 'ADMIN' ? 'bg-danger' : 'bg-light text-dark'"
-                >
-                  {{ currentUser.role }}
-                </span> -->
               </a>
               <ul class="dropdown-menu dropdown-menu-end">
                 <li>

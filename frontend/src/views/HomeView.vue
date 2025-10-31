@@ -18,24 +18,6 @@ import FeatureCard from '@/components/FeatureCard.vue'
         <p class="lead mb-4 text-white-50">
           Invest in thousands of products with zero commission fees
         </p>
-        
-        <!-- Search Bar -->
-        <!-- <div class="search-container mx-auto mb-4">
-          <div class="input-group input-group-lg search-box">
-            <span class="input-group-text bg-white border-0">
-              <i class="bi bi-search text-muted"></i>
-            </span>
-            <input
-              type="text"
-              class="form-control border-0 shadow-none"
-              placeholder="Search for stocks, mutual funds, ETFs..."
-              @focus="$router.push('/investments')"
-            />
-          </div>
-          <p class="search-hint mt-2 mb-0">
-            <small class="text-white-50">Try searching: "Technology Stocks" or "Low Risk Funds"</small>
-          </p>
-        </div> -->
 
         <div class="cta-buttons">
           <RouterLink to="/investments" class="btn btn-success btn-lg me-3 px-5">

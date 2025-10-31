@@ -33,26 +33,6 @@
                 <i class="bi" :class="currentUser.role === 'ADMIN' ? 'bi-shield-check' : 'bi-person'"></i>
                 {{ currentUser.role }}
               </span>
-
-              <!-- Stats -->
-              <!-- <div class="profile-stats mt-4">
-                <div class="stat-item">
-                  <div class="stat-value">{{ formatDate(currentUser.loggedInAt) }}</div>
-                  <div class="stat-label">Last Login</div>
-                </div>
-              </div> -->
-
-              <!-- Actions -->
-              <!-- <div class="d-grid gap-2 mt-4">
-                <button class="btn btn-outline-primary" @click="showEditModal = true">
-                  <i class="bi bi-pencil me-2"></i>
-                  Edit Profile
-                </button>
-                <button class="btn btn-outline-danger" @click="handleLogout">
-                  <i class="bi bi-box-arrow-right me-2"></i>
-                  Logout
-                </button>
-              </div> -->
             </div>
           </div>
         </div>
@@ -88,92 +68,9 @@
               </div>
             </div>
           </div>
-
-          <!-- Account Activity -->
-          <!-- <div class="card shadow-sm">
-            <div class="card-header bg-white">
-              <h5 class="mb-0">
-                <i class="bi bi-clock-history me-2"></i>
-                Account Activity
-              </h5>
-            </div>
-            <div class="card-body">
-              <div class="activity-list">
-                <div class="activity-item">
-                  <div class="activity-icon bg-success">
-                    <i class="bi bi-box-arrow-in-right"></i>
-                  </div>
-                  <div class="activity-content">
-                    <p class="mb-1 fw-bold">Logged In</p>
-                    <small class="text-muted">{{ formatDate(currentUser.loggedInAt) }}</small>
-                  </div>
-                </div>
-                <div class="activity-item">
-                  <div class="activity-icon bg-primary">
-                    <i class="bi bi-person-check"></i>
-                  </div>
-                  <div class="activity-content">
-                    <p class="mb-1 fw-bold">Account Created</p>
-                    <small class="text-muted">{{ getAccountAge() }}</small>
-                  </div>
-                </div>
-              </div>
-            </div> -->
-          <!-- </div> -->
         </div>
       </div>
     </div>
-
-    <!-- Edit Profile Modal
-    <div v-if="showEditModal" class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.5)">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">
-              <i class="bi bi-pencil me-2"></i>
-              Edit Profile
-            </h5>
-            <button type="button" class="btn-close" @click="closeEditModal"></button>
-          </div>
-          <div class="modal-body">
-            <form @submit.prevent="handleUpdateProfile">
-              <div class="mb-3">
-                <label for="editFullName" class="form-label">Full Name</label>
-                <input
-                  id="editFullName"
-                  v-model="editFormData.fullName"
-                  type="text"
-                  class="form-control"
-                  required
-                />
-              </div>
-              <div class="mb-3">
-                <label for="editPhone" class="form-label">Phone Number</label>
-                <input
-                  id="editPhone"
-                  v-model="editFormData.phone"
-                  type="tel"
-                  class="form-control"
-                />
-              </div>
-              <div class="alert alert-info">
-                <small>
-                  <i class="bi bi-info-circle me-1"></i>
-                  Email address cannot be changed for security reasons.
-                </small>
-              </div>
-            </form>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" @click="closeEditModal">Cancel</button>
-            <button type="button" class="btn btn-primary" @click="handleUpdateProfile">
-              <i class="bi bi-check-circle me-2"></i>
-              Save Changes
-            </button>
-          </div>
-        </div>
-      </div>
-    </div> -->
   </div>
 </template>
 
@@ -181,6 +78,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import apiClient from '@/services/api'
+import { isAuthenticated } from '@/utils/auth'
 
 export default {
   name: 'UserProfile',
@@ -196,12 +94,6 @@ export default {
       fullName: '',
       phone: '',
     })
-
-    // Check if user is authenticated
-    function isAuthenticated() {
-      const token = localStorage.getItem('authToken')
-      return !!token
-    }
 
     // Load current user from backend
     async function loadCurrentUser() {
@@ -232,8 +124,7 @@ export default {
         
         // If session expired or unauthorized, redirect to login
         if (error.response?.status === 401) {
-          localStorage.removeItem('authToken')
-          localStorage.removeItem('currentUser')
+          sessionStorage.removeItem('authToken')
           router.push('/login')
         }
       } finally {
@@ -257,8 +148,7 @@ export default {
     // Handle logout
     function handleLogout() {
       if (confirm('Are you sure you want to logout?')) {
-        localStorage.removeItem('authToken')
-        localStorage.removeItem('currentUser')
+        sessionStorage.removeItem('authToken')
         console.log(' Logged out successfully')
         router.push('/login')
       }

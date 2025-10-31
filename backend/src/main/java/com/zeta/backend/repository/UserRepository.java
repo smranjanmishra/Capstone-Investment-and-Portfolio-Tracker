@@ -7,7 +7,7 @@ import java.util.Optional;
 
 // Provides CRUD operations and custom queries for users.
 @Repository
-public interface UserRepository extends JpaRepository<User, Integer> {
+public interface UserRepository extends JpaRepository<User, Long> {
 
 //    Find user by email.
 //    Used for authentication and checking duplicate emails.

@@ -5,7 +5,7 @@ import com.zeta.backend.exceptions.InvalidInputException;
 import java.math.BigDecimal;
 
 public class ValidationUtil {
-    // Prevents instantiation of utility class
+    // Prevents instantiation of utility class (private con)
     private ValidationUtil() {
         throw new UnsupportedOperationException("Utility class cannot be instantiated");
     }
@@ -74,40 +74,5 @@ public class ValidationUtil {
                     "Product name cannot be empty"
             );
         }
-    }
-
-    // Reusable validation for positive financial values
-    public static boolean isPositive(BigDecimal value, String fieldName) {
-        if (value == null || value.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new InvalidInputException(
-                    fieldName,
-                    value,
-                    fieldName + " must be a positive number"
-            );
-        }
-        return true;
-    }
-
-    public static boolean isNotEmpty(String value, String fieldName) {
-        if (value == null || value.trim().isEmpty()) {
-            throw new InvalidInputException(
-                    fieldName,
-                    value,
-                    fieldName + " cannot be empty"
-            );
-        }
-        return true;
-    }
-
-    // Range validation for bounded financial metrics
-    public static boolean isInRange(BigDecimal value, BigDecimal min, BigDecimal max, String fieldName) {
-        if (value == null || value.compareTo(min) < 0 || value.compareTo(max) > 0) {
-            throw new InvalidInputException(
-                    fieldName,
-                    value,
-                    fieldName + " must be between " + min + " and " + max
-            );
-        }
-        return true;
     }
 }

@@ -15,7 +15,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-
 // Utility class for JWT token operations.
 // Handles token generation, validation, and claim extraction using HS256 algorithm.
 
@@ -30,21 +29,22 @@ public class JwtUtil {
     @Value("${jwt.expiration}")
     private Long expiration;
 
-//     generate signing key from secret string.
-//     uses HMAC-SHA for HS256 algorithm.
-//     return SecretKey for signing tokens
+    // generate signing key from secret string.
+    // uses HMAC-SHA for HS256 algorithm.
+    // return SecretKey for signing tokens
 
     private SecretKey getSigningKey() {
         return Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     }
 
-//     generate JWT token for a user.
-//     token includes userId and role claims and expires after configured duration (30 minutes).
-//     userId -> the user's ID
-//     role -> the user's role
-//     return generated JWT token string
+    // generate JWT token for a user.
+    // token includes userId and role claims and expires after configured duration
+    // (30 minutes).
+    // userId -> the user's ID
+    // role -> the user's role
+    // return generated JWT token string
 
-    public String generateToken(Integer userId, Role role) {
+    public String generateToken(Long userId, Role role) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("userId", userId);
         claims.put("role", role.name());
@@ -63,10 +63,10 @@ public class JwtUtil {
         return token;
     }
 
-//     validate JWT token.
-//     checks signature and expiration.
-//     token -> the JWT token to validate
-//     return true if token is valid, false otherwise
+    // validate JWT token.
+    // checks signature and expiration.
+    // token -> the JWT token to validate
+    // return true if token is valid, false otherwise
 
     public boolean validateToken(String token) {
         try {
@@ -81,9 +81,9 @@ public class JwtUtil {
         }
     }
 
-//     extract all claims from JWT token.
-//     token -> the JWT token
-//     return claims object containing all token claims
+    // extract all claims from JWT token.
+    // token -> the JWT token
+    // return claims object containing all token claims
 
     public Claims extractClaims(String token) {
         return Jwts.parser()
@@ -93,18 +93,18 @@ public class JwtUtil {
                 .getPayload();
     }
 
-//     extract userId from JWT token.
-//     token -> the JWT token
-//     return user ID from token claims
+    // extract userId from JWT token.
+    // token -> the JWT token
+    // return user ID from token claims
 
-    public Integer extractUserId(String token) {
+    public Long extractUserId(String token) {
         Claims claims = extractClaims(token);
-        return claims.get("userId", Integer.class);
+        return claims.get("userId", Long.class);
     }
 
-//     extract role from JWT token.
-//     token -> the JWT token
-//     return Role enum from token claims
+    // extract role from JWT token.
+    // token -> the JWT token
+    // return Role enum from token claims
 
     public Role extractRole(String token) {
         Claims claims = extractClaims(token);
@@ -112,9 +112,9 @@ public class JwtUtil {
         return Role.valueOf(roleString);
     }
 
-//     check if token is expired.
-//     token the JWT token
-//     return true if expired, false otherwise
+    // check if token is expired.
+    // token the JWT token
+    // return true if expired, false otherwise
 
     public boolean isTokenExpired(String token) {
         try {

@@ -146,45 +146,6 @@
       :user="selectedUser"
       @close="showDetailsModal = false"
     />
-
-    <!-- Confirm Delete Modal -->
-    <div
-      v-if="showDeleteModal"
-      class="modal fade show d-block"
-      tabindex="-1"
-      style="background: rgba(0, 0, 0, 0.5)"
-    >
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header bg-danger text-white">
-            <h5 class="modal-title">
-              <i class="bi bi-exclamation-triangle-fill me-2"></i>
-              Confirm Delete
-            </h5>
-            <button type="button" class="btn-close btn-close-white" @click="showDeleteModal = false"></button>
-          </div>
-          <div class="modal-body" v-if="userToDelete">
-            <p>Are you sure you want to delete this user?</p>
-            <div class="alert alert-warning">
-              <strong>{{ userToDelete.fullName }}</strong> ({{ userToDelete.email }})
-            </div>
-            <p class="text-danger mb-0">
-              <i class="bi bi-exclamation-circle me-1"></i>
-              This action cannot be undone!
-            </p>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" @click="showDeleteModal = false">
-              Cancel
-            </button>
-            <button type="button" class="btn btn-danger" @click="deleteUser">
-              <i class="bi bi-trash me-2"></i>
-              Delete User
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 
@@ -194,6 +155,7 @@ import apiClient from '@/services/api'
 import UserStatCard from '@/components/UserStatCard.vue'
 import UserTableRow from '@/components/UserTableRow.vue'
 import UserDetailsModal from '@/components/UserDetailsModal.vue'
+import { useAuth } from '@/composables/useAuth'
 
 export default {
   name: 'UserListView',
@@ -205,22 +167,16 @@ export default {
   },
 
   setup() {
+    const { isAdmin } = useAuth()
+
     // State
     const users = ref([])
-    const currentUser = ref(null)
     const searchQuery = ref('')
     const filterRole = ref('')
     const showDetailsModal = ref(false)
-    const showDeleteModal = ref(false)
     const selectedUser = ref(null)
-    const userToDelete = ref(null)
     const loading = ref(false)
     const error = ref(null)
-
-    // Check if current user is admin
-    const isAdmin = computed(() => {
-      return currentUser.value && currentUser.value.role === 'ADMIN'
-    })
 
     // Filtered users
     const filteredUsers = computed(() => {
@@ -272,23 +228,8 @@ export default {
       } catch (err) {
         console.error('Error loading users:', err)
         error.value = err.response?.data?.message || 'Failed to load users'
-        
-        // Fallback to localStorage if API fails (for development)
-        const storedUsers = localStorage.getItem('users')
-        if (storedUsers) {
-          users.value = JSON.parse(storedUsers)
-          console.log('⚠️ Loaded users from localStorage fallback')
-        }
       } finally {
         loading.value = false
-      }
-    }
-
-    // Load current user from localStorage
-    function loadCurrentUser() {
-      const storedCurrentUser = localStorage.getItem('currentUser')
-      if (storedCurrentUser) {
-        currentUser.value = JSON.parse(storedCurrentUser)
       }
     }
 
@@ -305,13 +246,11 @@ export default {
     }
 
     onMounted(() => {
-      loadCurrentUser()
       loadUsers()
     })
 
     return {
       users,
-      currentUser,
       isAdmin,
       searchQuery,
       filterRole,
@@ -319,9 +258,7 @@ export default {
       adminCount,
       regularUserCount,
       showDetailsModal,
-      showDeleteModal,
       selectedUser,
-      userToDelete,
       loading,
       error,
       loadUsers,

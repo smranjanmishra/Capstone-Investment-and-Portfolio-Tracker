@@ -35,13 +35,13 @@ class JwtUtilTest {
         field.set(target, value);
     }
 
-// Token Generation Tests
+    // Token Generation Tests
 
     @Test
     @DisplayName("Should generate valid JWT token")
     void testGenerateToken_Success() {
 
-        Integer userId = 1;
+        Long userId = 1L;
         Role role = Role.USER;
 
         String token = jwtUtil.generateToken(userId, role);
@@ -55,11 +55,12 @@ class JwtUtilTest {
     @DisplayName("Should generate different tokens for same user (due to issued time)")
     void testGenerateToken_DifferentTokensForSameUser() throws InterruptedException {
 
-        Integer userId = 1;
+        Long userId = 1L;
         Role role = Role.USER;
 
         String token1 = jwtUtil.generateToken(userId, role);
-        Thread.sleep(1100); // 1.1 second delay to ensure different issuedAt time (JWT uses seconds precision)
+        Thread.sleep(1100); // 1.1 second delay to ensure different issuedAt time (JWT uses seconds
+                            // precision)
         String token2 = jwtUtil.generateToken(userId, role);
 
         assertNotEquals(token1, token2, "Tokens should be different due to different issued times");
@@ -69,11 +70,11 @@ class JwtUtilTest {
     @DisplayName("Should generate token with correct userId claim")
     void testGenerateToken_ContainsCorrectUserId() {
 
-        Integer userId = 123;
+        Long userId = 123L;
         Role role = Role.USER;
 
         String token = jwtUtil.generateToken(userId, role);
-        Integer extractedUserId = jwtUtil.extractUserId(token);
+        Long extractedUserId = jwtUtil.extractUserId(token);
 
         assertEquals(userId, extractedUserId, "Extracted userId should match original");
     }
@@ -82,7 +83,7 @@ class JwtUtilTest {
     @DisplayName("Should generate token with correct role claim")
     void testGenerateToken_ContainsCorrectRole() {
 
-        Integer userId = 1;
+        Long userId = 1L;
         Role role = Role.ADMIN;
 
         String token = jwtUtil.generateToken(userId, role);
@@ -95,7 +96,7 @@ class JwtUtilTest {
     @DisplayName("Should generate token for USER role")
     void testGenerateToken_UserRole() {
 
-        Integer userId = 1;
+        Long userId = 1L;
         Role role = Role.USER;
 
         String token = jwtUtil.generateToken(userId, role);
@@ -108,7 +109,7 @@ class JwtUtilTest {
     @DisplayName("Should generate token for ADMIN role")
     void testGenerateToken_AdminRole() {
 
-        Integer userId = 2;
+        Long userId = 2L;
         Role role = Role.ADMIN;
 
         String token = jwtUtil.generateToken(userId, role);
@@ -117,13 +118,13 @@ class JwtUtilTest {
         assertEquals(Role.ADMIN, extractedRole, "Role should be ADMIN");
     }
 
-// Token Validation Tests
+    // Token Validation Tests
 
     @Test
     @DisplayName("Should validate correct token successfully")
     void testValidateToken_ValidToken() {
 
-        Integer userId = 1;
+        Long userId = 1L;
         Role role = Role.USER;
         String token = jwtUtil.generateToken(userId, role);
 
@@ -179,7 +180,7 @@ class JwtUtilTest {
     @Test
     @DisplayName("Should reject token with wrong signature")
     void testValidateToken_WrongSignature() {
-         // create token with different secret
+        // create token with different secret
         JwtUtil differentSecretUtil = new JwtUtil();
         try {
             setField(differentSecretUtil, "secret", "differentSecretKey12345678901234567890123456789012");
@@ -188,20 +189,20 @@ class JwtUtilTest {
             fail("Failed to setup test: " + e.getMessage());
         }
 
-        String tokenWithWrongSecret = differentSecretUtil.generateToken(1, Role.USER);
+        String tokenWithWrongSecret = differentSecretUtil.generateToken(1L, Role.USER);
 
         boolean isValid = jwtUtil.validateToken(tokenWithWrongSecret);
 
         assertFalse(isValid, "Token signed with different secret should fail validation");
     }
 
-// Token Expiry Tests
+    // Token Expiry Tests
 
     @Test
     @DisplayName("Should not be expired immediately after generation")
     void testIsTokenExpired_NewToken() {
 
-        Integer userId = 1;
+        Long userId = 1L;
         Role role = Role.USER;
         String token = jwtUtil.generateToken(userId, role);
 
@@ -218,7 +219,7 @@ class JwtUtilTest {
         setField(shortExpiryUtil, "secret", testSecret);
         setField(shortExpiryUtil, "expiration", 1L); // 1 millisecond
 
-        String token = shortExpiryUtil.generateToken(1, Role.USER);
+        String token = shortExpiryUtil.generateToken(1L, Role.USER);
 
         // Wait for token to expire
         Thread.sleep(10);
@@ -236,7 +237,7 @@ class JwtUtilTest {
         setField(shortExpiryUtil, "secret", testSecret);
         setField(shortExpiryUtil, "expiration", 1L); // 1 millisecond
 
-        String token = shortExpiryUtil.generateToken(1, Role.USER);
+        String token = shortExpiryUtil.generateToken(1L, Role.USER);
 
         // Wait for token to expire
         Thread.sleep(10);
@@ -246,17 +247,17 @@ class JwtUtilTest {
         assertFalse(isValid, "Expired token should fail validation");
     }
 
-// Claim Extraction Tests
+    // Claim Extraction Tests
 
     @Test
     @DisplayName("Should extract userId claim correctly")
     void testExtractUserId_Success() {
 
-        Integer expectedUserId = 999;
+        Long expectedUserId = 999L;
         Role role = Role.USER;
         String token = jwtUtil.generateToken(expectedUserId, role);
 
-        Integer actualUserId = jwtUtil.extractUserId(token);
+        Long actualUserId = jwtUtil.extractUserId(token);
 
         assertEquals(expectedUserId, actualUserId, "Extracted userId should match original");
     }
@@ -265,7 +266,7 @@ class JwtUtilTest {
     @DisplayName("Should extract role claim correctly")
     void testExtractRole_Success() {
 
-        Integer userId = 1;
+        Long userId = 1L;
         Role expectedRole = Role.ADMIN;
         String token = jwtUtil.generateToken(userId, expectedRole);
 
@@ -278,14 +279,14 @@ class JwtUtilTest {
     @DisplayName("Should extract all claims correctly")
     void testExtractClaims_Success() {
 
-        Integer userId = 42;
+        Long userId = 42L;
         Role role = Role.USER;
         String token = jwtUtil.generateToken(userId, role);
 
         Claims claims = jwtUtil.extractClaims(token);
 
         assertNotNull(claims, "Claims should not be null");
-        assertEquals(userId, claims.get("userId", Integer.class), "userId claim should match");
+        assertEquals(userId, claims.get("userId", Long.class), "userId claim should match");
         assertEquals(role.name(), claims.get("role", String.class), "role claim should match");
         assertNotNull(claims.getIssuedAt(), "issuedAt should be present");
         assertNotNull(claims.getExpiration(), "expiration should be present");
@@ -295,7 +296,7 @@ class JwtUtilTest {
     @DisplayName("Should not contain jti claim (as per requirements)")
     void testToken_DoesNotContainJtiClaim() {
 
-        Integer userId = 1;
+        Long userId = 1L;
         Role role = Role.USER;
         String token = jwtUtil.generateToken(userId, role);
 
@@ -309,7 +310,7 @@ class JwtUtilTest {
     @DisplayName("Should verify token expiration is 30 minutes")
     void testToken_ExpirationIs30Minutes() {
 
-        Integer userId = 1;
+        Long userId = 1L;
         Role role = Role.USER;
 
         long beforeGeneration = System.currentTimeMillis();

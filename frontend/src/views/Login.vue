@@ -117,14 +117,15 @@ export default {
           password: formData.password
         })
         const token = loginResponse.data.token
-        localStorage.setItem('authToken', token)
+        sessionStorage.setItem('authToken', token)
+
+        // Dispatch login event for App.vue to load user profile
+        window.dispatchEvent(new CustomEvent('user-logged-in'))
+
+        // Get user role from token to determine redirect
         const profileResponse = await apiClient.get('/user/profile')
         const userProfile = profileResponse.data
-        localStorage.setItem('currentUser', JSON.stringify({
-          ...userProfile,
-          fullName: userProfile.name
-        }))
-        window.dispatchEvent(new CustomEvent('user-logged-in'))
+
         if (userProfile.role === 'ADMIN') {
           router.push('/admin/investments')
         } else {

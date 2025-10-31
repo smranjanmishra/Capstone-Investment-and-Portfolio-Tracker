@@ -1,5 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
+import { isAuthenticated, isAdmin } from '@/utils/auth'
+
 // Create router instance with HTML5 history mode
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -86,18 +88,6 @@ const router = createRouter({
       }
     },
     {
-      path: "/portfolio/buy",
-      name: "buy-investment",
-      component: () => import("../views/BuyInvestment.vue"),
-      meta: { requiresAuth: true }
-    },
-    {
-      path: "/portfolio/sell",
-      name: "sell-investment",
-      component: () => import("../views/SellInvestment.vue"),
-      meta: { requiresAuth: true }
-    },
-    {
        path: '/analytics',
        name: 'PortfolioAnalytics',
        component: () => import('../views/PortfolioAnalytics.vue'),
@@ -176,18 +166,7 @@ const router = createRouter({
     },
   ],
 })
-// Check if user has valid authentication token
-function isAuthenticated() {
-  const currentUser = localStorage.getItem('currentUser')
-  return !!currentUser
-}
-// Check if authenticated user has admin role
-function isAdmin() {
-  const currentUser = localStorage.getItem('currentUser')
-  if (!currentUser) return false
-  const user = JSON.parse(currentUser)
-  return user.role === 'ADMIN'
-}
+
 // Global navigation guard - runs before each route change
 router.beforeEach((to, from, next) => {
   // Update page title based on route metadata
@@ -198,13 +177,13 @@ router.beforeEach((to, from, next) => {
   }
   // Redirect to login if route requires authentication
   if (to.meta.requiresAuth && !isAuthenticated()) {
-    console.warn('⚠️ Access denied: Authentication required')
+    console.warn('Access denied: Authentication required')
     next({ name: 'login', query: { redirect: to.fullPath } })
     return
   }
   // Redirect to home if route requires admin but user is not admin
   if (to.meta.requiresAdmin && !isAdmin()) {
-    console.warn('⚠️ Access denied: Admin privileges required')
+    console.warn('Access denied: Admin privileges required')
     alert('Access denied! This page is only accessible to administrators.')
     next({ name: 'home' })
     return

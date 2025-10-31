@@ -1,11 +1,12 @@
 import { defineStore } from "pinia";
 import { ref } from 'vue';
-import apiClient, {
+import {
   createTicket as apiCreateTicket,
   getUserTickets as apiGetUserTickets,
   getAllTickets as apiGetAllTickets,
   respondToTicket as apiRespondToTicket,
 } from '@/services/api';
+import { isAdmin } from '@/utils/auth';
 
 export const useTicketStore = defineStore('ticket', () => {
 
@@ -21,13 +22,29 @@ export const useTicketStore = defineStore('ticket', () => {
     loading.value = true;
     error.value = null;
     try {
-      const response = await apiCreateTicket(ticketData);
+      // Validate & normalize payload (do not convert investmentProductId to Number)
+      const subject = ticketData.subject ? String(ticketData.subject).trim() : ''
+      const description = ticketData.description ? String(ticketData.description).trim() : ''
+      const investmentProductId = ticketData.investmentProductId == null || ticketData.investmentProductId === '' ? null : ticketData.investmentProductId
+
+      if (!subject || !description) {
+        error.value = 'Subject and description cannot be blank or whitespace only.'
+        throw new Error(error.value)
+      }
+
+      const payload = {
+        subject,
+        description,
+        investmentProductId
+      }
+
+      const response = await apiCreateTicket(payload);
       await fetchUserTickets();
       console.log('Ticket created successfully:', response.data);
       return response.data;
     }
     catch (error) {
-      error.value = error.response?.data || 'Failed to create ticket';
+      error.value = error.response?.data || error.message || 'Failed to create ticket';
       console.error('Error creating ticket:', error);
       throw error;
     }
@@ -80,6 +97,13 @@ export const useTicketStore = defineStore('ticket', () => {
   error.value = null;
 
   try {
+
+    const trimmedResponse = responseText ? String(responseText).trim() : ''
+    if (!trimmedResponse) {
+      error.value = 'Response/Comment cannot be empty.'
+      throw new Error(error.value)
+    }
+
     const currentStatus = currentTicket.value?.ticketStatus;
     let updatedStatus = currentStatus;
     if (currentStatus === "OPEN") {
@@ -87,8 +111,9 @@ export const useTicketStore = defineStore('ticket', () => {
     } else if (currentStatus === "RESPONDED") {
       updatedStatus = "CLOSED";
     }
+
     await apiRespondToTicket(ticketId, {
-      response: responseText,
+      response: trimmedResponse,
       priority: newPriority
     });
     console.log("Ticket updated — refreshing data...");
@@ -98,6 +123,7 @@ export const useTicketStore = defineStore('ticket', () => {
     return currentTicket.value;
   }
   catch (err) {
+    error.value = err.response?.data || err.message || 'Failed to update ticket';
     console.error("Error updating ticket:", err);
     throw err;
   }
@@ -120,15 +146,13 @@ export const useTicketStore = defineStore('ticket', () => {
         currentTicket.value = ticket;
         return ticket;
       } else {
-        if (localStorage.getItem('currentUser')) {
-           const userRole = JSON.parse(localStorage.getItem('currentUser')).role;
-           if (userRole === 'ADMIN') {
-             await fetchAllTickets();
-             ticket = allTickets.value.find(t => t.id === ticketId);
-           } else {
-             await fetchUserTickets();
-             ticket = userTickets.value.find(t => t.id === ticketId);
-           }
+        // Fetch tickets if not in cache
+        if (isAdmin()) {
+          await fetchAllTickets();
+          ticket = allTickets.value.find(t => t.id === ticketId);
+        } else {
+          await fetchUserTickets();
+          ticket = userTickets.value.find(t => t.id === ticketId);
         }
         
         if (ticket) {

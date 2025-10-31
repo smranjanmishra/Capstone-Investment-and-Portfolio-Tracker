@@ -65,17 +65,20 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { RouterLink } from 'vue-router'
+import { useAuth } from '@/composables/useAuth'
 
+const { currentUser, loadUserProfile } = useAuth()
 const userName = ref('User')
 const userRole = ref('USER')
 
-onMounted(() => {
-  // We read the user role from localStorage, just like in App.vue
-  const user = localStorage.getItem('currentUser')
-  if (user) {
-    const userData = JSON.parse(user)
-    userName.value = userData.fullName || 'User'
-    userRole.value = userData.role || 'USER'
+onMounted(async () => {
+  // Load user profile if not already loaded
+  await loadUserProfile()
+  
+  // Set local refs from currentUser
+  if (currentUser.value) {
+    userName.value = currentUser.value.fullName || 'User'
+    userRole.value = currentUser.value.role || 'USER'
   }
 })
 </script>
