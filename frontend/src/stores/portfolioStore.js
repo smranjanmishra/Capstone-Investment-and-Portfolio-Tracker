@@ -19,7 +19,7 @@ export const usePortfolioStore = defineStore('portfolio', () => {
       // 1. Calls  endpoint: GET /api/v1/portfolio
       const response = await apiClient.get('/portfolio')
     
-      if (response.data && response.data.success) {
+      if (response.data && response.data.data) {
         portfolioItems.value = response.data.data || []
       } else {
         // Handle cases where { "success": false } is returned
