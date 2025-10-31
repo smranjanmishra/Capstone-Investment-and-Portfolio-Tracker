@@ -41,22 +41,6 @@ public class InvestmentServiceImpl implements InvestmentService {
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public InvestmentProductResponseDTO getInvestmentById(Long id) {
-        log.info("Fetching investment product with ID: {}", id);
-
-        InvestmentProduct product = investmentRepository.findById(id)
-                .orElseThrow(() -> {
-                    log.error("Investment product not found with ID: {}", id);
-                    return new ResourceNotFoundException("InvestmentProduct", "id", id);
-                });
-
-        log.debug("Found investment product: {}", product.getName());
-
-        return convertToResponseDTO(product);
-    }
-
-    @Override
     public InvestmentProductResponseDTO createInvestment(InvestmentProductRequestDTO requestDTO) {
         log.info("Creating new investment product: {}", requestDTO.getName());
 
@@ -120,31 +104,6 @@ public class InvestmentServiceImpl implements InvestmentService {
         log.info("Successfully updated investment product with ID: {}", id);
 
         return convertToResponseDTO(updatedProduct);
-    }
-
-    @Override
-    public void deactivateInvestment(Long id) {
-        log.info("Deactivating investment product with ID: {}", id);
-
-        InvestmentProduct product = investmentRepository.findById(id)
-                .orElseThrow(() -> {
-                    log.error("Investment product not found with ID: {}", id);
-                    return new ResourceNotFoundException("InvestmentProduct", "id", id);
-                });
-
-        if (!product.getIsActive()) {
-            log.warn("Investment product with ID {} is already inactive", id);
-            throw new InvalidInputException(
-                    "isActive",
-                    false,
-                    "Investment product is already inactive"
-            );
-        }
-
-        product.setIsActive(false);
-        investmentRepository.save(product);
-
-        log.info("Successfully deactivated investment product with ID: {}", id);
     }
 
     private InvestmentProductResponseDTO convertToResponseDTO(InvestmentProduct product) {
