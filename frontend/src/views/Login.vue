@@ -144,26 +144,12 @@ export default {
       }
     }
 
-    async function loginAsUser() {
-      formData.email = 'user@example.com'
-      formData.password = 'User@123'
-      await handleLogin()
-    }
-
-    async function loginAsAdmin() {
-      formData.email = 'admin@example.com'
-      formData.password = 'Admin@123'
-      await handleLogin()
-    }
-
     return {
       formData,
       loading,
       errorMessage,
       showPassword,
       handleLogin,
-      loginAsUser,
-      loginAsAdmin,
     }
   },
 }

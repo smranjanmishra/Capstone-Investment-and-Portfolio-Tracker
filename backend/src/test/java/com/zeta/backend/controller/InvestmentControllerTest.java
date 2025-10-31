@@ -96,9 +96,10 @@ class InvestmentControllerTest {
                 .getResponse()
                 .getContentAsString();
 
+        // Extract product ID from response JSON
         Long productId = objectMapper.readTree(createResponse).get("data").get("id").asLong();
 
-        // Update
+        // Prepare update DTO
         InvestmentProductRequestDTO updateRequest = InvestmentProductRequestDTO.builder()
                 .name("Updated Product " + System.currentTimeMillis())
                 .type(InvestmentType.MUTUAL_FUND)

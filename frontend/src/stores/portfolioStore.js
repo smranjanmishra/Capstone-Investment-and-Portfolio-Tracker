@@ -20,7 +20,7 @@ export const usePortfolioStore = defineStore('portfolio', () => {
       // 3. Calls endpoint: GET /api/v1/portfolio
       const response = await apiClient.get('/portfolio')
     
-      if (response.data && response.data.success) {
+      if (response.data && response.data.data) {
         
         portfolioItems.value = response.data.data || []
         console.log(`Loaded ${portfolioItems.value.length} portfolio items`)
